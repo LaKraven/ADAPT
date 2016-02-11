@@ -1,5 +1,5 @@
 {
-  A.D.A.P.T. Library
+  AD.A.P.T. Library
   Copyright (C) 2014-2016, Simon J Stuart, All Rights Reserved
 
   Original Source Location: https://github.com/LaKraven/ADAPT

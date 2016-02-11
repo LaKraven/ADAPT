@@ -37,17 +37,10 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
+unit ADAPT.Common.Types.Threads;
 
-{
-  This unit allows you to enable and disable RTTI for ADAPT's units
-  By default, RTTI is ENABLED.
+interface
 
-  You can disable RTTI by defining ADAPT_NO_RTTI in your Project Options
+implementation
 
-  NOTE: THIS UNIT CURRENTLY ONLY APPLIES TO DELPHI!
-}
-{$IFNDEF FPC}
-  {$IFDEF ADAPT_NO_RTTI}
-    {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
-  {$ENDIF ADAPT_NO_RTTI}
-{$ENDIF FPC}
+end.

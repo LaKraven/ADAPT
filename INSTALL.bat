@@ -2,8 +2,7 @@
 cls
 echo A.D.A.P.T.
 echo --------------------
-echo (A)dvanced
-echo (D)eveloper
+echo (AD)dvanced
 echo (A)sync
 echo (P)rogramming
 echo (T)oolkit
