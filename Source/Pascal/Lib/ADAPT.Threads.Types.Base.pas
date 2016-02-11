@@ -49,13 +49,102 @@ uses
   {$ELSE}
     Classes, SysUtils, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common.Types.Base;
+  ADAPT.Common.Types.Base, ADAPT.Common.Types.Threadsafe;
 
 type
-  TADThread = class abstract(TThread)
+  { Interface Forward Declarations }
+  IADThread = interface;
+  { Class Forward Declarations }
+  TADThread = class;
+
+  { Enums }
+  TLKThreadState = (tsRunning, tsPaused);
+
+  ///  <summary><c>Common Interface for ADAPT Thread Types.</c></summary>
+  IADThread = interface
+  ['{021D276B-6619-4489-ABD1-56787D0FBF2D}']
 
   end;
 
+  ///  <summary><c>Abstract Base Type for all Threads in the ADAPT codebase.</c></summary>
+  ///  <remarks>
+  ///    <para><c>ALL Threads in the codebase have a defactor Threadsafe Lock.</c></para>
+  ///  </remarks>
+  TADThread = class abstract(TThread, IADInterface, IADThread, IADReadWriteLock)
+  private
+    FOwnerInterface: IInterface;
+    { IInterface }
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+    { IADInterface }
+    function GetInstanceGUID: TGUID;
+    { IADReadWriteLock }
+    function GetLock: IADReadWriteLock;
+  protected
+    FInstanceGUID: TGUID;
+    FLock: TADReadWriteLock;
+  public
+    constructor Create; reintroduce; virtual;
+    destructor Destroy; override;
+    procedure AfterConstruction; override;
+
+    { IADInterface }
+    property InstanceGUID: TGUID read GetInstanceGUID;
+    { IADReadWriteLock }
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
 implementation
+
+{ TADThread }
+
+constructor TADThread.Create;
+begin
+  inherited;
+  CreateGUID(FInstanceGUID);
+  FLock := TADReadWriteLock.Create(IADThread(Self));
+end;
+
+destructor TADThread.Destroy;
+begin
+  FLock.Free;
+  inherited;
+end;
+
+function TADThread.GetInstanceGUID: TGUID;
+begin
+  Result := FInstanceGUID;
+end;
+
+function TADThread.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+function TADThread.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE;
+end;
+
+function TADThread._AddRef: Integer;
+begin
+  if FOwnerInterface <> nil then
+    Result := FOwnerInterface._AddRef else
+    Result := -1;
+end;
+
+function TADThread._Release: Integer;
+begin
+  if FOwnerInterface <> nil then
+    Result := FOwnerInterface._Release else
+    Result := -1;
+end;
+
+procedure TADThread.AfterConstruction;
+begin
+  inherited;
+  GetInterface(IInterface, FOwnerInterface);
+end;
 
 end.

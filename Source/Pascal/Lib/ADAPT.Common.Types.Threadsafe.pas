@@ -60,6 +60,8 @@ type
   IADReadWriteLock = interface;
   { Class Forward Declarations }
   TADReadWriteLock = class;
+  TADObjectTS = class;
+  TADPersistentTS = class;
 
   { Enums }
   TADReadWriteLockState = (lsWaiting, lsReading, lsWriting);
