@@ -81,6 +81,14 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  { Interface Forward Declarations }
+  IADInterface = interface;
+
+  { Class Forward Declarations }
+  TADObject = class;
+  TADPersistent = class;
+  TADAggregatedObject = class;
+
   {$IFDEF ADAPT_FLOAT_SINGLE}
     ///  <summary><c>Single-Precision Floating Point Type.</c></summary>
     ADFloat = Single;
@@ -141,6 +149,18 @@ type
     property InstanceGUID: TGUID read GetInstanceGUID;
   end;
 
+  ///  <summary><c>ADAPT Base Aggregated Object Type.</c></summary>
+  ///  <remarks><c>All Classes in ADAPT are Interfaced unless otherwise stated.</c></remarks>
+  TADAggregatedObject = class abstract(TAggregatedObject, IADInterface)
+  private
+    function GetInstanceGUID: TGUID;
+  protected
+    FInstanceGUID: TGUID;
+  public
+    constructor Create(const Controller: IInterface); reintroduce; virtual;
+    property InstanceGUID: TGUID read GetInstanceGUID;
+  end;
+
 implementation
 
 { TADObject }
@@ -163,6 +183,19 @@ begin
 end;
 
 function TADPersistent.GetInstanceGUID: TGUID;
+begin
+  Result := FInstanceGUID;
+end;
+
+{ TADAggregatedObject }
+
+constructor TADAggregatedObject.Create(const Controller: IInterface);
+begin
+  inherited Create(Controller);
+  CreateGUID(FInstanceGUID);
+end;
+
+function TADAggregatedObject.GetInstanceGUID: TGUID;
 begin
   Result := FInstanceGUID;
 end;

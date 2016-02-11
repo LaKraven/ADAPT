@@ -12,7 +12,8 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   ADAPT.UnitTests.Generics.Collections in 'ADAPT.UnitTests.Generics.Collections.pas',
-  ADAPT.Common.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas';
+  ADAPT.Common.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas',
+  ADAPT.Common.Types.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threadsafe.pas';
 
 var
   runner : ITestRunner;

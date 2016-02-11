@@ -162,6 +162,7 @@
         </DelphiCompile>
         <DCCReference Include="ADAPT.UnitTests.Generics.Collections.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threadsafe.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -198,7 +199,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="2">
-                <DeployFile LocalName="Win32\TestInsight - Debug\ADAPT_UnitTests_Delphi.exe" Configuration="TestInsight - Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\Bin\Win32\TestInsight - Debug\ADAPT_UnitTests_Delphi.exe" Configuration="TestInsight - Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>ADAPT_UnitTests_Delphi.exe</RemoteName>
                         <Overwrite>true</Overwrite>
