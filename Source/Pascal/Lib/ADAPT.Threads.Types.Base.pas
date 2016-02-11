@@ -37,9 +37,24 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Common.Types.Threads;
+unit ADAPT.Threads.Types.Base;
+
+{$I ADAPT.inc}
 
 interface
+
+uses
+  {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
+    System.Classes, System.SysUtils, System.SyncObjs,
+  {$ELSE}
+    Classes, SysUtils, SyncObjs,
+  {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
+  ADAPT.Common.Types.Base;
+
+type
+  TADThread = class abstract(TThread)
+
+  end;
 
 implementation
 

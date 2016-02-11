@@ -163,7 +163,7 @@
         <DCCReference Include="ADAPT.UnitTests.Generics.Collections.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threadsafe.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threads.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threads.Types.Base.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

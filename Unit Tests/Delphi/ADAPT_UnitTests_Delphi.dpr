@@ -14,7 +14,7 @@ uses
   ADAPT.UnitTests.Generics.Collections in 'ADAPT.UnitTests.Generics.Collections.pas',
   ADAPT.Common.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas',
   ADAPT.Common.Types.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threadsafe.pas',
-  ADAPT.Common.Types.Threads in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threads.pas';
+  ADAPT.Threads.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Threads.Types.Base.pas';
 
 var
   runner : ITestRunner;
