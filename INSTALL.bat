@@ -8,6 +8,9 @@ echo (A)sync
 echo (P)rogramming
 echo (T)oolkit
 echo.
+echo Copyright (C) 2014-2016, Simon J Stuart, All Rights Reserved
+echo Formerly known as LaKraven Studios Standard Library [LKSL]
+echo.
 echo Setting Environment Variables for ADAPT Paths
 
 echo Registering ADAPT_HOME
