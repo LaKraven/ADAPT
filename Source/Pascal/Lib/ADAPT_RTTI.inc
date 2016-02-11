@@ -37,10 +37,17 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Common.Types.Base;
 
-interface
+{
+  This unit allows you to enable and disable RTTI for ADAPT's units
+  By default, RTTI is ENABLED.
 
-implementation
+  You can disable RTTI by defining ADAPT_NO_RTTI in your Project Options
 
-end.
+  NOTE: THIS UNIT CURRENTLY ONLY APPLIES TO DELPHI!
+}
+{$IFNDEF FPC}
+  {$IFDEF ADAPT_NO_RTTI}
+    {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
+  {$ENDIF ADAPT_NO_RTTI}
+{$ENDIF FPC}
