@@ -73,9 +73,9 @@ interface
 
 uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-    System.Classes, System.SysUtils, System.SyncObjs;
+    System.Classes, System.SysUtils;
   {$ELSE}
-    Classes, SysUtils, SyncObjs;
+    Classes, SysUtils;
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
 
   {$I ADAPT_RTTI.inc}
@@ -94,6 +94,77 @@ type
     {$ENDIF ADAPT_FLOAT_DOUBLE}
   {$ENDIF ADAPT_FLOAT_SINGLE}
 
+  ///  <summary><c>Generic Callback Type for an Unbound Method.</c></summary>
+  TADGenericCallbackUnbound<T> = procedure(const Value: T);
+  ///  <summary><c>Generic Callback Type for an Type-Bound Method.</c></summary>
+  TADGenericCallbackOfObject<T> = procedure(const Value: T) of Object;
+  {$IFNDEF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Generic Callback Type for an Anonymous Method.</c></summary>
+    TADGenericCallbackAnonymous<T> = reference to procedure(const Value: T);
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+  ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
+  EADException = class abstract(Exception);
+
+  ///  <summary><c></c></summary>
+  IADInterface = interface
+  ['{FF2AF334-2A54-414B-AF23-D80EFA93715A}']
+    function GetInstanceGUID: TGUID;
+
+    property InstanceGUID: TGUID read GetInstanceGUID;
+  end;
+
+  ///  <summary><c>ADAPT Base Object Type.</c></summary>
+  ///  <remarks><c>All Classes in ADAPT are Interfaced unless otherwise stated.</c></remarks>
+  TADObject = class abstract(TInterfacedObject, IADInterface)
+  private
+    function GetInstanceGUID: TGUID;
+  protected
+    FInstanceGUID: TGUID;
+  public
+    constructor Create; virtual;
+    property InstanceGUID: TGUID read GetInstanceGUID;
+  end;
+
+  ///  <summary><c>ADAPT Base Persistent Type.</c></summary>
+  ///  <remarks>
+  ///    <para><c>All Classes in ADAPT are Interfaced unless otherwise stated.</c></para>
+  ///    <para><c>There is no Reference Counting on Persistent Types.</c></para>
+  ///  </remarks>
+  TADPersistent = class abstract(TInterfacedPersistent, IADInterface)
+  private
+    function GetInstanceGUID: TGUID;
+  protected
+    FInstanceGUID: TGUID;
+  public
+    constructor Create; virtual;
+    property InstanceGUID: TGUID read GetInstanceGUID;
+  end;
+
 implementation
+
+{ TADObject }
+
+constructor TADObject.Create;
+begin
+  CreateGUID(FInstanceGUID);
+end;
+
+function TADObject.GetInstanceGUID: TGUID;
+begin
+  Result := FInstanceGUID;
+end;
+
+{ TADPersistent }
+
+constructor TADPersistent.Create;
+begin
+  CreateGUID(FInstanceGUID);
+end;
+
+function TADPersistent.GetInstanceGUID: TGUID;
+begin
+  Result := FInstanceGUID;
+end;
 
 end.
