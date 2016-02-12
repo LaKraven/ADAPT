@@ -12,10 +12,9 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   ADAPT.UnitTests.Generics.Collections in 'ADAPT.UnitTests.Generics.Collections.pas',
-  ADAPT.Common.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Base.pas',
-  ADAPT.Common.Types.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Common.Types.Threadsafe.pas',
-  ADAPT.Threads.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Threads.Types.Base.pas',
-  ADAPT.Performance.Types.Base in '..\..\Source\Pascal\Lib\ADAPT.Performance.Types.Base.pas';
+  ADAPT.Common in '..\..\Source\Pascal\Lib\ADAPT.Common.pas',
+  ADAPT.Threads in '..\..\Source\Pascal\Lib\ADAPT.Threads.pas',
+  ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas';
 
 var
   runner : ITestRunner;

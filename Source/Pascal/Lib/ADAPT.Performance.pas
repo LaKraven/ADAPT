@@ -37,7 +37,7 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Performance.Types.Base;
+unit ADAPT.Performance;
 
 {$I ADAPT.inc}
 
@@ -49,7 +49,7 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common.Types.Base, ADAPT.Common.Types.Threadsafe;
+  ADAPT.Common;
 
   {$I ADAPT_RTTI.inc}
 

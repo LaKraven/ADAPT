@@ -37,7 +37,7 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Threads.Types.Base;
+unit ADAPT.Threads;
 
 {$I ADAPT.inc}
 
@@ -49,7 +49,7 @@ uses
   {$ELSE}
     Classes, SysUtils, SyncObjs, {$IFDEF FPC}ADAPT.Common.Types.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common.Types.Base, ADAPT.Common.Types.Threadsafe, ADAPT.Performance.Types.Base;
+  ADAPT.Common, ADAPT.Performance;
 
   {$I ADAPT_RTTI.inc}
 
