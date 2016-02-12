@@ -47,7 +47,7 @@ uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
     System.Classes, System.SysUtils, System.SyncObjs, System.Diagnostics, System.Math,
   {$ELSE}
-    Classes, SysUtils, SyncObjs, {$IFDEF FPC}ADAPT.Common.Types.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
+    Classes, SysUtils, SyncObjs, {$IFDEF FPC}ADAPT.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Performance;
 
