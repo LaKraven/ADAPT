@@ -102,15 +102,6 @@ type
     {$ENDIF ADAPT_FLOAT_DOUBLE}
   {$ENDIF ADAPT_FLOAT_SINGLE}
 
-  ///  <summary><c>Generic Callback Type for an Unbound Method.</c></summary>
-  TADGenericCallbackUnbound<T> = procedure(const Value: T);
-  ///  <summary><c>Generic Callback Type for an Type-Bound Method.</c></summary>
-  TADGenericCallbackOfObject<T> = procedure(const Value: T) of Object;
-  {$IFNDEF SUPPORTS_REFERENCETOMETHOD}
-    ///  <summary><c>Generic Callback Type for an Anonymous Method.</c></summary>
-    TADGenericCallbackAnonymous<T> = reference to procedure(const Value: T);
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
   ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
   EADException = class abstract(Exception);
 
