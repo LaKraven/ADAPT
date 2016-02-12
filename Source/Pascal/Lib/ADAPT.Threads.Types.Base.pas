@@ -63,7 +63,7 @@ type
   TADThreadState = (tsRunning, tsPaused);
 
   ///  <summary><c>Common Interface for ADAPT Thread Types.</c></summary>
-  IADThread = interface
+  IADThread = interface(IADInterface)
   ['{021D276B-6619-4489-ABD1-56787D0FBF2D}']
     function GetLock: IADReadWriteLock;
 
@@ -157,7 +157,6 @@ type
   ///  </remarks>
   TADThreadPrecision = class abstract(TADThread, IADThreadPrecision)
   private
-    FInstanceGUID: TGUID;
     FNextTickTime: ADFloat;
     FPerformance: IADPerformanceCounterTS;
     FThreadState: TADThreadState;
@@ -397,7 +396,6 @@ const
   THREAD_STATES: Array[TADThreadState] of Boolean = (True, False);
 begin
   inherited Create(ACreateSuspended);
-  CreateGUID(FInstanceGUID);
   FPerformance := TADPerformanceCounterTS.Create(GetDefaultTickRateAverageOver);
   FThrottleInterval := GetDefaultThrottleInterval;
   FreeOnTerminate := False;

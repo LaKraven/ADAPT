@@ -67,7 +67,7 @@ type
   ///    <para><c>Keeps track of Performance both Instant and Average, in units of Things Per Second.</c></para>
   ///    <para><c>Note that this does NOT operate like a "Stopwatch", it merely takes the given Time Difference (Delta) Values to calculate smooth averages.</c></para>
   ///  </remarks>
-  IADPerformanceCounter = interface
+  IADPerformanceCounter = interface(IADInterface)
   ['{6095EB28-79FC-4AC8-8CED-C11BA9A2CF48}']
     { Getters }
     function GetAverageOver: Cardinal;
