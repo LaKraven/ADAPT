@@ -108,6 +108,15 @@ type
     {$ENDIF ADAPT_FLOAT_DOUBLE}
   {$ENDIF ADAPT_FLOAT_SINGLE}
 
+  ///  <summary><c>Typedef for an Unbound Parameterless Callback method.</c></summary>
+  TADCallbackUnbound = procedure;
+  ///  <summary><c>Typedef for an Object-Bound Parameterless Callback method.</c></summary>
+  TADCallbackOfObject = procedure of object;
+  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Typedef for an Anonymous Parameterless Callback method.</c></summary>
+    TADCallbackAnonymous = reference to procedure;
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
   ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
   EADException = class abstract(Exception);
 
@@ -131,6 +140,18 @@ type
     procedure ReleaseWrite;
     function TryAcquireRead: Boolean;
     function TryAcquireWrite: Boolean;
+
+    procedure WithRead(const ACallback: TADCallbackUnbound); overload;
+    procedure WithRead(const ACallback: TADCallbackOfObject); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure WithRead(const ACallback: TADCallbackAnonymous); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+    procedure WithWrite(const ACallback: TADCallbackUnbound); overload;
+    procedure WithWrite(const ACallback: TADCallbackOfObject); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure WithWrite(const ACallback: TADCallbackAnonymous); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
     {$IFNDEF ADAPT_LOCK_ALLEXCLUSIVE}
       property LockState: TADReadWriteLockState read GetLockState;
@@ -205,6 +226,18 @@ type
     procedure ReleaseWrite;
     function TryAcquireRead: Boolean;
     function TryAcquireWrite: Boolean;
+
+    procedure WithRead(const ACallback: TADCallbackUnbound); overload;
+    procedure WithRead(const ACallback: TADCallbackOfObject); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure WithRead(const ACallback: TADCallbackAnonymous); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+    procedure WithWrite(const ACallback: TADCallbackUnbound); overload;
+    procedure WithWrite(const ACallback: TADCallbackOfObject); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure WithWrite(const ACallback: TADCallbackAnonymous); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
     {$IFNDEF ADAPT_LOCK_ALLEXCLUSIVE}
       property LockState: TADReadWriteLockState read GetLockState;
@@ -474,6 +507,70 @@ begin
     Result := AcquireWriteActual;
   {$ENDIF ADAPT_LOCK_ALLEXCLUSIVE}
 end;
+
+procedure TADReadWriteLock.WithRead(const ACallback: TADCallbackUnbound);
+begin
+  AcquireRead;
+  try
+    ACallback;
+  finally
+    ReleaseRead;
+  end;
+end;
+
+procedure TADReadWriteLock.WithRead(const ACallback: TADCallbackOfObject);
+begin
+  AcquireRead;
+  try
+    ACallback;
+  finally
+    ReleaseRead;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADReadWriteLock.WithRead(const ACallback: TADCallbackAnonymous);
+  begin
+    AcquireRead;
+    try
+      ACallback;
+    finally
+      ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADReadWriteLock.WithWrite(const ACallback: TADCallbackUnbound);
+begin
+  AcquireWrite;
+  try
+    ACallback;
+  finally
+    ReleaseWrite;
+  end;
+end;
+
+procedure TADReadWriteLock.WithWrite(const ACallback: TADCallbackOfObject);
+begin
+  AcquireWrite;
+  try
+    ACallback;
+  finally
+    ReleaseWrite;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADReadWriteLock.WithWrite(const ACallback: TADCallbackAnonymous);
+  begin
+    AcquireWrite;
+    try
+      ACallback;
+    finally
+      ReleaseWrite;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 { TADObjectTS }
 

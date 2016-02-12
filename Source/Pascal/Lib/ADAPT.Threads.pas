@@ -123,6 +123,7 @@ type
   ///  <summary><c>Abstract Base Type for all Threads in the ADAPT codebase.</c></summary>
   ///  <remarks>
   ///    <para><c>ALL Threads in the codebase have a Threadsafe Lock.</c></para>
+  ///    <para><c>ALL Threads in the codebase are Interfaced Types.</c></para>
   ///  </remarks>
   TADThread = class abstract(TThread, IADInterface, IADThread, IADReadWriteLock)
   private
