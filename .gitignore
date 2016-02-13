@@ -67,3 +67,4 @@ TestInsightSettings.ini
 *.compiled
 *.ppu
 *.bak
+dunitx-results.xml
