@@ -7,7 +7,7 @@ uses
 type
 
   [TestFixture]
-  TAdaptUnitTestGenerics = class(TObject) 
+  TAdaptUnitTestGenericsArray = class(TObject)
   public
 
   end;
@@ -15,5 +15,5 @@ type
 implementation
 
 initialization
-  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenerics);
+  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsArray);
 end.

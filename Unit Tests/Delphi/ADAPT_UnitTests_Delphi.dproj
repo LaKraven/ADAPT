@@ -164,6 +164,8 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threads.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

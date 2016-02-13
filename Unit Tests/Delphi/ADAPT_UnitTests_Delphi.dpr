@@ -14,7 +14,9 @@ uses
   ADAPT.UnitTests.Generics.Collections in 'ADAPT.UnitTests.Generics.Collections.pas',
   ADAPT.Common in '..\..\Source\Pascal\Lib\ADAPT.Common.pas',
   ADAPT.Threads in '..\..\Source\Pascal\Lib\ADAPT.Threads.pas',
-  ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas';
+  ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas',
+  ADAPT.Generics.Arrays in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas',
+  ADAPT.Generics.Defaults in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas';
 
 var
   runner : ITestRunner;
