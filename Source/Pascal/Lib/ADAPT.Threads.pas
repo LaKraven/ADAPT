@@ -75,9 +75,9 @@ type
   ['{3668FFD2-45E4-4EA7-948F-75A698C90480}']
     ///  <summary><c>Forces the "Next Tick Time" to be bumped to RIGHT NOW. This will trigger the next Tick immediately regardless of any Rate Limit setting.</c></summary>
     procedure Bump;
-    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads.Types.Base|ILKThreadPrecision.Wake"/><c> the Thread.</c></summary>
+    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|ILKThreadPrecision.Wake"/><c> the Thread.</c></summary>
     procedure Rest;
-    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads.Types.Base|ILKThreadPrecision.Rest"/><c> for details)</c></summary>
+    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|ILKThreadPrecision.Rest"/><c> for details)</c></summary>
     procedure Wake;
 
     { Property Getters }
@@ -220,7 +220,7 @@ type
     ///  <remarks><c>Could be a negative number of the Thread is performing BELOW the desired rate!</c></remarks>
     function CalculateExtraTime: ADFloat;
 
-    ///  <summary><c>You must NOT override "Execute" on descendants. See </c><see DisplayName="Tick" cref="ADAPT.Threads.Types.Base|TADThreadPrecision.Tick"/><c> instead!</c></summary>
+    ///  <summary><c>You must NOT override "Execute" on descendants. See </c><see DisplayName="Tick" cref="ADAPT.Threads|TADThreadPrecision.Tick"/><c> instead!</c></summary>
     procedure Execute; override; final;
 
     ///  <summary><c>Override to implement code you need your Thread to perform on EVERY cycle (regardless of any Tick Rate Limit).</c></summary>
@@ -246,9 +246,9 @@ type
     ///  <summary><c>Forces the "Next Tick Time" to be bumped to RIGHT NOW. This will trigger the next Tick immediately regardless of any Rate Limit setting.</c></summary>
     procedure Bump;
 
-    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads.Types.Base|TLKThreadPrecision.Wake"/><c> the Thread.</c></summary>
+    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|TLKThreadPrecision.Wake"/><c> the Thread.</c></summary>
     procedure Rest;
-    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads.Types.Base|TLKThreadPrecision.Rest"/><c> for details)</c></summary>
+    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|TLKThreadPrecision.Rest"/><c> for details)</c></summary>
     procedure Wake;
 
     ///  <summary><c>The Absolute Reference Time at which the next Tick will occur.</c></summary>
