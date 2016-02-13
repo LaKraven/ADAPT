@@ -14,12 +14,21 @@ uses
   DUnitX.TestFramework;
 
 type
+  TDummyObject = class(TObject)
+  private
+    FFoo: String;
+  public
+    constructor Create(const AFoo: String);
+    property Foo: String read FFoo;
+  end;
 
   [TestFixture]
   TAdaptUnitTestGenericsArray = class(TObject)
   public
     [Test]
     procedure TestIntegrity;
+    [Test]
+    procedure TestIntegrityThreadsafe;
     [Test]
     [TestCase('In Range at 1', '1,True')]
     [TestCase('Out Of Range at 11', '11,False')]
@@ -28,9 +37,34 @@ type
     [TestCase('In Range at 9', '9,True')]
     [TestCase('Out Of Range at 10', '10,False')]
     procedure TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
+    [Test]
+    [TestCase('In Range at 1', '1,True')]
+    [TestCase('Out Of Range at 11', '11,False')]
+    [TestCase('In Range at 2', '2,True')]
+    [TestCase('Out Of Range at 1337', '1337,False')]
+    [TestCase('In Range at 9', '9,True')]
+    [TestCase('Out Of Range at 10', '10,False')]
+    procedure TestItemInRangeThreadsafe(const AIndex: Integer; const AExpectInRange: Boolean);
+    [Test]
+    procedure TestDummyObjectIntegrity;
+    [Test]
+    procedure TestDummyObjectIntegrityThreadsafe;
+  end;
+
+  [TestFixture]
+  TAdaptUnitTestGenericsList = class(TObject)
+
   end;
 
 implementation
+
+{ TDummyObject }
+
+constructor TDummyObject.Create(const AFoo: String);
+begin
+  inherited Create;
+  FFoo := AFoo;
+end;
 
 { TAdaptUnitTestGenericsArray }
 
@@ -59,6 +93,31 @@ begin
     Assert.IsTrue(LArray.Items[I] = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], ITEMS[I]]));
 end;
 
+procedure TAdaptUnitTestGenericsArray.TestIntegrityThreadsafe;
+const
+  ITEMS: Array[0..9] of String = (
+                                  'Bob',
+                                  'Terry',
+                                  'Andy',
+                                  'Rick',
+                                  'Sarah',
+                                  'Ellen',
+                                  'Hugh',
+                                  'Jack',
+                                  'Marie',
+                                  'Ninette'
+                                 );
+var
+  I: Integer;
+  LArray: IADArray<String>;
+begin
+  LArray := TADArrayTS<String>.Create(10);
+  for I := Low(ITEMS) to High(ITEMS) do
+    LArray.Items[I] := ITEMS[I];
+  for I := 0 to LArray.Capacity - 1 do
+    Assert.IsTrue(LArray.Items[I] = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], ITEMS[I]]));
+end;
+
 procedure TAdaptUnitTestGenericsArray.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
 const
   ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
@@ -81,6 +140,79 @@ begin
     Assert.IsTrue(LArray.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LArray.Items[AIndex]]))
 end;
 
+procedure TAdaptUnitTestGenericsArray.TestItemInRangeThreadsafe(const AIndex: Integer; const AExpectInRange: Boolean);
+const
+  ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+var
+  I: Integer;
+  LArray: IADArray<String>;
+begin
+  LArray := TADArrayTS<String>.Create(10);
+  for I := Low(ITEMS) to High(ITEMS) do
+    LArray.Items[I] := ITEMS[I];
+
+  if not (AExpectInRange) then
+    Assert.WillRaise(procedure
+                     begin
+                       LArray.Items[AIndex]
+                     end,
+                     EADGenericsRangeException,
+                     Format('Item %d SHOULD be out of range!', [AIndex]))
+  else
+    Assert.IsTrue(LArray.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LArray.Items[AIndex]]));
+end;
+
+procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrity;
+const
+  ITEMS: Array[0..9] of String = (
+                                  'Bob',
+                                  'Terry',
+                                  'Andy',
+                                  'Rick',
+                                  'Sarah',
+                                  'Ellen',
+                                  'Hugh',
+                                  'Jack',
+                                  'Marie',
+                                  'Ninette'
+                                 );
+var
+  I: Integer;
+  LArray: IADObjectArray<TDummyObject>;
+begin
+  LArray := TADObjectArray<TDummyObject>.Create(True, 10);
+  for I := Low(ITEMS) to High(ITEMS) do
+    LArray.Items[I] := TDummyObject.Create(ITEMS[I]);
+  for I := 0 to LArray.Capacity - 1 do
+    Assert.IsTrue(LArray.Items[I].Foo = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, ITEMS[I]]));
+end;
+
+procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrityThreadsafe;
+const
+  ITEMS: Array[0..9] of String = (
+                                  'Bob',
+                                  'Terry',
+                                  'Andy',
+                                  'Rick',
+                                  'Sarah',
+                                  'Ellen',
+                                  'Hugh',
+                                  'Jack',
+                                  'Marie',
+                                  'Ninette'
+                                 );
+var
+  I: Integer;
+  LArray: IADObjectArray<TDummyObject>;
+begin
+  LArray := TADObjectArrayTS<TDummyObject>.Create(True, 10);
+  for I := Low(ITEMS) to High(ITEMS) do
+    LArray.Items[I] := TDummyObject.Create(ITEMS[I]);
+  for I := 0 to LArray.Capacity - 1 do
+    Assert.IsTrue(LArray.Items[I].Foo = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, ITEMS[I]]));
+end;
+
 initialization
   TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsArray);
+  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsList);
 end.

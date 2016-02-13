@@ -404,12 +404,12 @@ end;
 destructor TADReadWriteLock.Destroy;
 begin
   {$IFDEF ADAPT_LOCK_ALLEXCLUSIVE}
-    FWriteLock.Free;
+    FWriteLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   {$ELSE}
     FWaitRead.SetEvent;
     FWaitWrite.SetEvent;
-    FWaitRead.Free;
-    FWaitWrite.Free;
+    FWaitRead.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+    FWaitWrite.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   {$ENDIF ADAPT_LOCK_ALLEXCLUSIVE}
   inherited;
 end;
@@ -582,7 +582,7 @@ end;
 
 destructor TADObjectTS.Destroy;
 begin
-  FLock.Free;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
@@ -601,7 +601,7 @@ end;
 
 destructor TADPersistentTS.Destroy;
 begin
-  FLock.Free;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 

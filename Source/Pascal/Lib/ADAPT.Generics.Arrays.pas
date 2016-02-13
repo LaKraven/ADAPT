@@ -61,9 +61,12 @@ type
 
   { Interface Forward Declarations }
   IADArray<T> = interface;
+  IADObjectArray<T: Class> = interface;
   { Class Forward Declarations }
   TADArray<T> = class;
+  TADObjectArray<T: Class> = class;
   TADArrayTS<T> = class;
+  TADObjectArrayTS<T: Class> = class;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
   IADArray<T> = interface(IADInterface)
@@ -75,16 +78,36 @@ type
     procedure SetCapacity(const ACapacity: Integer);
     procedure SetItem(const AIndex: Integer; const AItem: T);
     // Management Methods
+    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear;
+    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
     procedure Finalize(const AIndex, ACount: Integer);
+    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
     procedure Move(const AFromIndex, AToIndex, ACount: Integer);
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
+  ///  <summary><c>A Simple Generic Object Array with basic Management Methods and Item Ownership.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Will automatically Free any Object contained within the Array on Destruction if </c>OwnsItems<c> is set to </c>True<c>.</c></para>
+  ///  </remarks>
+  IADObjectArray<T: Class> = interface(IADArray<T>)
+  ['{82243ACD-FE8F-4EE4-9231-75D3A6B2D5FE}']
+    // Getters
+    function GetOwnsItems: Boolean;
+    // Setters
+    procedure SetOwnsItems(const AOwnsItems: Boolean);
+    // Properties
+    property OwnsItems: Boolean read GetOwnsItems write SetOwnsItems;
+  end;
+
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
-  ///  <remarks><para><c>This is NOT Threadsafe</c></para></remarks>
+  ///  <remarks>
+  ///    <para><c>Use IADArray if you want to take advantage of Reference Counting.</c></para>
+  ///    <para><c>This is NOT Threadsafe</c></para>
+  ///  </remarks>
   TADArray<T> = class(TADObject, IADArray<T>)
   protected
     FArray: TArray<T>;
@@ -98,21 +121,50 @@ type
   public
     constructor Create(const ACapacity: Integer = 0); reintroduce; virtual;
     // Management Methods
+    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; virtual;
+    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
     procedure Finalize(const AIndex, ACount: Integer); virtual;
+    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); virtual;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
+  ///  <summary><c>A Simple Generic Object Array with basic Management Methods and Item Ownership.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Will automatically Free any Object contained within the Array on Destruction if </c>OwnsItems<c> is set to </c>True<c>.</c></para>
+  ///    <para><c>Use IADObjectArray if you want to take advantage of Reference Counting.</c></para>
+  ///    <para><c>This is NOT Threadsafe</c></para>
+  ///  </remarks>
+  TADObjectArray<T: Class> = class(TADArray<T>, IADObjectArray<T>)
+  private
+    FOwnsItems: Boolean;
+  protected
+    // Getters
+    function GetOwnsItems: Boolean; virtual;
+    // Setters
+    procedure SetOwnsItems(const AOwnsItems: Boolean); virtual;
+  public
+    constructor Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
+    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
+    procedure Clear; override;
+    // Properties
+    property OwnsItems: Boolean read GetOwnsItems write SetOwnsItems;
+  end;
+
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
-  ///  <remarks><para><c>This is Threadsafe</c></para></remarks>
+  ///  <remarks>
+  ///    <para><c>Use IADArray if you want to take advantage of Reference Counting.</c></para>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
   TADArrayTS<T> = class(TADArray<T>, IADReadWriteLock)
   protected
     FArray: TArray<T>;
     FCapacityInitial: Integer;
-    FLock: IADReadWriteLock;
+    FLock: TADReadWriteLock;
     // Getters
     function GetCapacity: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
@@ -124,8 +176,43 @@ type
     constructor Create(const ACapacity: Integer = 0); override;
     destructor Destroy; override;
     // Management Methods
+    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; override;
+    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
     procedure Finalize(const AIndex, ACount: Integer); override;
+    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
+    procedure Move(const AFromIndex, AToIndex, ACount: Integer); override;
+    // Properties
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
+  ///  <summary><c>A Simple Generic Object Array with basic Management Methods and Item Ownership.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Will automatically Free any Object contained within the Array on Destruction if </c>OwnsItems<c> is set to </c>True<c>.</c></para>
+  ///    <para><c>Use IADObjectArray if you want to take advantage of Reference Counting.</c></para>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
+  TADObjectArrayTS<T: Class> = class(TADObjectArray<T>, IADReadWriteLock)
+  protected
+    FArray: TArray<T>;
+    FCapacityInitial: Integer;
+    FLock: TADReadWriteLock;
+    // Getters
+    function GetCapacity: Integer; override;
+    function GetItem(const AIndex: Integer): T; override;
+    function GetLock: IADReadWriteLock;
+    // Setters
+    procedure SetCapacity(const ACapacity: Integer); override;
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
+  public
+    constructor Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
+    // Management Methods
+    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
+    procedure Clear; override;
+    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
+    procedure Finalize(const AIndex, ACount: Integer); override;
+    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); override;
     // Properties
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
@@ -182,6 +269,41 @@ begin
   FArray[AIndex] := AItem;
 end;
 
+{ TADObjectArray<T> }
+
+procedure TADObjectArray<T>.Clear;
+var
+  I: Integer;
+begin
+  if OwnsItems then
+    for I := Low(FArray) to High(FArray) do
+      if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
+        FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+constructor TADObjectArray<T>.Create(const AOwnsItems: Boolean; const ACapacity: Integer);
+begin
+  inherited Create(ACapacity);
+  FOwnsItems := AOwnsItems;
+end;
+
+destructor TADObjectArray<T>.Destroy;
+begin
+  Clear;
+  inherited;
+end;
+
+function TADObjectArray<T>.GetOwnsItems: Boolean;
+begin
+  Result := FOwnsItems;
+end;
+
+procedure TADObjectArray<T>.SetOwnsItems(const AOwnsItems: Boolean);
+begin
+  FOwnsItems := AOwnsItems;
+end;
+
 { TADArrayTS<T> }
 
 procedure TADArrayTS<T>.Clear;
@@ -202,7 +324,7 @@ end;
 
 destructor TADArrayTS<T>.Destroy;
 begin
-  FLock := nil;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
@@ -262,6 +384,102 @@ begin
 end;
 
 procedure TADArrayTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+{ TADObjectArrayTS<T> }
+
+procedure TADObjectArrayTS<T>.Clear;
+var
+  I: Integer;
+begin
+  FLock.AcquireWrite;
+  try
+    if OwnsItems then
+      for I := Low(FArray) to High(FArray) do
+        if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
+          FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+constructor TADObjectArrayTS<T>.Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0);
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+end;
+
+destructor TADObjectArrayTS<T>.Destroy;
+begin
+  Clear;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+procedure TADObjectArrayTS<T>.Finalize(const AIndex, ACount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+function TADObjectArrayTS<T>.GetCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectArrayTS<T>.GetItem(const AIndex: Integer): T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectArrayTS<T>.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+procedure TADObjectArrayTS<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectArrayTS<T>.SetCapacity(const ACapacity: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectArrayTS<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
   FLock.AcquireWrite;
   try

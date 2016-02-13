@@ -1,8 +1,7 @@
 program ADAPT_UnitTests_Delphi;
 
-{$IFNDEF TESTINSIGHT}
-{$APPTYPE CONSOLE}
-{$ENDIF}{$STRONGLINKTYPES ON}
+{$IFNDEF TESTINSIGHT}{$APPTYPE CONSOLE}{$ENDIF}
+{$STRONGLINKTYPES ON}
 uses
   SysUtils,
   {$IFDEF TESTINSIGHT}
@@ -16,7 +15,8 @@ uses
   ADAPT.Threads in '..\..\Source\Pascal\Lib\ADAPT.Threads.pas',
   ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas',
   ADAPT.Generics.Arrays in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas',
-  ADAPT.Generics.Defaults in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas';
+  ADAPT.Generics.Defaults in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas',
+  ADAPT.Generics.Lists in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas';
 
 var
   runner : ITestRunner;
@@ -24,6 +24,7 @@ var
   logger : ITestLogger;
   nunitLogger : ITestLogger;
 begin
+  ReportMemoryLeaksOnShutdown := True;
 {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX.RunRegisteredTests;
   exit;

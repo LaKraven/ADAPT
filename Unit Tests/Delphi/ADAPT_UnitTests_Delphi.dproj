@@ -4,7 +4,7 @@
         <ProjectVersion>18.1</ProjectVersion>
         <MainSource>ADAPT_UnitTests_Delphi.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">TestInsight - Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Console</AppType>
@@ -166,6 +166,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -223,7 +224,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\ADAPT_UnitTests_Delphi.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\Bin\Win32\Debug\ADAPT_UnitTests_Delphi.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>ADAPT_UnitTests_Delphi.exe</RemoteName>
                         <Overwrite>true</Overwrite>

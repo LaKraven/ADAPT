@@ -56,7 +56,6 @@ uses
 type
   { Interface Forward Declarations }
   IADPerformanceCounter = interface;
-  IADPerformanceCounterTS = interface;
 
   { Class Forward Declarations }
   TADPerformanceCounter = class;
@@ -87,13 +86,6 @@ type
     property AverageRate: ADFloat read GetAverageRate;
     ///  <summary><c>The Instant Rate (based only on the last given Sample)</c></summary>
     property InstantRate: ADFloat read GetInstantRate;
-  end;
-
-  ///  <summary><c>Interface for Threadsafe Performance Counter Types.</c></summary>
-  ///  <remarks><c>Provides access to the Multi-Read, Exclusive-Write Lock.</c></summary>
-  IADPerformanceCounterTS = interface(IADPerformanceCounter)
-  ['{B79A73CA-D995-4836-8921-234C21EC14AE}']
-    // Nothing here (yet)
   end;
 
   ///  <summary><c>Non-Threadsafe Performance Counter Type.</c></summary>
@@ -144,7 +136,7 @@ type
   ///    <para><c>Note that this does NOT operate like a "Stopwatch", it merely takes the given Time Difference (Delta) Values to calculate smooth averages.</c></para>
   ///    <para><c>Contains a Threadsafe Lock.</c></para>
   ///  </remarks>
-  TADPerformanceCounterTS = class(TADPerformanceCounter, IADPerformanceCounterTS, IADReadWriteLock)
+  TADPerformanceCounterTS = class(TADPerformanceCounter, IADReadWriteLock)
   protected
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
@@ -252,7 +244,7 @@ end;
 
 destructor TADPerformanceCounterTS.Destroy;
 begin
-  FLock.Free;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 

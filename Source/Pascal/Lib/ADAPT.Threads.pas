@@ -159,7 +159,7 @@ type
   TADThreadPrecision = class abstract(TADThread, IADThreadPrecision)
   private
     FNextTickTime: ADFloat;
-    FPerformance: IADPerformanceCounterTS;
+    FPerformance: IADPerformanceCounter;
     FThreadState: TADThreadState;
     FTickRateDesired: ADFloat; // The DESIRED rate at which you want the Thread to Tick (minimum)
     FTickRateLimit: ADFloat; // The current Tick Rate Limit (in "Ticks per Second"), 0 = no limit.
@@ -303,7 +303,7 @@ end;
 
 destructor TADThread.Destroy;
 begin
-  FLock.Free;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
@@ -408,7 +408,7 @@ end;
 
 destructor TADThreadPrecision.Destroy;
 begin
-  FWakeUp.Free;
+  FWakeUp.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   FPerformance := nil;
   inherited;
 end;
