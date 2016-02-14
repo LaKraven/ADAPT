@@ -10,7 +10,7 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists,
   DUnitX.TestFramework;
 
 type
@@ -21,6 +21,19 @@ type
     constructor Create(const AFoo: String);
     property Foo: String read FFoo;
   end;
+
+  IStringArray = IADArray<String>;
+  TStringArray = class(TADArray<String>);
+  TStringArrayTS = class(TADArrayTS<String>);
+  IDummyArray = IADObjectArray<TDummyObject>;
+  TDummyArray = class(TADObjectArray<TDummyObject>);
+  TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
+  IStringList = IADList<String, TADListExpanderDefault, TADListCompactorDefault>;
+  TStringList = class(TADList<String, TADListExpanderDefault, TADListCompactorDefault>);
+//  TStringListTS = class(TADListTS<String, TADListExpanderDefault, TADListCompactorDefault>);
+//  IDummyList = IADObjectList<TDummyObject, TADListExpanderDefault, TADListCompactorDefault>);
+//  TDummyList = class(TADObjectList<TDummyObject, TADListExpanderDefault, TADListCompactorDefault>);
+//  TDummyListTS = class(TADObjectListTS<TDummyObject, TADListExpanderDefault, TADListCompactorDefault>);
 
   [TestFixture]
   TAdaptUnitTestGenericsArray = class(TObject)
@@ -53,10 +66,26 @@ type
 
   [TestFixture]
   TAdaptUnitTestGenericsList = class(TObject)
-
+  public
+    [Test]
+    procedure TestIntegrity;
   end;
 
 implementation
+
+const
+  BASIC_ITEMS: Array[0..9] of String = (
+                                         'Bob',
+                                         'Terry',
+                                         'Andy',
+                                         'Rick',
+                                         'Sarah',
+                                         'Ellen',
+                                         'Hugh',
+                                         'Jack',
+                                         'Marie',
+                                         'Ninette'
+                                       );
 
 { TDummyObject }
 
@@ -69,53 +98,27 @@ end;
 { TAdaptUnitTestGenericsArray }
 
 procedure TAdaptUnitTestGenericsArray.TestIntegrity;
-const
-  ITEMS: Array[0..9] of String = (
-                                  'Bob',
-                                  'Terry',
-                                  'Andy',
-                                  'Rick',
-                                  'Sarah',
-                                  'Ellen',
-                                  'Hugh',
-                                  'Jack',
-                                  'Marie',
-                                  'Ninette'
-                                 );
 var
   I: Integer;
-  LArray: IADArray<String>;
+  LArray: IStringArray;
 begin
-  LArray := TADArray<String>.Create(10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := ITEMS[I];
+  LArray := TStringArray.Create(10);
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I] = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], BASIC_ITEMS[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestIntegrityThreadsafe;
-const
-  ITEMS: Array[0..9] of String = (
-                                  'Bob',
-                                  'Terry',
-                                  'Andy',
-                                  'Rick',
-                                  'Sarah',
-                                  'Ellen',
-                                  'Hugh',
-                                  'Jack',
-                                  'Marie',
-                                  'Ninette'
-                                 );
 var
   I: Integer;
-  LArray: IADArray<String>;
+  LArray: IStringArray;
 begin
-  LArray := TADArrayTS<String>.Create(10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := ITEMS[I];
+  LArray := TStringArrayTS.Create(10);
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I] = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], BASIC_ITEMS[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
@@ -123,9 +126,9 @@ const
   ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 var
   I: Integer;
-  LArray: IADArray<String>;
+  LArray: IStringArray;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TStringArray.Create(10);
   for I := Low(ITEMS) to High(ITEMS) do
     LArray.Items[I] := ITEMS[I];
 
@@ -145,9 +148,9 @@ const
   ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 var
   I: Integer;
-  LArray: IADArray<String>;
+  LArray: IStringArray;
 begin
-  LArray := TADArrayTS<String>.Create(10);
+  LArray := TStringArrayTS.Create(10);
   for I := Low(ITEMS) to High(ITEMS) do
     LArray.Items[I] := ITEMS[I];
 
@@ -163,53 +166,39 @@ begin
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrity;
-const
-  ITEMS: Array[0..9] of String = (
-                                  'Bob',
-                                  'Terry',
-                                  'Andy',
-                                  'Rick',
-                                  'Sarah',
-                                  'Ellen',
-                                  'Hugh',
-                                  'Jack',
-                                  'Marie',
-                                  'Ninette'
-                                 );
 var
   I: Integer;
-  LArray: IADObjectArray<TDummyObject>;
+  LArray: IDummyArray;
 begin
-  LArray := TADObjectArray<TDummyObject>.Create(True, 10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := TDummyObject.Create(ITEMS[I]);
+  LArray := TDummyArray.Create(True, 10);
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I].Foo = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, BASIC_ITEMS[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrityThreadsafe;
-const
-  ITEMS: Array[0..9] of String = (
-                                  'Bob',
-                                  'Terry',
-                                  'Andy',
-                                  'Rick',
-                                  'Sarah',
-                                  'Ellen',
-                                  'Hugh',
-                                  'Jack',
-                                  'Marie',
-                                  'Ninette'
-                                 );
 var
   I: Integer;
-  LArray: IADObjectArray<TDummyObject>;
+  LArray: IDummyArray;
 begin
-  LArray := TADObjectArrayTS<TDummyObject>.Create(True, 10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := TDummyObject.Create(ITEMS[I]);
+  LArray := TDummyArrayTS.Create(True, 10);
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I].Foo = ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, BASIC_ITEMS[I]]));
+end;
+
+{ TAdaptUnitTestGenericsList }
+
+procedure TAdaptUnitTestGenericsList.TestIntegrity;
+var
+  I: Integer;
+  LList: IStringList;
+begin
+  LList := TStringList.Create(10);
+//  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+//    LList.Items[I] := BASIC_ITEMS[I];
 end;
 
 initialization

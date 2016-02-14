@@ -50,21 +50,11 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common,
-  ADAPT.Generics.Defaults;
+  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  { Interface Forward Declarations }
-
-  { Class Forward Declarations }
-  TADListExpander = class;
-  TADListExpanderDefault = class;
-  TADListExpanderGeometric = class;
-  TADListExpanderGeometricTS = class;
-  TADListCompactor = class;
-  TADListCompactorDefault = class;
-
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
   TADListExpander = class abstract(TADObject)
@@ -141,6 +131,56 @@ type
   public
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
   end;
+
+  { Interface Forward Declarations }
+  IADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = interface;
+  { Class Forward Declarations }
+  TADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class;
+//  TADListTS<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class;
+
+  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
+  IADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = interface
+  ['{891BA246-B06C-4B8D-84BD-57878BBB6991}']
+    function GetCompactor: TCompactor;
+    function GetExpander: TExpander;
+    function GetInitialCapacity: Integer;
+
+    property Compactor: TCompactor read GetCompactor;
+    property Expander: TExpander read GetExpander;
+    property InitialCapacity: Integer read GetInitialCapacity;
+  end;
+
+  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class(TADObject, IADList<T, TExpander, TCompactor>)
+  private
+    FCompactor: TCompactor;
+    FExpander: TExpander;
+  protected
+    FArray: TADArray<T>;
+    FInitialCapacity: Integer;
+    // Getters
+    function GetCompactor: TCompactor;
+    function GetExpander: TExpander;
+    function GetInitialCapacity: Integer; virtual;
+  public
+    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
+
+    property Compactor: TCompactor read GetCompactor;
+    property Expander: TExpander read GetExpander;
+    property InitialCapacity: Integer read GetInitialCapacity;
+  end;
+
+  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is Threadsafe.</c></para>
+  ///  </remarks>
+//  TADListTS<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class(TADObject, IADList<T, TExpander, TCompactor>, IADReadWriteLock)
+//
+//  end;
 
 implementation
 
@@ -249,6 +289,40 @@ end;
 function TADListCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
 begin
   Result := AVacating;
+end;
+
+{ TADList<T, TExpander, TCompactor> }
+
+constructor TADList<T, TExpander, TCompactor>.Create(const AInitialCapacity: Integer);
+begin
+  inherited Create;
+  FCompactor := TCompactor.Create;
+  FExpander := TExpander.Create;
+  FInitialCapacity := AInitialCapacity;
+  FArray := TADArray<T>.Create(AInitialCapacity);
+end;
+
+destructor TADList<T, TExpander, TCompactor>.Destroy;
+begin
+  FExpander.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  FCompactor.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  FArray.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+function TADList<T, TExpander, TCompactor>.GetCompactor: TCompactor;
+begin
+  Result := FCompactor;
+end;
+
+function TADList<T, TExpander, TCompactor>.GetExpander: TExpander;
+begin
+  Result := FExpander;
+end;
+
+function TADList<T, TExpander, TCompactor>.GetInitialCapacity: Integer;
+begin
+  Result := FInitialCapacity;
 end;
 
 end.
