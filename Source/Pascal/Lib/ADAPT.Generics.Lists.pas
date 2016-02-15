@@ -55,9 +55,65 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  { Interface Forward Declarations }
+  IADListExpander = interface;
+  IADListExpanderGeometric = interface;
+  IADListCompactor = interface;
+  IADList<T> = interface;
+  { Class Forward Declarations }
+  TADListExpander = class;
+  TADListExpanderDefault = class;
+  TADListExpanderGeometric = class;
+  TADListExpanderGeometricTS = class;
+  TADListCompactor = class;
+  TADList<T> = class;
+
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
-  TADListExpander = class abstract(TADObject)
+  IADListExpander = interface(IADInterface)
+  ['{B4742A80-74A7-408E-92BA-F854515B6D24}']
+    function CheckExpand(const ACapacity, ACurrentcount, AAdditionalRequired: Integer): Integer;
+  end;
+
+  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
+  ///  </remarks>
+  IADListExpanderGeometric = interface(IADListExpander)
+  ['{CAF4B15C-9BE5-4A66-B31F-804AB752A102}']
+    // Getters
+    function GetCapacityMultiplier: Single;
+    function GetCapacityThreshold: Integer;
+    // Setters
+    procedure SetCapacityMultiplier(const AMultiplier: Single);
+    procedure SetCapacityThreshold(const AThreshold: Integer);
+    // Properties
+    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
+    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
+  end;
+
+  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
+  IADListCompactor = interface(IADInterface)
+  ['{B7D577D4-8425-4C5D-9DDB-5864C3676199}']
+    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
+  end;
+
+  ///  <summary><c>Generic List Type</c></summary>
+  IADList<T> = interface
+  ['{89F7688F-8C90-4165-9CC9-73B07826381A}']
+    function GetCompactor: IADListCompactor;
+    function GetExpander: IADListExpander;
+    function GetInitialCapacity: Integer;
+
+    property Compactor: IADListCompactor read GetCompactor;
+    property Expander: IADListExpander read GetExpander;
+    property InitialCapacity: Integer read GetInitialCapacity;
+  end;
+
+  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
+  TADListExpander = class abstract(TADObject, IADListExpander)
   public
     ///  <summary><c>Override this to implement the actual Allocation Algorithm</c></summary>
     ///  <remarks><c>Must return the amount by which the Array has been Expanded.</c></remarks>
@@ -76,7 +132,7 @@ type
   ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
   ///    <para><c>This Expander Type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADListExpanderGeometric = class(TADListExpander)
+  TADListExpanderGeometric = class(TADListExpander, IADListExpanderGeometric)
   private
     FMultiplier: Single;
     FThreshold: Integer;
@@ -120,7 +176,7 @@ type
 
   ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
-  TADListCompactor = class abstract(TADObject)
+  TADListCompactor = class abstract(TADObject, IADListCompactor)
   public
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; virtual; abstract;
   end;
@@ -132,55 +188,45 @@ type
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
   end;
 
-  { Interface Forward Declarations }
-  IADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = interface;
-  { Class Forward Declarations }
-  TADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class;
-//  TADListTS<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class;
+  TADListExpanderType = class of TADListExpander;
+  TADListCompactorType = class of TADListCompactor;
 
-  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
-  IADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = interface
-  ['{891BA246-B06C-4B8D-84BD-57878BBB6991}']
-    function GetCompactor: TCompactor;
-    function GetExpander: TExpander;
-    function GetInitialCapacity: Integer;
-
-    property Compactor: TCompactor read GetCompactor;
-    property Expander: TExpander read GetExpander;
-    property InitialCapacity: Integer read GetInitialCapacity;
-  end;
-
-  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
+  ///  <summary><c>Generic List Type</c></summary>
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADList<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class(TADObject, IADList<T, TExpander, TCompactor>)
+  TADList<T> = class(TADObject, IADList<T>)
   private
-    FCompactor: TCompactor;
-    FExpander: TExpander;
+    FCompactor: IADListCompactor;
+    FExpander: IADListExpander;
+    FInitialCapacity: Integer;
   protected
     FArray: TADArray<T>;
-    FInitialCapacity: Integer;
     // Getters
-    function GetCompactor: TCompactor;
-    function GetExpander: TExpander;
-    function GetInitialCapacity: Integer; virtual;
+    function GetCompactor: IADListCompactor;
+    function GetExpander: IADListExpander;
+    function GetInitialCapacity: Integer;
   public
-    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; virtual;
+    ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using the Default Expander, and a Custom Conpactor Type.</c></summary>
+    constructor Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Type.</c></summary>
+    constructor Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
-
-    property Compactor: TCompactor read GetCompactor;
-    property Expander: TExpander read GetExpander;
+    // Properties
+    property Compactor: IADListCompactor read GetCompactor;
+    property Expander: IADListExpander read GetExpander;
     property InitialCapacity: Integer read GetInitialCapacity;
   end;
-
-  ///  <summary><c>Generic List Type with Dynamic Expander and Compactor</c></summary>
-  ///  <remarks>
-  ///    <para><c>This type is Threadsafe.</c></para>
-  ///  </remarks>
-//  TADListTS<T; TExpander: TADListExpander, constructor; TCompactor: TADListCompactor, constructor> = class(TADObject, IADList<T, TExpander, TCompactor>, IADReadWriteLock)
-//
-//  end;
 
 implementation
 
@@ -291,36 +337,66 @@ begin
   Result := AVacating;
 end;
 
-{ TADList<T, TExpander, TCompactor> }
+{ TADList<T> }
 
-constructor TADList<T, TExpander, TCompactor>.Create(const AInitialCapacity: Integer);
+constructor TADList<T>.Create(const AInitialCapacity: Integer = 0);
+begin
+  Create(TADListExpanderDefault, TADListCompactorDefault, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer = 0);
+begin
+  Create(AExpanderType, TADListCompactorDefault, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0);
+begin
+  Create(TADListExpanderDefault, ACompactorType, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0);
+begin
+  Create(AExpanderType.Create, ACompactorType.Create, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpander: IADListExpander; const AInitialCapacity: Integer = 0);
+begin
+  Create(AExpander, TADListCompactorDefault.Create, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0);
+begin
+  Create(TADListExpanderDefault.Create, ACompactor, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0);
 begin
   inherited Create;
-  FCompactor := TCompactor.Create;
-  FExpander := TExpander.Create;
+  FCompactor := ACompactor;
+  FExpander := AExpander;
   FInitialCapacity := AInitialCapacity;
   FArray := TADArray<T>.Create(AInitialCapacity);
 end;
 
-destructor TADList<T, TExpander, TCompactor>.Destroy;
+destructor TADList<T>.Destroy;
 begin
-  FExpander.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
-  FCompactor.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  FExpander := nil;
+  FCompactor := nil;
   FArray.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
-function TADList<T, TExpander, TCompactor>.GetCompactor: TCompactor;
+function TADList<T>.GetCompactor: IADListCompactor;
 begin
   Result := FCompactor;
 end;
 
-function TADList<T, TExpander, TCompactor>.GetExpander: TExpander;
+function TADList<T>.GetExpander: IADListExpander;
 begin
   Result := FExpander;
 end;
 
-function TADList<T, TExpander, TCompactor>.GetInitialCapacity: Integer;
+function TADList<T>.GetInitialCapacity: Integer;
 begin
   Result := FInitialCapacity;
 end;

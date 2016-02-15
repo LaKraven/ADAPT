@@ -28,8 +28,8 @@ type
   IDummyArray = IADObjectArray<TDummyObject>;
   TDummyArray = class(TADObjectArray<TDummyObject>);
   TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
-  IStringList = IADList<String, TADListExpanderDefault, TADListCompactorDefault>;
-  TStringList = class(TADList<String, TADListExpanderDefault, TADListCompactorDefault>);
+//  IStringList = IADList<String, TADListExpanderDefault, TADListCompactorDefault>;
+//  TStringList = class(TADList<String, TADListExpanderDefault, TADListCompactorDefault>);
 //  TStringListTS = class(TADListTS<String, TADListExpanderDefault, TADListCompactorDefault>);
 //  IDummyList = IADObjectList<TDummyObject, TADListExpanderDefault, TADListCompactorDefault>);
 //  TDummyList = class(TADObjectList<TDummyObject, TADListExpanderDefault, TADListCompactorDefault>);
@@ -194,9 +194,9 @@ end;
 procedure TAdaptUnitTestGenericsList.TestIntegrity;
 var
   I: Integer;
-  LList: IStringList;
+//  LList: IStringList;
 begin
-  LList := TStringList.Create(10);
+//  LList := TStringList.Create(10);
 //  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
 //    LList.Items[I] := BASIC_ITEMS[I];
 end;
