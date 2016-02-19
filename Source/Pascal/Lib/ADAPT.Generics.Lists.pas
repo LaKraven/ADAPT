@@ -68,6 +68,10 @@ type
   TADListCompactor = class;
   TADList<T> = class;
 
+  EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
+  EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
+  EADGenericsCapacityLessThanCount = class(EADGenericsParameterInvalidException);
+
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
   IADListExpander = interface(IADInterface)
@@ -122,7 +126,7 @@ type
     procedure Delete(const AIndex: Integer);
     procedure DeleteRange(const AFirst, ACount: Integer);
     procedure Insert(const AItem: T; const AIndex: Integer);
-    procedure InsertItems(const AItems: TArray<T>; const AIndex: Integer);
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Compactor: IADListCompactor read GetCompactor;
@@ -223,6 +227,7 @@ type
     FInitialCapacity: Integer;
   protected
     FArray: TADArray<T>;
+    FCount: Integer;
     // Getters
     function GetCapacity: Integer;
     function GetCompactor: IADListCompactor;
@@ -235,6 +240,13 @@ type
     procedure SetCompactor(const ACompactor: IADListCompactor);
     procedure SetExpander(const AExpander: IADListExpander);
     procedure SetItem(const AIndex: Integer; const AItem: T);
+    // Management Methods
+    ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
+    procedure AddActual(const AItem: T);
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer);
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer);
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
@@ -252,14 +264,14 @@ type
     constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
     // Management Methods
-    procedure Add(const AItem: T); overload;
-    procedure Add(const AList: IADList<T>); overload;
-    procedure AddItems(const AItems: Array of T);
-    procedure Clear;
-    procedure Delete(const AIndex: Integer);
-    procedure DeleteRange(const AFirst, ACount: Integer);
-    procedure Insert(const AItem: T; const AIndex: Integer);
-    procedure InsertItems(const AItems: TArray<T>; const AIndex: Integer);
+    procedure Add(const AItem: T); overload; virtual;
+    procedure Add(const AList: IADList<T>); overload; virtual;
+    procedure AddItems(const AItems: Array of T); virtual;
+    procedure Clear; virtual;
+    procedure Delete(const AIndex: Integer); virtual;
+    procedure DeleteRange(const AFirst, ACount: Integer); virtual;
+    procedure Insert(const AItem: T; const AIndex: Integer); virtual;
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Compactor: IADListCompactor read GetCompactor;
@@ -412,27 +424,65 @@ end;
 
 procedure TADList<T>.Add(const AItem: T);
 begin
-
+  CheckExpand(1);
+  AddActual(AItem);
+  Inc(FCount);
 end;
 
 procedure TADList<T>.Add(const AList: IADList<T>);
+var
+  I: Integer;
 begin
-
+  CheckExpand(AList.Count);
+  for I := 0 to AList.Count - 1 do
+    AddActual(AList[I]);
+  Inc(FCount, AList.Count);
 end;
 
-procedure TADList<T>.AddItems(const AItems: array of T);
+procedure TADList<T>.AddActual(const AItem: T);
 begin
+  FArray[FCount] := AItem;
+end;
 
+procedure TADList<T>.AddItems(const AItems: Array of T);
+var
+  I: Integer;
+begin
+  CheckExpand(Length(AItems));
+  for I := Low(AItems) to High(AItems) do
+    AddActual(AItems[I]);
+  Inc(FCount, Length(AItems));
+end;
+
+procedure TADList<T>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := FCompactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADList<T>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := FExpander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
 procedure TADList<T>.Clear;
 begin
-
+  FArray.Finalize(0, FCount);
+  FCount := 0;
+  FArray.Capacity := FInitialCapacity;
 end;
 
 constructor TADList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0);
 begin
   inherited Create;
+  FCount := 0;
   FCompactor := ACompactor;
   FExpander := AExpander;
   FInitialCapacity := AInitialCapacity;
@@ -441,12 +491,20 @@ end;
 
 procedure TADList<T>.Delete(const AIndex: Integer);
 begin
-
+  FArray.Finalize(AIndex, 1);
+  if AIndex < FCount - 1 then
+    FArray.Move(AIndex + 1, AIndex, FCount - AIndex); // Shift all subsequent items left by 1
+  Dec(FCount);
+  CheckCompact(1);
 end;
 
 procedure TADList<T>.DeleteRange(const AFirst, ACount: Integer);
 begin
-
+  FArray.Finalize(AFirst, ACount);
+  if AFirst + FCount < FCount - 1 then
+    FArray.Move(AFirst + FCount + 1, AFirst, ACount); // Shift all subsequent items left
+  Dec(FCount, ACount);
+  CheckCompact(ACount);
 end;
 
 destructor TADList<T>.Destroy;
@@ -459,7 +517,7 @@ end;
 
 function TADList<T>.GetCapacity: Integer;
 begin
-
+  Result := FArray.Capacity;
 end;
 
 function TADList<T>.GetCompactor: IADListCompactor;
@@ -469,7 +527,7 @@ end;
 
 function TADList<T>.GetCount: Integer;
 begin
-
+  Result := FCount;
 end;
 
 function TADList<T>.GetExpander: IADListExpander;
@@ -484,33 +542,41 @@ end;
 
 function TADList<T>.GetItem(const AIndex: Integer): T;
 begin
-
+  Result := FArray[AIndex];
 end;
 
 procedure TADList<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
-
+  //TODO -oDaniel -cTADList<T>: Implement Insert method
 end;
 
-procedure TADList<T>.InsertItems(const AItems: TArray<T>;
-  const AIndex: Integer);
+procedure TADList<T>.InsertItems(const AItems: Array of T; const AIndex: Integer);
 begin
-
+  //TODO -oDaniel -cTADList<T>: Implement InsertItems method
 end;
 
 procedure TADList<T>.SetCapacity(const ACapacity: Integer);
 begin
-
+  if ACapacity < FCount then
+    raise EADGenericsCapacityLessThanCount.CreateFmt('Given Capacity of %d insufficient for a List containing %d Items.', [ACapacity, FCount])
+  else
+    FArray.Capacity := ACapacity;
 end;
 
 procedure TADList<T>.SetCompactor(const ACompactor: IADListCompactor);
 begin
-
+  if ACompactor = nil then
+    raise EADGenericsCompactorNilException.Create('Cannot assign a Nil Compactor.')
+  else
+    FCompactor := ACompactor;
 end;
 
 procedure TADList<T>.SetExpander(const AExpander: IADListExpander);
 begin
-
+  if AExpander = nil then
+    raise EADGenericsExpanderNilException.Create('Cannot assign a Nil Expander.')
+  else
+    FExpander := AExpander;
 end;
 
 procedure TADList<T>.SetItem(const AIndex: Integer; const AItem: T);

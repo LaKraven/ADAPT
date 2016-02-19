@@ -54,6 +54,7 @@ uses
 type
   EADGenericsException = class(EADException);
     EADGenericsRangeException = class(EADGenericsException);
+    EADGenericsParameterInvalidException = class(EADGenericsException);
 
   {$I ADAPT_RTTI.inc}
 

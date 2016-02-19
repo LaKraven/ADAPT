@@ -69,6 +69,14 @@ type
   public
     [Test]
     procedure TestIntegrity;
+    [Test]
+    [TestCase('In Range at 1', '1,True')]
+    [TestCase('Out Of Range at 11', '11,False')]
+    [TestCase('In Range at 2', '2,True')]
+    [TestCase('Out Of Range at 1337', '1337,False')]
+    [TestCase('In Range at 9', '9,True')]
+    [TestCase('Out Of Range at 10', '10,False')]
+    procedure TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
   end;
 
 implementation
@@ -196,9 +204,34 @@ var
   I: Integer;
   LList: IStringList;
 begin
-  LList := TStringList.Create(10);
-//  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-//    LList.Items[I] := BASIC_ITEMS[I];
+  LList := TStringList.Create(0);
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  for I := 0 to LList.Count - 1 do
+    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LList.Items[I], BASIC_ITEMS[I]]));
+end;
+
+procedure TAdaptUnitTestGenericsList.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
+const
+  ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+var
+  I: Integer;
+  LList: IStringList;
+begin
+  LList := TStringList.Create(0);
+  for I := Low(ITEMS) to High(ITEMS) do
+    LList.Add(ITEMS[I]);
+
+  if not (AExpectInRange) then
+    Assert.WillRaise(procedure
+                     begin
+                       LList.Items[AIndex]
+                     end,
+                     EADGenericsRangeException,
+                     Format('Item %d SHOULD be out of range!', [AIndex]))
+  else
+    Assert.IsTrue(LList.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LList.Items[AIndex]]))
 end;
 
 initialization
