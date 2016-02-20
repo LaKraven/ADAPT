@@ -60,9 +60,7 @@ type
   IADListExpanderGeometric = interface;
   IADListCompactor = interface;
   IADList<T> = interface;
-  IADObjectList<T: class> = interface;
   IADCircularList<T> = interface;
-  IADCircularObjectList<T: class> = interface;
   { Class Forward Declarations }
   TADListExpander = class;
   TADListExpanderDefault = class;
@@ -147,24 +145,9 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
-  IADObjectList<T: class> = interface(IADList<T>)
-  ['{9B5D42E7-0B73-4E6B-BDAD-AA3AB63E03C3}']
-    // Getters
-    function GetOwnership: TADOwnership;
-    // Setters
-    procedure SetOwnership(const AOwnership: TADOwnership);
-    // Properties
-    property Ownership: TADOwnership read GetOwnership write SetOwnership;
-  end;
-
   IADCircularList<T> = interface(IADInterface)
   ['{AB8E1DFA-D287-4224-BB5B-66364B175956}']
     //TODO -oDaniel -cIADCircularList<T>: Complete interface
-  end;
-
-  IADCircularObjectList<T: class> = interface(IADCircularList<T>)
-  ['{AA702AC4-A7E4-4A17-9CA5-239199030AFE}']
-    //TODO -oDaniel -cIADCircularObjectList<T>: Complete interface
   end;
 
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
@@ -314,7 +297,7 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
-  TADObjectList<T: class> = class(TADList<T>, IADObjectList<T>)
+  TADObjectList<T: class> = class(TADList<T>, IADObjectOwner)
   private type
     TADObjectArrayT = class(TADObjectArray<T>);
   protected
@@ -351,7 +334,12 @@ type
     destructor Destroy; override;
   end;
 
-  TADCircularObjectList<T: class> = class(TADCircularList<T>, IADCircularObjectList<T>)
+  TADCircularObjectList<T: class> = class(TADCircularList<T>, IADObjectOwner)
+  protected
+    // Getters
+    function GetOwnership: TADOwnership; virtual;
+    // Setters
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -369,7 +357,7 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
-  TADObjectListTS<T: class> = class(TADObjectList<T>, IADReadWriteLock)
+  TADObjectListTS<T: class> = class(TADObjectList<T>, IADObjectOwner, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
@@ -392,7 +380,7 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
-  TADCircularObjectListTS<T: class> = class(TADCircularObjectList<T>, IADReadWriteLock)
+  TADCircularObjectListTS<T: class> = class(TADCircularObjectList<T>, IADObjectOwner, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
@@ -809,6 +797,16 @@ destructor TADCircularObjectList<T>.Destroy;
 begin
 
   inherited;
+end;
+
+function TADCircularObjectList<T>.GetOwnership: TADOwnership;
+begin
+
+end;
+
+procedure TADCircularObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+
 end;
 
 { TADObjectListTS<T> }

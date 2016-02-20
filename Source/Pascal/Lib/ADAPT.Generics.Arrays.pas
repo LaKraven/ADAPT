@@ -61,7 +61,6 @@ type
 
   { Interface Forward Declarations }
   IADArray<T> = interface;
-  IADObjectArray<T: Class> = interface;
   { Class Forward Declarations }
   TADArray<T> = class;
   TADObjectArray<T: Class> = class;
@@ -87,20 +86,6 @@ type
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
-  end;
-
-  ///  <summary><c>A Simple Generic Object Array with basic Management Methods and Item Ownership.</c></summary>
-  ///  <remarks>
-  ///    <para><c>Will automatically Free any Object contained within the Array on Destruction if </c>OwnsItems<c> is set to </c>True<c>.</c></para>
-  ///  </remarks>
-  IADObjectArray<T: Class> = interface(IADArray<T>)
-  ['{82243ACD-FE8F-4EE4-9231-75D3A6B2D5FE}']
-    // Getters
-    function GetOwnership: TADOwnership;
-    // Setters
-    procedure SetOwnership(const AOwnership: TADOwnership);
-    // Properties
-    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
@@ -138,7 +123,7 @@ type
   ///    <para><c>Use IADObjectArray if you want to take advantage of Reference Counting.</c></para>
   ///    <para><c>This is NOT Threadsafe</c></para>
   ///  </remarks>
-  TADObjectArray<T: Class> = class(TADArray<T>, IADObjectArray<T>)
+  TADObjectArray<T: Class> = class(TADArray<T>, IADObjectOwner)
   private
     FOwnership: TADOwnership;
   protected
@@ -192,7 +177,7 @@ type
   ///    <para><c>Use IADObjectArray if you want to take advantage of Reference Counting.</c></para>
   ///    <para><c>This is Threadsafe</c></para>
   ///  </remarks>
-  TADObjectArrayTS<T: Class> = class(TADObjectArray<T>, IADReadWriteLock)
+  TADObjectArrayTS<T: Class> = class(TADObjectArray<T>, IADObjectOwner, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;

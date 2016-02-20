@@ -26,13 +26,13 @@ type
   IStringArray = IADArray<String>;
   TStringArray = class(TADArray<String>);
   TStringArrayTS = class(TADArrayTS<String>);
-  IDummyArray = IADObjectArray<TDummyObject>;
+  IDummyArray = IADArray<TDummyObject>;
   TDummyArray = class(TADObjectArray<TDummyObject>);
   TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
   IStringList = IADList<String>;
   TStringList = class(TADList<String>);
 //  TStringListTS = class(TADListTS<String>);
-  IDummyList = IADObjectList<TDummyObject>;
+  IDummyList = IADList<TDummyObject>;
   TDummyList = class(TADObjectList<TDummyObject>);
 //  TDummyListTS = class(TADObjectListTS<TDummyObject>);
 
