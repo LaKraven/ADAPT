@@ -60,13 +60,24 @@ type
   IADListExpanderGeometric = interface;
   IADListCompactor = interface;
   IADList<T> = interface;
+  IADObjectList<T> = interface;
+  IADCircularList<T> = interface;
+  IADCircularObjectList<T> = interface;
   { Class Forward Declarations }
   TADListExpander = class;
   TADListExpanderDefault = class;
   TADListExpanderGeometric = class;
   TADListExpanderGeometricTS = class;
   TADListCompactor = class;
+  TADListCompactorDefault = class;
   TADList<T> = class;
+  TADObjectList<T> = class;
+  TADCircularList<T> = class;
+  TADCircularObjectList<T> = class;
+  TADListTS<T> = class;
+  TADObjectListTS<T> = class;
+  TADCircularListTS<T> = class;
+  TADCircularObjectListTS<T> = class;
 
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
@@ -134,6 +145,21 @@ type
     property Expander: IADListExpander read GetExpander;
     property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
+  end;
+
+  IADObjectList<T> = interface(IADList<T>)
+  ['{9B5D42E7-0B73-4E6B-BDAD-AA3AB63E03C3}']
+    //TODO -oDaniel -cIADObjectList<T>: Complete interface
+  end;
+
+  IADCircularList<T> = interface(IADInterface)
+  ['{AB8E1DFA-D287-4224-BB5B-66364B175956}']
+    //TODO -oDaniel -cIADCircularList<T>: Complete interface
+  end;
+
+  IADCircularObjectList<T> = interface(IADCircularList<T>)
+  ['{AA702AC4-A7E4-4A17-9CA5-239199030AFE}']
+    //TODO -oDaniel -cIADCircularObjectList<T>: Complete interface
   end;
 
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
@@ -249,17 +275,17 @@ type
     procedure CheckExpand(const AAmount: Integer);
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
-    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using the Default Expander, and a Custom Conpactor Type.</c></summary>
-    constructor Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpander: IADListExpander; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const AExpander: IADListExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
-    constructor Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
@@ -279,6 +305,82 @@ type
     property Expander: IADListExpander read GetExpander;
     property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
+  end;
+
+  TADObjectList<T> = class(TADList<T>)
+  public
+    ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using the Default Expander, and a Custom Conpactor Type.</c></summary>
+    constructor Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Type.</c></summary>
+    constructor Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload; virtual;
+  end;
+
+  TADCircularList<T> = class(TADObject, IADCircularList<T>)
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  end;
+
+  TADCircularObjectList<T> = class(TADCircularList<T>, IADCircularObjectList<T>)
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  end;
+
+  TADListTS<T> = class(TADList<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
+  public
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0); overload; override;
+    destructor Destroy; override;
+
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
+  TADObjectListTS<T> = class(TADObjectList<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
+  public
+    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); overload; override;
+    destructor Destroy; override;
+
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
+  TADCircularListTS<T> = class(TADCircularList<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
+  TADCircularObjectListTS<T> = class(TADCircularObjectList<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
 implementation
@@ -582,6 +684,147 @@ end;
 procedure TADList<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
 
+end;
+
+{ TADListTS<T> }
+
+constructor TADListTS<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer);
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+end;
+
+destructor TADListTS<T>.Destroy;
+begin
+  FLock.Free;
+  inherited;
+end;
+
+function TADListTS<T>.GetLock: IADReadWriteLock;
+begin
+
+end;
+
+{ TADObjectList<T> }
+
+constructor TADObjectList<T>.Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+
+end;
+
+{ TADCircularList<T> }
+
+constructor TADCircularList<T>.Create;
+begin
+  inherited;
+
+end;
+
+destructor TADCircularList<T>.Destroy;
+begin
+
+  inherited;
+end;
+
+{ TADCircularObjectList<T> }
+
+constructor TADCircularObjectList<T>.Create;
+begin
+  inherited;
+
+end;
+
+destructor TADCircularObjectList<T>.Destroy;
+begin
+
+  inherited;
+end;
+
+{ TADObjectListTS<T> }
+
+constructor TADObjectListTS<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+end;
+
+destructor TADObjectListTS<T>.Destroy;
+begin
+  FLock.Free;
+  inherited;
+end;
+
+function TADObjectListTS<T>.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+{ TADCircularListTS<T> }
+
+constructor TADCircularListTS<T>.Create;
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+end;
+
+destructor TADCircularListTS<T>.Destroy;
+begin
+  FLock.Free;
+  inherited;
+end;
+
+function TADCircularListTS<T>.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+{ TADCircularObjectListTS<T> }
+
+constructor TADCircularObjectListTS<T>.Create;
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+end;
+
+destructor TADCircularObjectListTS<T>.Destroy;
+begin
+  FLock.Free;
+  inherited;
+end;
+
+function TADCircularObjectListTS<T>.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
 end;
 
 end.

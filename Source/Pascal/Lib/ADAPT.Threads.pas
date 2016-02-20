@@ -56,8 +56,10 @@ uses
 type
   { Interface Forward Declarations }
   IADThread = interface;
+  IADThreadPrecision = interface;
   { Class Forward Declarations }
   TADThread = class;
+  TADThreadPrecision = class;
 
   { Enums }
   TADThreadState = (tsRunning, tsPaused);

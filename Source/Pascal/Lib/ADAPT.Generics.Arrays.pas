@@ -96,11 +96,11 @@ type
   IADObjectArray<T: Class> = interface(IADArray<T>)
   ['{82243ACD-FE8F-4EE4-9231-75D3A6B2D5FE}']
     // Getters
-    function GetOwnsItems: Boolean;
+    function GetOwnership: TADOwnership;
     // Setters
-    procedure SetOwnsItems(const AOwnsItems: Boolean);
+    procedure SetOwnership(const AOwnership: TADOwnership);
     // Properties
-    property OwnsItems: Boolean read GetOwnsItems write SetOwnsItems;
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
@@ -140,19 +140,19 @@ type
   ///  </remarks>
   TADObjectArray<T: Class> = class(TADArray<T>, IADObjectArray<T>)
   private
-    FOwnsItems: Boolean;
+    FOwnership: TADOwnership;
   protected
     // Getters
-    function GetOwnsItems: Boolean; virtual;
+    function GetOwnership: TADOwnership; virtual;
     // Setters
-    procedure SetOwnsItems(const AOwnsItems: Boolean); virtual;
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
   public
-    constructor Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0); reintroduce; virtual;
+    constructor Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0); reintroduce; virtual;
     destructor Destroy; override;
     ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; override;
     // Properties
-    property OwnsItems: Boolean read GetOwnsItems write SetOwnsItems;
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
@@ -193,19 +193,20 @@ type
   ///    <para><c>This is Threadsafe</c></para>
   ///  </remarks>
   TADObjectArrayTS<T: Class> = class(TADObjectArray<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
   protected
     FArray: TArray<T>;
     FCapacityInitial: Integer;
-    FLock: TADReadWriteLock;
     // Getters
     function GetCapacity: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
-    function GetLock: IADReadWriteLock;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
-    constructor Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0); reintroduce; virtual;
+    constructor Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0); reintroduce; virtual;
     destructor Destroy; override;
     // Management Methods
     ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
@@ -275,17 +276,17 @@ procedure TADObjectArray<T>.Clear;
 var
   I: Integer;
 begin
-  if OwnsItems then
+  if Ownership = oOwnsObjects then
     for I := Low(FArray) to High(FArray) do
       if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
         FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
-constructor TADObjectArray<T>.Create(const AOwnsItems: Boolean; const ACapacity: Integer);
+constructor TADObjectArray<T>.Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0);
 begin
   inherited Create(ACapacity);
-  FOwnsItems := AOwnsItems;
+  FOwnership := AOwnership;
 end;
 
 destructor TADObjectArray<T>.Destroy;
@@ -294,14 +295,14 @@ begin
   inherited;
 end;
 
-function TADObjectArray<T>.GetOwnsItems: Boolean;
+function TADObjectArray<T>.GetOwnership: TADOwnership;
 begin
-  Result := FOwnsItems;
+  Result := FOwnership;
 end;
 
-procedure TADObjectArray<T>.SetOwnsItems(const AOwnsItems: Boolean);
+procedure TADObjectArray<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
-  FOwnsItems := AOwnsItems;
+  FOwnership := AOwnership;
 end;
 
 { TADArrayTS<T> }
@@ -401,7 +402,7 @@ var
 begin
   FLock.AcquireWrite;
   try
-    if OwnsItems then
+    if Ownership = oOwnsObjects then
       for I := Low(FArray) to High(FArray) do
         if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
           FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
@@ -411,7 +412,7 @@ begin
   end;
 end;
 
-constructor TADObjectArrayTS<T>.Create(const AOwnsItems: Boolean = True; const ACapacity: Integer = 0);
+constructor TADObjectArrayTS<T>.Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);

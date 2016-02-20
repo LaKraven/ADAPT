@@ -10,6 +10,7 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
+  ADAPT.Common,
   ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists,
   DUnitX.TestFramework;
 
@@ -178,7 +179,7 @@ var
   I: Integer;
   LArray: IDummyArray;
 begin
-  LArray := TDummyArray.Create(True, 10);
+  LArray := TDummyArray.Create(oOwnsObjects, 10);
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
   for I := 0 to LArray.Capacity - 1 do
@@ -190,7 +191,7 @@ var
   I: Integer;
   LArray: IDummyArray;
 begin
-  LArray := TDummyArrayTS.Create(True, 10);
+  LArray := TDummyArrayTS.Create(oOwnsObjects, 10);
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
   for I := 0 to LArray.Capacity - 1 do

@@ -93,7 +93,10 @@ type
   TADPersistentTS = class;
 
   { Enums }
+  ///  <summary><c>Defines the present State of a Read/Write Lock.</c></summary>
   TADReadWriteLockState = (lsWaiting, lsReading, lsWriting);
+  ///  <summary><c>Defines the Ownership role of a container.</c></summary>
+  TADOwnership = (oOwnsObjects, oNotOwnsObjects);
 
   {$IFDEF ADAPT_FLOAT_SINGLE}
     ///  <summary><c>Single-Precision Floating Point Type.</c></summary>
