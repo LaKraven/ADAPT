@@ -98,6 +98,8 @@ const
                                          'Ninette'
                                        );
 
+  LETTERS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+
 { TDummyObject }
 
 constructor TDummyObject.Create(const AFoo: String);
@@ -133,15 +135,13 @@ begin
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
-const
-  ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 var
   I: Integer;
   LArray: IStringArray;
 begin
   LArray := TStringArray.Create(10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := ITEMS[I];
+  for I := Low(LETTERS) to High(LETTERS) do
+    LArray.Items[I] := LETTERS[I];
 
   if not (AExpectInRange) then
     Assert.WillRaise(procedure
@@ -151,19 +151,17 @@ begin
                      EADGenericsRangeException,
                      Format('Item %d SHOULD be out of range!', [AIndex]))
   else
-    Assert.IsTrue(LArray.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LArray.Items[AIndex]]))
+    Assert.IsTrue(LArray.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LArray.Items[AIndex]]))
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestItemInRangeThreadsafe(const AIndex: Integer; const AExpectInRange: Boolean);
-const
-  ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 var
   I: Integer;
   LArray: IStringArray;
 begin
   LArray := TStringArrayTS.Create(10);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LArray.Items[I] := ITEMS[I];
+  for I := Low(LETTERS) to High(LETTERS) do
+    LArray.Items[I] := LETTERS[I];
 
   if not (AExpectInRange) then
     Assert.WillRaise(procedure
@@ -173,7 +171,7 @@ begin
                      EADGenericsRangeException,
                      Format('Item %d SHOULD be out of range!', [AIndex]))
   else
-    Assert.IsTrue(LArray.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LArray.Items[AIndex]]));
+    Assert.IsTrue(LArray.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LArray.Items[AIndex]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrity;
@@ -228,15 +226,13 @@ begin
 end;
 
 procedure TAdaptUnitTestGenericsList.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
-const
-  ITEMS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 var
   I: Integer;
   LList: IStringList;
 begin
   LList := TStringList.Create(0);
-  for I := Low(ITEMS) to High(ITEMS) do
-    LList.Add(ITEMS[I]);
+  for I := Low(LETTERS) to High(LETTERS) do
+    LList.Add(LETTERS[I]);
 
   if not (AExpectInRange) then
     Assert.WillRaise(procedure
@@ -246,7 +242,7 @@ begin
                      EADGenericsRangeException,
                      Format('Item %d SHOULD be out of range!', [AIndex]))
   else
-    Assert.IsTrue(LList.Items[AIndex] = ITEMS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, ITEMS[AIndex], LList.Items[AIndex]]))
+    Assert.IsTrue(LList.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LList.Items[AIndex]]))
 end;
 
 initialization
