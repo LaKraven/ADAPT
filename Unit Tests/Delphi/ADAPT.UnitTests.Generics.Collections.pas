@@ -32,8 +32,8 @@ type
   IStringList = IADList<String>;
   TStringList = class(TADList<String>);
 //  TStringListTS = class(TADListTS<String>);
-//  IDummyList = IADObjectList<TDummyObject>);
-//  TDummyList = class(TADObjectList<TDummyObject>);
+  IDummyList = IADObjectList<TDummyObject>;
+  TDummyList = class(TADObjectList<TDummyObject>);
 //  TDummyListTS = class(TADObjectListTS<TDummyObject>);
 
   [TestFixture]
@@ -78,6 +78,8 @@ type
     [TestCase('In Range at 9', '9,True')]
     [TestCase('Out Of Range at 10', '10,False')]
     procedure TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
+    [Test]
+    procedure TestDummyObjectIntegrity;
   end;
 
 implementation
@@ -199,6 +201,18 @@ begin
 end;
 
 { TAdaptUnitTestGenericsList }
+
+procedure TAdaptUnitTestGenericsList.TestDummyObjectIntegrity;
+var
+  I: Integer;
+  LList: IDummyList;
+begin
+  LList := TDummyList.Create;
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(TDummyObject.Create(BASIC_ITEMS[I]));
+  for I := 0 to LList.Count - 1 do
+    Assert.IsTrue(LList.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LList.Items[I].Foo, BASIC_ITEMS[I]]));
+end;
 
 procedure TAdaptUnitTestGenericsList.TestIntegrity;
 var

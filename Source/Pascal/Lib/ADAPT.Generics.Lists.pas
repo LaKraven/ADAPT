@@ -60,9 +60,9 @@ type
   IADListExpanderGeometric = interface;
   IADListCompactor = interface;
   IADList<T> = interface;
-  IADObjectList<T> = interface;
+  IADObjectList<T: class> = interface;
   IADCircularList<T> = interface;
-  IADCircularObjectList<T> = interface;
+  IADCircularObjectList<T: class> = interface;
   { Class Forward Declarations }
   TADListExpander = class;
   TADListExpanderDefault = class;
@@ -71,13 +71,13 @@ type
   TADListCompactor = class;
   TADListCompactorDefault = class;
   TADList<T> = class;
-  TADObjectList<T> = class;
+  TADObjectList<T: class> = class;
   TADCircularList<T> = class;
-  TADCircularObjectList<T> = class;
+  TADCircularObjectList<T: class> = class;
   TADListTS<T> = class;
-  TADObjectListTS<T> = class;
+  TADObjectListTS<T: class> = class;
   TADCircularListTS<T> = class;
-  TADCircularObjectListTS<T> = class;
+  TADCircularObjectListTS<T: class> = class;
 
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
@@ -147,9 +147,14 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
-  IADObjectList<T> = interface(IADList<T>)
+  IADObjectList<T: class> = interface(IADList<T>)
   ['{9B5D42E7-0B73-4E6B-BDAD-AA3AB63E03C3}']
-    //TODO -oDaniel -cIADObjectList<T>: Complete interface
+    // Getters
+    function GetOwnership: TADOwnership;
+    // Setters
+    procedure SetOwnership(const AOwnership: TADOwnership);
+    // Properties
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   IADCircularList<T> = interface(IADInterface)
@@ -157,7 +162,7 @@ type
     //TODO -oDaniel -cIADCircularList<T>: Complete interface
   end;
 
-  IADCircularObjectList<T> = interface(IADCircularList<T>)
+  IADCircularObjectList<T: class> = interface(IADCircularList<T>)
   ['{AA702AC4-A7E4-4A17-9CA5-239199030AFE}']
     //TODO -oDaniel -cIADCircularObjectList<T>: Complete interface
   end;
@@ -269,6 +274,8 @@ type
     // Management Methods
     ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
     procedure AddActual(const AItem: T);
+    ///  <summary><c>Override to constructor an alternative Array type</c></summary>
+    procedure CreateArray(const AInitialCapacity: Integer = 0); virtual;
     ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
     procedure CheckCompact(const AAmount: Integer);
     ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
@@ -307,7 +314,17 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
-  TADObjectList<T> = class(TADList<T>)
+  TADObjectList<T: class> = class(TADList<T>, IADObjectList<T>)
+  private type
+    TADObjectArrayT = class(TADObjectArray<T>);
+  protected
+    // Getters
+    function GetOwnership: TADOwnership; virtual;
+    // Setters
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
+    // Management Methods
+    ///  <summary><c>We need a TADObjectArray instead.</c></summary>
+    procedure CreateArray(const AInitialCapacity: Integer = 0); override;
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
@@ -323,6 +340,9 @@ type
     constructor Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload; virtual;
+
+    // Properties
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   TADCircularList<T> = class(TADObject, IADCircularList<T>)
@@ -331,7 +351,7 @@ type
     destructor Destroy; override;
   end;
 
-  TADCircularObjectList<T> = class(TADCircularList<T>, IADCircularObjectList<T>)
+  TADCircularObjectList<T: class> = class(TADCircularList<T>, IADCircularObjectList<T>)
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -349,7 +369,7 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
-  TADObjectListTS<T> = class(TADObjectList<T>, IADReadWriteLock)
+  TADObjectListTS<T: class> = class(TADObjectList<T>, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
@@ -372,7 +392,7 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
-  TADCircularObjectListTS<T> = class(TADCircularObjectList<T>, IADReadWriteLock)
+  TADCircularObjectListTS<T: class> = class(TADCircularObjectList<T>, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
@@ -588,6 +608,11 @@ begin
   FCompactor := ACompactor;
   FExpander := AExpander;
   FInitialCapacity := AInitialCapacity;
+  CreateArray(AInitialCapacity);
+end;
+
+procedure TADList<T>.CreateArray(const AInitialCapacity: Integer = 0);
+begin
   FArray := TADArray<T>.Create(AInitialCapacity);
 end;
 
@@ -707,39 +732,55 @@ end;
 
 { TADObjectList<T> }
 
+constructor TADObjectList<T>.Create(const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+  Create(TADListExpanderDefault, TADListCompactorDefault, AInitialCapacity, AOwnership);
+end;
+
 constructor TADObjectList<T>.Create(const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-
+  Create(TADListExpanderDefault.Create, ACompactorType.Create, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const AExpanderType: TADListExpanderType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-
-end;
-
-constructor TADObjectList<T>.Create(const AInitialCapacity: Integer; const AOwnership: TADOwnership);
-begin
-
+  Create(AExpanderType.Create, TADListCompactorDefault.Create, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const AExpanderType: TADListExpanderType; const ACompactorType: TADListCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-
-end;
-
-constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
-begin
-
+  Create(AExpanderType.Create, ACompactorType.Create, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-
+  Create(TADListExpanderDefault.Create, ACompactor, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
+  Create(AExpander, TADListCompactorDefault.Create, AInitialCapacity, AOwnership);
+end;
 
+constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
+begin
+  inherited Create(AExpander, ACompactor, AInitialCapacity);
+  TADObjectArrayT(FArray).Ownership := AOwnership;
+end;
+
+procedure TADObjectList<T>.CreateArray(const AInitialCapacity: Integer = 0);
+begin
+  FArray := TADObjectArrayT.Create(oOwnsObjects, AInitialCapacity);
+end;
+
+function TADObjectList<T>.GetOwnership: TADOwnership;
+begin
+  Result := TADObjectArrayT(FArray).Ownership;
+end;
+
+procedure TADObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+  TADObjectArrayT(FArray).Ownership := AOwnership;
 end;
 
 { TADCircularList<T> }
