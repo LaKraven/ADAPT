@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="ADAPT_UnitTests_Lazarus.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -18,8 +18,7 @@
         <Filename Value="adapt.unittests.generics.collections.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ADAPT.UnitTests.Generics.Collections"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="118" Y="29"/>
+        <CursorPos X="71" Y="10"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -35,20 +34,22 @@
       <Unit3>
         <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
+        <UnitName Value="ADAPT.Generics.Arrays"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="45"/>
+        <CursorPos X="3" Y="71"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
+        <UnitName Value="ADAPT.Generics.Defaults"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="99"/>
+        <CursorPos X="32" Y="120"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Performance.pas"/>
@@ -68,7 +69,35 @@
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
+        <UnitName Value="ADAPT.Generics.Lists"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="374"/>
+        <CursorPos Y="394"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
+        <Caret Line="207" TopLine="187"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
+        <Caret Line="65" Column="15" TopLine="51"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
+      </Position5>
+    </JumpHistory>
   </ProjectSession>
 </CONFIG>

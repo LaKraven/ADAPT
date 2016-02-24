@@ -59,13 +59,15 @@ type
     TArray<T> = Array of T; // FreePascal doesn't have this defined (yet)
   {$ENDIF FPC}
 
-  { Interface Forward Declarations }
-  IADArray<T> = interface;
-  { Class Forward Declarations }
-  TADArray<T> = class;
-  TADObjectArray<T: Class> = class;
-  TADArrayTS<T> = class;
-  TADObjectArrayTS<T: Class> = class;
+  {$IFNDEF FPC}
+    { Interface Forward Declarations }
+    IADArray<T> = interface;
+    { Class Forward Declarations }
+    TADArray<T> = class;
+    TADObjectArray<T: Class> = class;
+    TADArrayTS<T> = class;
+    TADObjectArrayTS<T: Class> = class;
+  {$ENDIF FPC}
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
   IADArray<T> = interface(IADInterface)

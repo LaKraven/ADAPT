@@ -55,27 +55,29 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  { Interface Forward Declarations }
-  IADListExpander = interface;
-  IADListExpanderGeometric = interface;
-  IADListCompactor = interface;
-  IADList<T> = interface;
-  IADCircularList<T> = interface;
-  { Class Forward Declarations }
-  TADListExpander = class;
-  TADListExpanderDefault = class;
-  TADListExpanderGeometric = class;
-  TADListExpanderGeometricTS = class;
-  TADListCompactor = class;
-  TADListCompactorDefault = class;
-  TADList<T> = class;
-  TADObjectList<T: class> = class;
-  TADCircularList<T> = class;
-  TADCircularObjectList<T: class> = class;
-  TADListTS<T> = class;
-  TADObjectListTS<T: class> = class;
-  TADCircularListTS<T> = class;
-  TADCircularObjectListTS<T: class> = class;
+  {$IFNDEF FPC}
+    { Interface Forward Declarations }
+    IADListExpander = interface;
+    IADListExpanderGeometric = interface;
+    IADListCompactor = interface;
+    IADList<T> = interface;
+    IADCircularList<T> = interface;
+    { Class Forward Declarations }
+    TADListExpander = class;
+    TADListExpanderDefault = class;
+    TADListExpanderGeometric = class;
+    TADListExpanderGeometricTS = class;
+    TADListCompactor = class;
+    TADListCompactorDefault = class;
+    TADList<T> = class;
+    TADObjectList<T: class> = class;
+    TADCircularList<T> = class;
+    TADCircularObjectList<T: class> = class;
+    TADListTS<T> = class;
+    TADObjectListTS<T: class> = class;
+    TADCircularListTS<T> = class;
+    TADCircularObjectListTS<T: class> = class;
+  {$ENDIF FPC}
 
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);

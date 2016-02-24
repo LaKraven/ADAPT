@@ -5,7 +5,9 @@ unit ADAPT.UnitTests.Generics.Collections;
 interface
 
 uses
-  Classes, SysUtils, fpcunit, testutils, testregistry;
+  Classes, SysUtils, fpcunit, testutils, testregistry,
+  ADAPT.Common,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
 
 type
 
