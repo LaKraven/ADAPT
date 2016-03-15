@@ -10,32 +10,9 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists,
   DUnitX.TestFramework;
 
 type
-  TDummyObject = class(TObject)
-  private
-    FFoo: String;
-  public
-    constructor Create(const AFoo: String);
-    property Foo: String read FFoo;
-  end;
-
-  IStringArray = IADArray<String>;
-  TStringArray = class(TADArray<String>);
-  TStringArrayTS = class(TADArrayTS<String>);
-  IDummyArray = IADArray<TDummyObject>;
-  TDummyArray = class(TADObjectArray<TDummyObject>);
-  TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
-  IStringList = IADList<String>;
-  TStringList = class(TADList<String>);
-//  TStringListTS = class(TADListTS<String>);
-  IDummyList = IADList<TDummyObject>;
-  TDummyList = class(TADObjectList<TDummyObject>);
-//  TDummyListTS = class(TADObjectListTS<TDummyObject>);
-
   [TestFixture]
   TAdaptUnitTestGenericsArray = class(TObject)
   public
@@ -83,6 +60,32 @@ type
   end;
 
 implementation
+
+uses
+  ADAPT.Common,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
+
+type
+  TDummyObject = class(TObject)
+  private
+    FFoo: String;
+  public
+    constructor Create(const AFoo: String);
+    property Foo: String read FFoo;
+  end;
+
+  IStringArray = IADArray<String>;
+  TStringArray = class(TADArray<String>);
+  TStringArrayTS = class(TADArrayTS<String>);
+  IDummyArray = IADArray<TDummyObject>;
+  TDummyArray = class(TADObjectArray<TDummyObject>);
+  TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
+  IStringList = IADList<String>;
+  TStringList = class(TADList<String>);
+//  TStringListTS = class(TADListTS<String>);
+  IDummyList = IADList<TDummyObject>;
+  TDummyList = class(TADObjectList<TDummyObject>);
+//  TDummyListTS = class(TADObjectListTS<TDummyObject>);
 
 const
   BASIC_ITEMS: Array[0..9] of String = (
