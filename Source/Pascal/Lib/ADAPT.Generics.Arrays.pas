@@ -71,7 +71,6 @@ type
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
   IADArray<T> = interface(IADInterface)
-  ['{8BCFF286-B08C-4A20-8162-F5E926E6A940}']
     // Getters
     function GetCapacity: Integer;
     function GetItem(const AIndex: Integer): T;

@@ -116,7 +116,6 @@ type
 
   ///  <summary><c>Generic List Type</c></summary>
   IADList<T> = interface
-  ['{89F7688F-8C90-4165-9CC9-73B07826381A}']
     // Getters
     function GetCapacity: Integer;
     function GetCompactor: IADListCompactor;
@@ -148,7 +147,6 @@ type
   end;
 
   IADCircularList<T> = interface(IADInterface)
-  ['{AB8E1DFA-D287-4224-BB5B-66364B175956}']
     //TODO -oDaniel -cIADCircularList<T>: Complete interface
   end;
 
