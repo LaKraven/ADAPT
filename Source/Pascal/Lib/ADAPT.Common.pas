@@ -461,7 +461,7 @@ begin
     case GetLockState of
       lsWaiting: raise Exception.Create('Lock State not Write, cannot Release Write on a Waiting Lock!');
       lsReading: begin
-                   if (not GetThreadMatch) then;
+                   if (not GetThreadMatch) then
                      raise Exception.Create('Lock State not Write, cannot Release Write on a Read Lock!');
                  end;
       lsWriting: begin

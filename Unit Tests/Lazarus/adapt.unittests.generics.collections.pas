@@ -5,13 +5,11 @@ unit ADAPT.UnitTests.Generics.Collections;
 interface
 
 uses
-  Classes, SysUtils, fpcunit, testutils, testregistry,
-  ADAPT.Common,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
+  Classes, SysUtils, fpcunit, testutils, testregistry;
 
 type
 
-  TAdaptUnitTestGenericsArray= class(TTestCase)
+  TAdaptUnitTestGenericsArray = class(TTestCase)
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -20,6 +18,10 @@ type
   end;
 
 implementation
+
+uses
+  ADAPT.Common,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
 
 procedure TAdaptUnitTestGenericsArray.TestHookUp;
 begin
