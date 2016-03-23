@@ -1,0 +1,6 @@
+{
+  "name": "ADAPT",
+  "tagline": "ADvanced Developer Async Programming Toolkit",
+  "body": "### Welcome to the ADAPT Project.\r\nThis project replaces the \"LKSL\" library, providing constituents of a powerful development framework for a broad range of high-performance, multi-threaded systems.\r\n\r\nADAPT is largely built up of constituents from a powerful game engine project called \"AGE\" (Another Game Engine), which have been abstracted from the game engine for use in an infinite number of potential applications. These can range from something as simple as a time-critical automation tool, to complete workflow management systems, data-driven systems, or scientific applications.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
