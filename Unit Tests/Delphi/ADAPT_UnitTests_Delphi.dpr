@@ -16,7 +16,8 @@ uses
   ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas',
   ADAPT.Generics.Arrays in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas',
   ADAPT.Generics.Defaults in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas',
-  ADAPT.Generics.Lists in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas';
+  ADAPT.Generics.Lists in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas',
+  ADAPT.Math.SIUnits in '..\..\Source\Pascal\Lib\ADAPT.Math.SIUnits.pas';
 
 var
   runner : ITestRunner;
