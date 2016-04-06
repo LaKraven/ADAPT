@@ -156,11 +156,20 @@ const
                                                                                );
   {$ENDREGION}
 
+function SIMagnitude(const ASourceValue: ADFloat): Integer;
 function SIMagnitudeConvert(const ASourceValue: ADFloat; const AFromMagnitude, AToMagnitude: TADSIMagnitude): ADFloat; inline;
 function SIMagnitudeGetNotationText(const AMagnitude: TADSIMagnitude; const ANotation: TADSIUnitNotation): String; inline;
 procedure SIMagnitudeToBest(const AInValue: ADFloat; const AInMagnitude: TADSIMagnitude; var AOutValue: ADFloat; var AOutMagnitude: TADSIMagnitude); inline;
 
 implementation
+
+function SIMagnitude(const ASourceValue: ADFloat): Integer;
+begin
+  if ASourceValue < 1 then
+    Result := 0
+  else
+    Result := Trunc(Log10(Abs(ASourceValue)));
+end;
 
 function SIMagnitudeConvert(const ASourceValue: ADFloat; const AFromMagnitude, AToMagnitude: TADSIMagnitude): ADFloat;
 begin
@@ -173,11 +182,21 @@ begin
 end;
 
 procedure SIMagnitudeToBest(const AInValue: ADFloat; const AInMagnitude: TADSIMagnitude; var AOutValue: ADFloat; var AOutMagnitude: TADSIMagnitude);
+var
+  LMagnitudeDifference: Integer;
 begin
   // Presume that no conversion is required.
   AOutValue := AInValue;
   AOutMagnitude := AInMagnitude;
   { TODO -oDaniel -cSI Units : Implement method to determine most appropriate Order of Magnitude to represent given value }
+  LMagnitudeDifference := SIMagnitude(AInValue);
+  if LMagnitudeDifference = 0 then
+    Exit
+  else if LMagnitudeDifference > 0 then
+    AOutMagnitude := TADSIMagnitude(Integer(AInMagnitude) + LMagnitudeDifference)
+  else if LMagnitudeDifference < 0 then
+    AOutMagnitude := TADSIMagnitude(Integer(AInMagnitude) - LMagnitudeDifference);
+  AOutValue := SIMagnitudeConvert(AInValue, AInMagnitude, AOutMagnitude);
 end;
 
 end.

@@ -170,6 +170,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.SIUnits.pas"/>
+        <DCCReference Include="ADAPT.UnitTests.Maths.SIUnits.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
