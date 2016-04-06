@@ -71,6 +71,7 @@ type
     Symbol: String;
     BaseMagnitude: TADSIMagnitude;
     Notations: TADSIUnitNotations;
+    UnitType: TADSIBaseUnitType;
   end;
 
 const
@@ -79,6 +80,7 @@ const
                                   Symbol: 'm';
                                   BaseMagnitude: simOne;
                                   Notations: ('m', 'metre');
+                                  UnitType: sbtLength;
                                );
 
   AD_UNIT_GRAM: TADSIUnit =    (
@@ -86,6 +88,7 @@ const
                                   Symbol: 'g';
                                   BaseMagnitude: simKilo;
                                   Notations: ('g', 'gram');
+                                  UnitType: sbtMass;
                                );
 
   AD_UNIT_SECOND: TADSIUnit =  (
@@ -93,6 +96,7 @@ const
                                   Symbol: 's';
                                   BaseMagnitude: simOne;
                                   Notations: ('s', 'second');
+                                  UnitType: sbtTime;
                                );
 
   AD_UNIT_AMPERE: TADSIUnit =  (
@@ -100,6 +104,7 @@ const
                                   Symbol: 'A';
                                   BaseMagnitude: simOne;
                                   Notations: ('A', 'ampere');
+                                  UnitType: sbtCurrent;
                                );
 
   AD_UNIT_KELVIN: TADSIUnit =  (
@@ -107,6 +112,7 @@ const
                                   Symbol: 'K';
                                   BaseMagnitude: simOne;
                                   Notations: ('K', 'kelvin');
+                                  UnitType: sbtTemperature;
                                );
 
   AD_UNIT_MOLE: TADSIUnit =    (
@@ -114,6 +120,7 @@ const
                                   Symbol: 'mol';
                                   BaseMagnitude: simOne;
                                   Notations: ('mol', 'mole');
+                                  UnitType: sbtSubstance;
                                );
 
   AD_UNIT_CANDELA: TADSIUnit = (
@@ -121,6 +128,7 @@ const
                                   Symbol: 'cd';
                                   BaseMagnitude: simOne;
                                   Notations: ('cd', 'candela');
+                                  UnitType: sbtLuminousIntensity;
                                );
 
   AD_UNIT_MAGNITUDE_NAMES_SI: Array[TADSIMagnitude, TADSIUnitNotation] of String = (
