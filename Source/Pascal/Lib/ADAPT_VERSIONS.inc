@@ -81,9 +81,9 @@
   
   {$IFDEF VER310}
     {$DEFINE DELPHI10.1}
-    {$DEFINE DELPHI10.1LONDON}
-    {$DEFINE LONDON}
-    {$DEFINE DELPHILONDON}
+    {$DEFINE DELPHI10.1BERLIN}
+    {$DEFINE BERLIN}
+    {$DEFINE DELPHIBERLIN}
   {$ENDIF VER300}  
   
 // This-and-Up Defines
@@ -111,9 +111,9 @@
     {$DEFINE DELPHISEATTLE_UP}
   {$IFEND}
   {$IF COMPILERVERSION > 30}
-    {$DEFINE DELPHI10.1LONDON_UP}
+    {$DEFINE DELPHI10.1BERLIN_UP}
     {$DEFINE DELPHI10.1_UP}
-    {$DEFINE DELPHILONDON_UP}
+    {$DEFINE DELPHIBERLIN_UP}
     {$MESSAGE WARN 'Versions newer than Delphi 10 Seattle have not yet been tested. This message will be removed once the version you are using has been officially tested.'}
   {$IFEND}
 // Support Definitions
