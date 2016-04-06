@@ -158,8 +158,7 @@ const
 
 function SIMagnitudeConvert(const ASourceValue: ADFloat; const AFromMagnitude, AToMagnitude: TADSIMagnitude): ADFloat; inline;
 function SIMagnitudeGetNotationText(const AMagnitude: TADSIMagnitude; const ANotation: TADSIUnitNotation): String; inline;
-procedure SIMagnitudeToBest(const AInValue: ADFloat; const AInMagnitude: TADSIMagnitude; var AOutValue: ADFloat; var AOutMagnitude: TADSIMagnitude); overload; inline;
-procedure SIMagnitudeToBest(var AValue: ADFloat; var AMagnitude: TADSIMagnitude); overload; inline;
+procedure SIMagnitudeToBest(const AInValue: ADFloat; const AInMagnitude: TADSIMagnitude; var AOutValue: ADFloat; var AOutMagnitude: TADSIMagnitude); inline;
 
 implementation
 
@@ -173,17 +172,12 @@ begin
   Result := AD_UNIT_MAGNITUDE_NAMES_SI[AMagnitude, ANotation];
 end;
 
-procedure SIMagnitudeToBest(var AValue: ADFloat; var AMagnitude: TADSIMagnitude);
-begin
-  { TODO -oDaniel -cSI Units : Implement method to determine most appropriate Order of Magnitude to represent given value }
-end;
-
 procedure SIMagnitudeToBest(const AInValue: ADFloat; const AInMagnitude: TADSIMagnitude; var AOutValue: ADFloat; var AOutMagnitude: TADSIMagnitude);
 begin
   // Presume that no conversion is required.
   AOutValue := AInValue;
   AOutMagnitude := AInMagnitude;
-  SIMagnitudeToBest(AOutValue, AOutMagnitude);
+  { TODO -oDaniel -cSI Units : Implement method to determine most appropriate Order of Magnitude to represent given value }
 end;
 
 end.
