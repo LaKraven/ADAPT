@@ -226,6 +226,11 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
+  ///  <summary><c>Generic Object List Type</c></summary>
+  ///  <remarks>
+  ///    <para><c>Can take Ownership of its Items.</c></para>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
   TADObjectList<T: class> = class(TADList<T>, IADObjectOwner)
   private type
     TADObjectArrayT = class(TADObjectArray<T>);
@@ -257,20 +262,52 @@ type
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
+  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and items are subsequently Replaced by new ones.</c></para>
+  ///  </remarks>
   TADCircularList<T> = class(TADObject, IADCircularList<T>)
+  private
+    FCount: Integer;
+    FIndex: Integer;
+    FItems: TADArray<T>;
+    // Getters
+    function GetCapacity: Integer;
+  protected
+    // Getters
+    function GetCount: Integer; virtual;
+    function GetItem(const AIndex: Integer): T; virtual;
+    // Setters
+    procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
+    // Management Methods
+    function AddActual(const AItem: T): Integer;
+    procedure CreateItemArray(const ACapacity: Integer); virtual;
   public
-    constructor Create; override;
+    constructor Create(const ACapacity: Integer); reintroduce; virtual;
     destructor Destroy; override;
+    // Management Methods
+    function Add(const AItem: T): Integer; virtual;
+    procedure AddItems(const AItems: Array of T); virtual;
+    procedure Clear; virtual;
+    procedure Delete(const AIndex: Integer); virtual;
+    // Properties
+    property Capacity: Integer read GetCapacity;
+    property Count: Integer read GetCount;
+    property Items[const AIndex: Integer]:  T read GetItem write SetItem;
   end;
 
   TADCircularObjectList<T: class> = class(TADCircularList<T>, IADObjectOwner)
+  private
+    FDefaultOwnership: TADOwnership;
   protected
     // Getters
     function GetOwnership: TADOwnership; virtual;
     // Setters
     procedure SetOwnership(const AOwnership: TADOwnership); virtual;
+  protected
+    procedure CreateItemArray(const ACapacity: Integer); override;
   public
-    constructor Create; override;
+    constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); reintroduce; virtual;
     destructor Destroy; override;
   end;
 
@@ -302,9 +339,21 @@ type
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
+  protected
+    // Getters
+    function GetCount: Integer; override;
+    function GetItem(const AIndex: Integer): T; override;
+    // Setters
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
-    constructor Create; override;
+    constructor Create(const ACapacity: Integer); override;
     destructor Destroy; override;
+
+    // Management Methods
+    function Add(const AItem: T): Integer; override;
+    procedure AddItems(const AItems: Array of T); override;
+    procedure Clear; override;
+    procedure Delete(const AIndex: Integer); override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -313,9 +362,21 @@ type
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
+  protected
+    // Getters
+    function GetCount: Integer; override;
+    function GetItem(const AIndex: Integer): T; override;
+    // Setters
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
-    constructor Create; override;
+    constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); override;
     destructor Destroy; override;
+
+    // Management Methods
+    function Add(const AItem: T): Integer; override;
+    procedure AddItems(const AItems: Array of T); override;
+    procedure Clear; override;
+    procedure Delete(const AIndex: Integer); override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -702,24 +763,99 @@ end;
 
 { TADCircularList<T> }
 
-constructor TADCircularList<T>.Create;
+function TADCircularList<T>.Add(const AItem: T): Integer;
 begin
-  inherited;
+  Result := AddActual(AItem);
+end;
 
+function TADCircularList<T>.AddActual(const AItem: T): Integer;
+begin
+  Result := FIndex;
+  if FIndex <= FCount then
+    FItems.Finalize(FIndex, 1);
+  FItems[FIndex] := AItem;
+  Inc(FIndex);
+  if FIndex > FItems.Capacity - 1 then
+    FIndex := 0;
+  if FCount <= FItems.Capacity - 1 then
+    Inc(FCount);
+end;
+
+procedure TADCircularList<T>.AddItems(const AItems: array of T);
+var
+  I: Integer;
+begin
+  for I := Low(AItems) to High(AItems) do
+    AddActual(AItems[I]);
+end;
+
+procedure TADCircularList<T>.Clear;
+begin
+  FItems.Clear;
+  FCount := 0;
+  FIndex := 0;
+end;
+
+constructor TADCircularList<T>.Create(const ACapacity: Integer);
+begin
+  inherited Create;
+  CreateItemArray(ACapacity);
+  FCount := 0;
+  FIndex := 0;
+end;
+
+procedure TADCircularList<T>.CreateItemArray(const ACapacity: Integer);
+begin
+  FItems := TADArray<T>.Create(ACapacity);
+end;
+
+procedure TADCircularList<T>.Delete(const AIndex: Integer);
+begin
+  FItems.Finalize(AIndex, 1); // Finalize the item at the specified Index
+  if AIndex < FItems.Capacity then
+    FItems.Move(AIndex + 1, AIndex, FCount - AIndex); // Shift all subsequent items left by 1
+  Dec(FCount); // Decrement the Count
+  if AIndex <= FIndex then
+    Dec(FIndex); // Shift the Index back by 1
 end;
 
 destructor TADCircularList<T>.Destroy;
 begin
-
+  FItems.Free;
   inherited;
+end;
+
+function TADCircularList<T>.GetCapacity: Integer;
+begin
+  Result := FItems.Capacity;
+end;
+
+function TADCircularList<T>.GetCount: Integer;
+begin
+  Result := FCount;
+end;
+
+function TADCircularList<T>.GetItem(const AIndex: Integer): T;
+begin
+  Result := FItems[AIndex]; // Index Validation is now performed by TADArray<T>.GetItem
+end;
+
+procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FItems[AIndex] := AItem;// Index Validation is now performed by TADArray<T>.GetItem
 end;
 
 { TADCircularObjectList<T> }
 
-constructor TADCircularObjectList<T>.Create;
+constructor TADCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
 begin
-  inherited;
+  FDefaultOwnership := AOwnership;
+  inherited Create(ACapacity);
+end;
 
+procedure TADCircularObjectList<T>.CreateItemArray(const ACapacity: Integer);
+begin
+  FItems := TADObjectArray<T>.Create(FDefaultOwnership, ACapacity);
 end;
 
 destructor TADCircularObjectList<T>.Destroy;
@@ -730,12 +866,12 @@ end;
 
 function TADCircularObjectList<T>.GetOwnership: TADOwnership;
 begin
-
+  Result := TADObjectArray<T>(FItems).Ownership;
 end;
 
 procedure TADCircularObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
-
+  TADObjectArray<T>(FItems).Ownership := AOwnership;
 end;
 
 { TADObjectListTS<T> }
@@ -759,10 +895,50 @@ end;
 
 { TADCircularListTS<T> }
 
-constructor TADCircularListTS<T>.Create;
+function TADCircularListTS<T>.Add(const AItem: T): Integer;
+begin
+  FLock.AcquireWrite;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADCircularListTS<T>.AddItems(const AItems: array of T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADCircularListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+constructor TADCircularListTS<T>.Create(const ACapacity: Integer);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
+end;
+
+procedure TADCircularListTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 destructor TADCircularListTS<T>.Destroy;
@@ -771,17 +947,87 @@ begin
   inherited;
 end;
 
+function TADCircularListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetItem(const AIndex: Integer): T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADCircularListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
 end;
 
+procedure TADCircularListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
 { TADCircularObjectListTS<T> }
 
-constructor TADCircularObjectListTS<T>.Create;
+function TADCircularObjectListTS<T>.Add(const AItem: T): Integer;
+begin
+  FLock.AcquireWrite;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADCircularObjectListTS<T>.AddItems(const AItems: array of T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADCircularObjectListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+constructor TADCircularObjectListTS<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
+end;
+
+procedure TADCircularObjectListTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 destructor TADCircularObjectListTS<T>.Destroy;
@@ -790,9 +1036,39 @@ begin
   inherited;
 end;
 
+function TADCircularObjectListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetItem(const AIndex: Integer): T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADCircularObjectListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+procedure TADCircularObjectListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 end.
