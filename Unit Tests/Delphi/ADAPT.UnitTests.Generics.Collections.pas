@@ -63,7 +63,9 @@ implementation
 
 uses
   ADAPT.Common,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
+  ADAPT.Generics.Defaults,
+  ADAPT.Generics.Arrays, ADAPT.Generics.Arrays.Intf,
+  ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf;
 
 type
   TDummyObject = class(TObject)

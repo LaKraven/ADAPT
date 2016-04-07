@@ -49,19 +49,15 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays;
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Arrays,
+  ADAPT.Generics.Lists.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
   {$IFNDEF FPC}
-    { Interface Forward Declarations }
-    IADListExpander = interface;
-    IADListExpanderGeometric = interface;
-    IADListCompactor = interface;
-    IADList<T> = interface;
-    IADCircularList<T> = interface;
     { Class Forward Declarations }
     TADListExpander = class;
     TADListExpanderDefault = class;
@@ -82,73 +78,6 @@ type
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCapacityLessThanCount = class(EADGenericsParameterInvalidException);
-
-  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
-  IADListExpander = interface(IADInterface)
-  ['{B4742A80-74A7-408E-92BA-F854515B6D24}']
-    function CheckExpand(const ACapacity, ACurrentcount, AAdditionalRequired: Integer): Integer;
-  end;
-
-  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
-  ///  </remarks>
-  IADListExpanderGeometric = interface(IADListExpander)
-  ['{CAF4B15C-9BE5-4A66-B31F-804AB752A102}']
-    // Getters
-    function GetCapacityMultiplier: Single;
-    function GetCapacityThreshold: Integer;
-    // Setters
-    procedure SetCapacityMultiplier(const AMultiplier: Single);
-    procedure SetCapacityThreshold(const AThreshold: Integer);
-    // Properties
-    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
-    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
-  end;
-
-  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
-  IADListCompactor = interface(IADInterface)
-  ['{B7D577D4-8425-4C5D-9DDB-5864C3676199}']
-    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
-  end;
-
-  ///  <summary><c>Generic List Type</c></summary>
-  IADList<T> = interface
-    // Getters
-    function GetCapacity: Integer;
-    function GetCompactor: IADListCompactor;
-    function GetCount: Integer;
-    function GetExpander: IADListExpander;
-    function GetInitialCapacity: Integer;
-    function GetItem(const AIndex: Integer): T;
-    // Setters
-    procedure SetCapacity(const ACapacity: Integer);
-    procedure SetCompactor(const ACompactor: IADListCompactor);
-    procedure SetExpander(const AExpander: IADListExpander);
-    procedure SetItem(const AIndex: Integer; const AItem: T);
-    // Management Methods
-    procedure Add(const AItem: T); overload;
-    procedure Add(const AList: IADList<T>); overload;
-    procedure AddItems(const AItems: Array of T);
-    procedure Clear;
-    procedure Delete(const AIndex: Integer);
-    procedure DeleteRange(const AFirst, ACount: Integer);
-    procedure Insert(const AItem: T; const AIndex: Integer);
-    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
-    // Properties
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Compactor: IADListCompactor read GetCompactor;
-    property Count: Integer read GetCount;
-    property Expander: IADListExpander read GetExpander;
-    property InitialCapacity: Integer read GetInitialCapacity;
-    property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
-  end;
-
-  IADCircularList<T> = interface(IADInterface)
-    //TODO -oDaniel -cIADCircularList<T>: Complete interface
-  end;
 
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>

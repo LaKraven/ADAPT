@@ -73,17 +73,15 @@ interface
 
 uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-    System.Classes, System.SysUtils, System.SyncObjs;
+    System.Classes, System.SysUtils, System.SyncObjs,
   {$ELSE}
-    Classes, SysUtils, SyncObjs;
+    Classes, SysUtils, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
+  ADAPT.Common.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  { Interface Forward Declarations }
-  IADInterface = interface;
-  IADReadWriteLock = interface;
   { Class Forward Declarations }
   TADObject = class;
   TADPersistent = class;
@@ -93,8 +91,6 @@ type
   TADPersistentTS = class;
 
   { Enums }
-  ///  <summary><c>Defines the present State of a Read/Write Lock.</c></summary>
-  TADReadWriteLockState = (lsWaiting, lsReading, lsWriting);
   ///  <summary><c>Defines the Ownership role of a container.</c></summary>
   TADOwnership = (oOwnsObjects, oNotOwnsObjects);
 
@@ -111,55 +107,8 @@ type
     {$ENDIF ADAPT_FLOAT_DOUBLE}
   {$ENDIF ADAPT_FLOAT_SINGLE}
 
-  ///  <summary><c>Typedef for an Unbound Parameterless Callback method.</c></summary>
-  TADCallbackUnbound = procedure;
-  ///  <summary><c>Typedef for an Object-Bound Parameterless Callback method.</c></summary>
-  TADCallbackOfObject = procedure of object;
-  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    ///  <summary><c>Typedef for an Anonymous Parameterless Callback method.</c></summary>
-    TADCallbackAnonymous = reference to procedure;
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
   ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
   EADException = class abstract(Exception);
-
-  ///  <summary><c></c></summary>
-  IADInterface = interface
-  ['{FF2AF334-2A54-414B-AF23-D80EFA93715A}']
-    function GetInstanceGUID: TGUID;
-
-    property InstanceGUID: TGUID read GetInstanceGUID;
-  end;
-
-  ///  <summary><c>Multiple-Read, Exclusive Write Locking for Thread-Safety.</c></summary>
-  IADReadWriteLock = interface(IADInterface)
-  ['{F88991C1-0B3D-4427-9D6D-4A69C187CFAA}']
-    procedure AcquireRead;
-    procedure AcquireWrite;
-    {$IFNDEF ADAPT_LOCK_ALLEXCLUSIVE}
-      function GetLockState: TADReadWriteLockState;
-    {$ENDIF ADAPT_LOCK_ALLEXCLUSIVE}
-    procedure ReleaseRead;
-    procedure ReleaseWrite;
-    function TryAcquireRead: Boolean;
-    function TryAcquireWrite: Boolean;
-
-    procedure WithRead(const ACallback: TADCallbackUnbound); overload;
-    procedure WithRead(const ACallback: TADCallbackOfObject); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure WithRead(const ACallback: TADCallbackAnonymous); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
-    procedure WithWrite(const ACallback: TADCallbackUnbound); overload;
-    procedure WithWrite(const ACallback: TADCallbackOfObject); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure WithWrite(const ACallback: TADCallbackAnonymous); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
-    {$IFNDEF ADAPT_LOCK_ALLEXCLUSIVE}
-      property LockState: TADReadWriteLockState read GetLockState;
-    {$ENDIF ADAPT_LOCK_ALLEXCLUSIVE}
-  end;
 
   ///  <summary><c>ADAPT Base Object Type.</c></summary>
   ///  <remarks><c>All Classes in ADAPT are Interfaced unless otherwise stated.</c></remarks>

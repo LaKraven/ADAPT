@@ -49,29 +49,16 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common;
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Defaults.Intf;
+
+  {$I ADAPT_RTTI.inc}
 
 type
-  // Interface Forward Declarations
-  IADObjectOwner = interface;
-
   // Exceptions
   EADGenericsException = class(EADException);
     EADGenericsRangeException = class(EADGenericsException);
     EADGenericsParameterInvalidException = class(EADGenericsException);
-
-  ///  <summary><c>A Collection that can Own Objects.</c></summary>
-  IADObjectOwner = interface(IADInterface)
-  ['{5756A232-26B6-4395-9F1D-CCCC071E5701}']
-  // Getters
-  function GetOwnership: TADOwnership;
-  // Setters
-  procedure SetOwnership(const AOwnership: TADOwnership);
-  // Properties
-  property Ownership: TADOwnership read GetOwnership write SetOwnership;
-  end;
-
-  {$I ADAPT_RTTI.inc}
 
 ///  <comments>
 ///    <para><c>For 32bit CPUs uses </c><see DisplayName="ADSuperFastHash32" cref="ADAPT.Generics.Defaults|ADSuperFastHash32"/><c>.</c></para>

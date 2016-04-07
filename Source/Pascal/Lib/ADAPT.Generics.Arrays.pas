@@ -49,8 +49,9 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common,
-  ADAPT.Generics.Defaults;
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Defaults, ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Arrays.Intf;
 
   {$I ADAPT_RTTI.inc}
 
@@ -60,34 +61,12 @@ type
   {$ENDIF FPC}
 
   {$IFNDEF FPC}
-    { Interface Forward Declarations }
-    IADArray<T> = interface;
     { Class Forward Declarations }
     TADArray<T> = class;
     TADObjectArray<T: Class> = class;
     TADArrayTS<T> = class;
     TADObjectArrayTS<T: Class> = class;
   {$ENDIF FPC}
-
-  ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
-  IADArray<T> = interface(IADInterface)
-    // Getters
-    function GetCapacity: Integer;
-    function GetItem(const AIndex: Integer): T;
-    // Setters
-    procedure SetCapacity(const ACapacity: Integer);
-    procedure SetItem(const AIndex: Integer; const AItem: T);
-    // Management Methods
-    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
-    procedure Clear;
-    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
-    procedure Finalize(const AIndex, ACount: Integer);
-    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
-    procedure Move(const AFromIndex, AToIndex, ACount: Integer);
-    // Properties
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
-  end;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
   ///  <remarks>

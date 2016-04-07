@@ -49,44 +49,15 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common;
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Performance.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  { Interface Forward Declarations }
-  IADPerformanceCounter = interface;
-
   { Class Forward Declarations }
   TADPerformanceCounter = class;
   TADPerformanceCounterTS = class;
-
-  ///  <summary><c>Common Interface for all Performance Counter Types.</c></summary>
-  ///  <remarks>
-  ///    <para><c>Keeps track of Performance both Instant and Average, in units of Things Per Second.</c></para>
-  ///    <para><c>Note that this does NOT operate like a "Stopwatch", it merely takes the given Time Difference (Delta) Values to calculate smooth averages.</c></para>
-  ///  </remarks>
-  IADPerformanceCounter = interface(IADInterface)
-  ['{6095EB28-79FC-4AC8-8CED-C11BA9A2CF48}']
-    { Getters }
-    function GetAverageOver: Cardinal;
-    function GetAverageRate: ADFloat;
-    function GetInstantRate: ADFloat;
-
-    { Setters }
-    procedure SetAverageOver(const AAverageOver: Cardinal = 10);
-
-    { Public Methods }
-    procedure RecordSample(const AValue: ADFloat);
-    procedure Reset;
-
-    ///  <summary><c>The number of Samples over which to calculate the Average</c></summary>
-    property AverageOver: Cardinal read GetAverageOver write SetAverageOver;
-    ///  <summary><c>The Average Rate (based on the number of Samples over which to calculate it)</c></summary>
-    property AverageRate: ADFloat read GetAverageRate;
-    ///  <summary><c>The Instant Rate (based only on the last given Sample)</c></summary>
-    property InstantRate: ADFloat read GetInstantRate;
-  end;
 
   ///  <summary><c>Non-Threadsafe Performance Counter Type.</c></summary>
   ///  <remarks>

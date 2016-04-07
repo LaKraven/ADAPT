@@ -20,7 +20,13 @@ uses
   ADAPT.Math.SIUnits in '..\..\Source\Pascal\Lib\ADAPT.Math.SIUnits.pas',
   ADAPT.UnitTests.Maths.SIUnits in 'ADAPT.UnitTests.Maths.SIUnits.pas',
   ADAPT.Streamables in '..\..\Source\Pascal\Lib\ADAPT.Streamables.pas',
-  ADAPT.Streams in '..\..\Source\Pascal\Lib\ADAPT.Streams.pas';
+  ADAPT.Streams in '..\..\Source\Pascal\Lib\ADAPT.Streams.pas',
+  ADAPT.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Common.Intf.pas',
+  ADAPT.Threads.Intf in '..\..\Source\Pascal\Lib\ADAPT.Threads.Intf.pas',
+  ADAPT.Performance.Intf in '..\..\Source\Pascal\Lib\ADAPT.Performance.Intf.pas',
+  ADAPT.Generics.Defaults.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.Intf.pas',
+  ADAPT.Generics.Arrays.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Intf.pas',
+  ADAPT.Generics.Lists.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Intf.pas';
 
 var
   runner : ITestRunner;
