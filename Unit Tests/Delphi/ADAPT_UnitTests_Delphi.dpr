@@ -18,7 +18,9 @@ uses
   ADAPT.Generics.Defaults in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas',
   ADAPT.Generics.Lists in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas',
   ADAPT.Math.SIUnits in '..\..\Source\Pascal\Lib\ADAPT.Math.SIUnits.pas',
-  ADAPT.UnitTests.Maths.SIUnits in 'ADAPT.UnitTests.Maths.SIUnits.pas';
+  ADAPT.UnitTests.Maths.SIUnits in 'ADAPT.UnitTests.Maths.SIUnits.pas',
+  ADAPT.Streamables in '..\..\Source\Pascal\Lib\ADAPT.Streamables.pas',
+  ADAPT.Streams in '..\..\Source\Pascal\Lib\ADAPT.Streams.pas';
 
 var
   runner : ITestRunner;
