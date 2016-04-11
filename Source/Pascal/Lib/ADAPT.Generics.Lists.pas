@@ -318,6 +318,10 @@ type
     destructor Destroy; override;
   end;
 
+  ///  <summary><c>Generic List Type</c></summary>
+  ///  <remarks>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
   TADListTS<T> = class(TADList<T>, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
@@ -330,6 +334,11 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
+  ///  <summary><c>Generic Object List Type</c></summary>
+  ///  <remarks>
+  ///    <para><c>Can take Ownership of its Items.</c></para>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
   TADObjectListTS<T: class> = class(TADObjectList<T>, IADObjectOwner, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
@@ -342,6 +351,11 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
+  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and items are subsequently Replaced by new ones.</c></para>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
   TADCircularListTS<T> = class(TADCircularList<T>, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
@@ -365,6 +379,12 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
+  ///  <summary><c>A Generic Fixed-Capacity Revolving Object List</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and items are subsequently Replaced by new ones.</c></para>
+  ///    <para><c>Can take Ownership of its Items.</c></para>
+  ///    <para><c>This is Threadsafe</c></para>
+  ///  </remarks>
   TADCircularObjectListTS<T: class> = class(TADCircularObjectList<T>, IADObjectOwner, IADReadWriteLock)
   private
     FLock: TADReadWriteLock;
