@@ -57,6 +57,65 @@ uses
 
   {$I ADAPT_RTTI.inc}
 
+type
+  { Callback Types }
+  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+    TADTreeNodeValueCallbackAnon<V> = reference to procedure(const Value: V);
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+  TADTreeNodeValueCallbackOfObject<V> = procedure(const Value: V) of object;
+  TADTreeNodeValueCallbackUnbound<V> = procedure(const Value: V);
+
+  IADTreeNode<T> = interface(IADInterface)
+    function GetChildCount: Integer;
+    function GetDepth: Integer;
+    function GetRootNode: IADTreeNode<T>;
+    function GetParent: IADTreeNode<T>;
+    function GetChild(const AIndex: Integer): IADTreeNode<T>;
+    function GetIndexAsChild: Integer;
+    function GetIsBranch: Boolean;
+    function GetIsRoot: Boolean;
+    function GetIsLeaf: Boolean;
+    function GetValue: T;
+    procedure SetValue(const AValue: T);
+
+    procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
+    procedure MoveTo(const AIndex: Integer); overload;
+
+    function IndexOf(const AChild: IADTreeNode<T>): Integer;
+
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    property Depth: Integer read GetDepth;
+
+    property Parent: IADTreeNode<T> read GetParent;
+    property RootNode: IADTreeNode<T> read GetRootNode;
+    property ChildCount: Integer read GetChildCount;
+    property Children[const AIndex: Integer]: IADTreeNode<T> read GetChild; default;
+    property IndexAsChild: Integer read GetIndexAsChild;
+
+    property IsBranch: Boolean read GetIsBranch;
+    property IsRoot: Boolean read GetIsRoot;
+    property IsLeaf: Boolean read GetIsLeaf;
+
+    property Value: T read GetValue write SetValue;
+  end;
+
 implementation
 
 end.
