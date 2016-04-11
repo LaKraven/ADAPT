@@ -54,12 +54,6 @@ uses
 
   {$I ADAPT_RTTI.inc}
 
-type
-  // Exceptions
-  EADGenericsException = class(EADException);
-    EADGenericsRangeException = class(EADGenericsException);
-    EADGenericsParameterInvalidException = class(EADGenericsException);
-
 ///  <comments>
 ///    <para><c>For 32bit CPUs uses </c><see DisplayName="ADSuperFastHash32" cref="ADAPT.Generics.Defaults|ADSuperFastHash32"/><c>.</c></para>
 ///    <para><c>For 64bit CPUs uses </c><see DisplayName="ADSuperFastHash64" cref="ADAPT.Generics.Defaults|ADSuperFastHash64"/><c>.</c></para>

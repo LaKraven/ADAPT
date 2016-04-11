@@ -50,8 +50,8 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Defaults.Intf,
-  ADAPT.Generics.Arrays,
+  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -169,7 +169,7 @@ type
     FExpander: IADListExpander;
     FInitialCapacity: Integer;
   protected
-    FArray: TADArray<T>;
+    FArray: IADArray<T>;
     FCount: Integer;
     // Getters
     function GetCapacity: Integer;
@@ -232,8 +232,6 @@ type
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
   TADObjectList<T: class> = class(TADList<T>, IADObjectOwner)
-  private type
-    TADObjectArrayT = class(TADObjectArray<T>);
   protected
     // Getters
     function GetOwnership: TADOwnership; virtual;
@@ -271,7 +269,7 @@ type
   private
     FCount: Integer;
     FIndex: Integer;
-    FItems: TADArray<T>;
+    FItems: IADArray<T>;
     // Getters
     function GetCapacity: Integer;
   protected
@@ -409,6 +407,9 @@ type
   end;
 
 implementation
+
+uses
+  ADAPT.Generics.Arrays;
 
 { TADListExpanderDefault }
 
@@ -643,7 +644,6 @@ destructor TADList<T>.Destroy;
 begin
   FExpander := nil;
   FCompactor := nil;
-  FArray.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 
@@ -770,22 +770,22 @@ end;
 constructor TADObjectList<T>.Create(const AExpander: IADListExpander; const ACompactor: IADListCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
   inherited Create(AExpander, ACompactor, AInitialCapacity);
-  TADObjectArrayT(FArray).Ownership := AOwnership;
+  TADObjectArray<T>(FArray).Ownership := AOwnership;
 end;
 
 procedure TADObjectList<T>.CreateArray(const AInitialCapacity: Integer = 0);
 begin
-  FArray := TADObjectArrayT.Create(oOwnsObjects, AInitialCapacity);
+  FArray := TADObjectArray<T>.Create(oOwnsObjects, AInitialCapacity);
 end;
 
 function TADObjectList<T>.GetOwnership: TADOwnership;
 begin
-  Result := TADObjectArrayT(FArray).Ownership;
+  Result := TADObjectArray<T>(FArray).Ownership;
 end;
 
 procedure TADObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
-  TADObjectArrayT(FArray).Ownership := AOwnership;
+  TADObjectArray<T>(FArray).Ownership := AOwnership;
 end;
 
 { TADCircularList<T> }
@@ -848,7 +848,6 @@ end;
 
 destructor TADCircularList<T>.Destroy;
 begin
-  FItems.Free;
   inherited;
 end;
 

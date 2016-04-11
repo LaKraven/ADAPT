@@ -63,7 +63,7 @@ implementation
 
 uses
   ADAPT.Common,
-  ADAPT.Generics.Defaults,
+  ADAPT.Generics.Defaults.Intf,
   ADAPT.Generics.Arrays, ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf;
 

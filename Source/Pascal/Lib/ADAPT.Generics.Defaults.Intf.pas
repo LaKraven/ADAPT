@@ -54,6 +54,11 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  // Exceptions
+  EADGenericsException = class(EADException);
+    EADGenericsRangeException = class(EADGenericsException);
+    EADGenericsParameterInvalidException = class(EADGenericsException);
+
   ///  <summary><c>A Collection that can Own Objects.</c></summary>
   IADObjectOwner = interface(IADInterface)
   ['{5756A232-26B6-4395-9F1D-CCCC071E5701}']

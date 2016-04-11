@@ -51,7 +51,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Defaults.Intf,
   ADAPT.Generics.Arrays,
   ADAPT.Generics.Lists.Intf;
 
