@@ -35,7 +35,7 @@
         <PackageName Value="FCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="ADAPT_UnitTests_Lazarus.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -65,6 +65,10 @@
         <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Threads.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
