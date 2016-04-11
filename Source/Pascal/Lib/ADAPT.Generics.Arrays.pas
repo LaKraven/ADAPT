@@ -367,10 +367,6 @@ var
 begin
   FLock.AcquireWrite;
   try
-    if Ownership = oOwnsObjects then
-      for I := Low(FArray) to High(FArray) do
-        if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
-          FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
     inherited;
   finally
     FLock.ReleaseWrite;
