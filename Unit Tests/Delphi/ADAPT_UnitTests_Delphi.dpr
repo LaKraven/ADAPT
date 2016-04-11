@@ -26,7 +26,9 @@ uses
   ADAPT.Performance.Intf in '..\..\Source\Pascal\Lib\ADAPT.Performance.Intf.pas',
   ADAPT.Generics.Defaults.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.Intf.pas',
   ADAPT.Generics.Arrays.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Intf.pas',
-  ADAPT.Generics.Lists.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Intf.pas';
+  ADAPT.Generics.Lists.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Intf.pas',
+  ADAPT.Generics.Trees in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.pas',
+  ADAPT.Generics.Trees.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas';
 
 var
   runner : ITestRunner;
