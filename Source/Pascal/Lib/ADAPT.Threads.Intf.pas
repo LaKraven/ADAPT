@@ -66,13 +66,13 @@ type
   end;
 
   ///  <summary><c>Common Interface for ADAPT Precision Thread Types.</c></summary>
-  IADThreadPrecision = interface(IADThread)
+  IADPrecisionThread = interface(IADThread)
   ['{3668FFD2-45E4-4EA7-948F-75A698C90480}']
     ///  <summary><c>Forces the "Next Tick Time" to be bumped to RIGHT NOW. This will trigger the next Tick immediately regardless of any Rate Limit setting.</c></summary>
     procedure Bump;
-    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|ILKThreadPrecision.Wake"/><c> the Thread.</c></summary>
+    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|IADPrecisionThread.Wake"/><c> the Thread.</c></summary>
     procedure Rest;
-    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|ILKThreadPrecision.Rest"/><c> for details)</c></summary>
+    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|IADPrecisionThread.Rest"/><c> for details)</c></summary>
     procedure Wake;
 
     { Property Getters }

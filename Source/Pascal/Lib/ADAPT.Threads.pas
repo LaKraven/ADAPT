@@ -58,7 +58,7 @@ uses
 type
   { Class Forward Declarations }
   TADThread = class;
-  TADThreadPrecision = class;
+  TADPrecisionThread = class;
 
   ///  <summary><c>Abstract Base Type for all Threads in the ADAPT codebase.</c></summary>
   ///  <remarks>
@@ -96,7 +96,7 @@ type
   ///    <para><c>Provides extremely precise Delta Time between Ticks.</c></para>
   ///    <para><c>You can set a precise Tick Rate Limit.</c></para>
   ///  </remarks>
-  TADThreadPrecision = class abstract(TADThread, IADThreadPrecision)
+  TADPrecisionThread = class abstract(TADThread, IADPrecisionThread)
   private
     FNextTickTime: ADFloat;
     FPerformance: IADPerformanceCounter;
@@ -160,7 +160,7 @@ type
     ///  <remarks><c>Could be a negative number of the Thread is performing BELOW the desired rate!</c></remarks>
     function CalculateExtraTime: ADFloat;
 
-    ///  <summary><c>You must NOT override "Execute" on descendants. See </c><see DisplayName="Tick" cref="ADAPT.Threads|TADThreadPrecision.Tick"/><c> instead!</c></summary>
+    ///  <summary><c>You must NOT override "Execute" on descendants. See </c><see DisplayName="Tick" cref="ADAPT.Threads|TADPrecisionThread.Tick"/><c> instead!</c></summary>
     procedure Execute; override; final;
 
     ///  <summary><c>Override to implement code you need your Thread to perform on EVERY cycle (regardless of any Tick Rate Limit).</c></summary>
@@ -186,9 +186,9 @@ type
     ///  <summary><c>Forces the "Next Tick Time" to be bumped to RIGHT NOW. This will trigger the next Tick immediately regardless of any Rate Limit setting.</c></summary>
     procedure Bump;
 
-    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|TLKThreadPrecision.Wake"/><c> the Thread.</c></summary>
+    ///  <summary><c>Places the Thread in an Inactive state, waiting for the signal to </c><see DisplayName="Wake" cref="ADAPT.Threads|TADPrecisionThread.Wake"/><c> the Thread.</c></summary>
     procedure Rest;
-    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|TLKThreadPrecision.Rest"/><c> for details)</c></summary>
+    ///  <summary><c>Wakes the Thread if it is an Inactive state (see </c><see DisplayName="Rest" cref="ADAPT.Threads|TADPrecisionThread.Rest"/><c> for details)</c></summary>
     procedure Wake;
 
     ///  <summary><c>The Absolute Reference Time at which the next Tick will occur.</c></summary>
@@ -284,7 +284,7 @@ end;
 
 { TADThreadPrecision }
 
-procedure TADThreadPrecision.AtomicIncrementNextTickTime(const AIncrementBy: ADFloat);
+procedure TADPrecisionThread.AtomicIncrementNextTickTime(const AIncrementBy: ADFloat);
 begin
   FLock.AcquireWrite;
   try
@@ -294,7 +294,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.AtomicInitializeCycleValues(var ATickRateLimit, ATickRateDesired: ADFloat; var AThrottleInterval: Cardinal);
+procedure TADPrecisionThread.AtomicInitializeCycleValues(var ATickRateLimit, ATickRateDesired: ADFloat; var AThrottleInterval: Cardinal);
 begin
   FLock.AcquireWrite;
   try
@@ -306,7 +306,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.BeforeDestruction;
+procedure TADPrecisionThread.BeforeDestruction;
 begin
   inherited;
   FWakeUp.SetEvent;
@@ -317,7 +317,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.Bump;
+procedure TADPrecisionThread.Bump;
 begin
   FLock.AcquireWrite;
   try
@@ -327,12 +327,12 @@ begin
   end;
 end;
 
-function TADThreadPrecision.CalculateExtraTime: ADFloat;
+function TADPrecisionThread.CalculateExtraTime: ADFloat;
 begin
   Result := NextTickTime - GetReferenceTime;
 end;
 
-constructor TADThreadPrecision.Create(const ACreateSuspended: Boolean);
+constructor TADPrecisionThread.Create(const ACreateSuspended: Boolean);
 const
   THREAD_STATES: Array[TADThreadState] of Boolean = (True, False);
 begin
@@ -346,14 +346,14 @@ begin
   FWakeUp := TEvent.Create(nil, True, THREAD_STATES[FThreadState], '');
 end;
 
-destructor TADThreadPrecision.Destroy;
+destructor TADPrecisionThread.Destroy;
 begin
   FWakeUp.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   FPerformance := nil;
   inherited;
 end;
 
-procedure TADThreadPrecision.Execute;
+procedure TADPrecisionThread.Execute;
 var
   LDelta, LCurrentTime: ADFloat;
   LTickRate, LTickRateLimit, LTickRateDesired: ADFloat;
@@ -399,32 +399,32 @@ begin
   end;
 end;
 
-function TADThreadPrecision.GetDefaultThrottleInterval: Integer;
+function TADPrecisionThread.GetDefaultThrottleInterval: Integer;
 begin
   Result := 1;
 end;
 
-function TADThreadPrecision.GetDefaultTickRateAverageOver: Cardinal;
+function TADPrecisionThread.GetDefaultTickRateAverageOver: Cardinal;
 begin
   Result := 10;
 end;
 
-function TADThreadPrecision.GetDefaultTickRateDesired: ADFloat;
+function TADPrecisionThread.GetDefaultTickRateDesired: ADFloat;
 begin
   Result := 0;
 end;
 
-function TADThreadPrecision.GetDefaultTickRateLimit: ADFloat;
+function TADPrecisionThread.GetDefaultTickRateLimit: ADFloat;
 begin
   Result := 0;
 end;
 
-function TADThreadPrecision.GetInitialThreadState: TADThreadState;
+function TADPrecisionThread.GetInitialThreadState: TADThreadState;
 begin
   Result := tsRunning;
 end;
 
-function TADThreadPrecision.GetNextTickTime: ADFloat;
+function TADPrecisionThread.GetNextTickTime: ADFloat;
 begin
   FLock.AcquireRead;
   try
@@ -434,7 +434,7 @@ begin
   end;
 end;
 
-function TADThreadPrecision.GetThreadState: TADThreadState;
+function TADPrecisionThread.GetThreadState: TADThreadState;
 begin
   FLock.AcquireRead;
   try
@@ -444,7 +444,7 @@ begin
   end;
 end;
 
-function TADThreadPrecision.GetThrottleInterval: Cardinal;
+function TADPrecisionThread.GetThrottleInterval: Cardinal;
 begin
   FLock.AcquireRead;
   try
@@ -454,22 +454,22 @@ begin
   end;
 end;
 
-function TADThreadPrecision.GetTickRate: ADFloat;
+function TADPrecisionThread.GetTickRate: ADFloat;
 begin
   Result := FPerformance.InstantRate;
 end;
 
-function TADThreadPrecision.GetTickRateAverage: ADFloat;
+function TADPrecisionThread.GetTickRateAverage: ADFloat;
 begin
   Result := FPerformance.AverageRate;
 end;
 
-function TADThreadPrecision.GetTickRateAverageOver: Cardinal;
+function TADPrecisionThread.GetTickRateAverageOver: Cardinal;
 begin
   Result := FPerformance.AverageOver;
 end;
 
-function TADThreadPrecision.GetTickRateDesired: ADFloat;
+function TADPrecisionThread.GetTickRateDesired: ADFloat;
 begin
   FLock.AcquireRead;
   try
@@ -479,7 +479,7 @@ begin
   end
 end;
 
-function TADThreadPrecision.GetTickRateLimit: ADFloat;
+function TADPrecisionThread.GetTickRateLimit: ADFloat;
 begin
   FLock.AcquireRead;
   try
@@ -489,7 +489,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.InitializeTickVariables(var ACurrentTime, ALastAverageCheckpoint, ANextAverageCheckpoint, ATickRate: ADFloat; var AAverageTicks: Integer);
+procedure TADPrecisionThread.InitializeTickVariables(var ACurrentTime, ALastAverageCheckpoint, ANextAverageCheckpoint, ATickRate: ADFloat; var AAverageTicks: Integer);
 begin
   ACurrentTime := GetReferenceTime;
   FLock.AcquireWrite;
@@ -504,12 +504,12 @@ begin
   AAverageTicks := 0;
 end;
 
-procedure TADThreadPrecision.PreTick(const ADelta, AStartTime: ADFloat);
+procedure TADPrecisionThread.PreTick(const ADelta, AStartTime: ADFloat);
 begin
   // Do nothing by default
 end;
 
-procedure TADThreadPrecision.Rest;
+procedure TADPrecisionThread.Rest;
 begin
   FLock.AcquireWrite;
   try
@@ -519,7 +519,7 @@ begin
     FLock.ReleaseWrite;
   end;end;
 
-procedure TADThreadPrecision.SetThreadState(const AThreadState: TADThreadState);
+procedure TADPrecisionThread.SetThreadState(const AThreadState: TADThreadState);
 begin
   FLock.AcquireWrite;
   try
@@ -533,7 +533,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.SetThrottleInterval(const AThrottleInterval: Cardinal);
+procedure TADPrecisionThread.SetThrottleInterval(const AThrottleInterval: Cardinal);
 begin
   FLock.AcquireWrite;
   try
@@ -546,12 +546,12 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.SetTickRateAverageOver(const AAverageOver: Cardinal);
+procedure TADPrecisionThread.SetTickRateAverageOver(const AAverageOver: Cardinal);
 begin
   FPerformance.AverageOver := AAverageOver;
 end;
 
-procedure TADThreadPrecision.SetTickRateDesired(const ADesiredRate: ADFloat);
+procedure TADPrecisionThread.SetTickRateDesired(const ADesiredRate: ADFloat);
 begin
   FLock.AcquireWrite;
   try
@@ -561,7 +561,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.SetTickRateLimit(const ATickRateLimit: ADFloat);
+procedure TADPrecisionThread.SetTickRateLimit(const ATickRateLimit: ADFloat);
 begin
   FLock.AcquireWrite;
   try
@@ -575,7 +575,7 @@ begin
   end;
 end;
 
-class function TADThreadPrecision.SmartSleep(const ATimeToWait: ADFloat; const AThreshold: Cardinal): Boolean;
+class function TADPrecisionThread.SmartSleep(const ATimeToWait: ADFloat; const AThreshold: Cardinal): Boolean;
 begin
   Result := False;
   if (ATimeToWait >= AThreshold / 1000) then
@@ -585,7 +585,7 @@ begin
   end;
 end;
 
-procedure TADThreadPrecision.Wake;
+procedure TADPrecisionThread.Wake;
 begin
   FLock.AcquireWrite;
   try
