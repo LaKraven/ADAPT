@@ -51,6 +51,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Allocators.Intf, ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists.Intf;
 
@@ -59,12 +60,6 @@ uses
 type
   {$IFNDEF FPC}
     { Class Forward Declarations }
-    TADListExpander = class;
-    TADListExpanderDefault = class;
-    TADListExpanderGeometric = class;
-    TADListExpanderGeometricTS = class;
-    TADListCompactor = class;
-    TADListCompactorDefault = class;
     TADList<T> = class;
     TADObjectList<T: class> = class;
     TADCircularList<T> = class;
@@ -78,86 +73,6 @@ type
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCapacityLessThanCount = class(EADGenericsParameterInvalidException);
-
-  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
-  TADListExpander = class abstract(TADObject, IADListExpander)
-  public
-    ///  <summary><c>Override this to implement the actual Allocation Algorithm</c></summary>
-    ///  <remarks><c>Must return the amount by which the Array has been Expanded.</c></remarks>
-    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; virtual; abstract;
-  end;
-
-  ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>By default, the Array will grow by 1 each time it becomes full</c></remarks>
-  TADListExpanderDefault = class(TADListExpander)
-  public
-    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
-  end;
-
-  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
-  ///    <para><c>This Expander Type is NOT Threadsafe.</c></para>
-  ///  </remarks>
-  TADListExpanderGeometric = class(TADListExpander, IADListExpanderGeometric)
-  private
-    FMultiplier: Single;
-    FThreshold: Integer;
-  protected
-    // Getters
-    function GetCapacityMultiplier: Single; virtual;
-    function GetCapacityThreshold: Integer; virtual;
-    // Setters
-    procedure SetCapacityMultiplier(const AMultiplier: Single); virtual;
-    procedure SetCapacityThreshold(const AThreshold: Integer); virtual;
-  public
-    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
-  public
-    // Properties
-    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
-    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
-  end;
-
-  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
-  ///    <para><c>This Expander Type is Threadsafe.</c></para>
-  ///  </remarks>
-  TADListExpanderGeometricTS = class(TADListExpanderGeometric, IADReadWriteLock)
-  private
-    FLock: TADReadWriteLock;
-    function GetLock: IADReadWriteLock;
-  protected
-    // Getters
-    function GetCapacityMultiplier: Single; override;
-    function GetCapacityThreshold: Integer; override;
-    // Setters
-    procedure SetCapacityMultiplier(const AMultiplier: Single); override;
-    procedure SetCapacityThreshold(const AThreshold: Integer); override;
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-
-    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
-  end;
-
-  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
-  TADListCompactor = class abstract(TADObject, IADListCompactor)
-  public
-    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; virtual; abstract;
-  end;
-
-  ///  <summary><c>The Default Deallocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>By default, the Array will shrink by 1 each time an Item is removed.</c></remarks>
-  TADListCompactorDefault = class(TADListCompactor)
-  public
-    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
-  end;
-
-  TADListExpanderType = class of TADListExpander;
-  TADListCompactorType = class of TADListCompactor;
 
   ///  <summary><c>Generic List Type</c></summary>
   ///  <remarks>
@@ -410,113 +325,6 @@ implementation
 
 uses
   ADAPT.Generics.Arrays;
-
-{ TADListExpanderDefault }
-
-function TADListExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
-begin
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
-    Result := 0;
-end;
-
-{ TADListExpanderGeometric }
-
-function TADListExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
-begin
-  // TODO -oDaniel -cTADListExpanderGeometric: Implement Geometric Expansion Algorithm
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
-    Result := 0;
-end;
-
-function TADListExpanderGeometric.GetCapacityMultiplier: Single;
-begin
-  Result := FMultiplier;
-end;
-
-function TADListExpanderGeometric.GetCapacityThreshold: Integer;
-begin
-  Result := FThreshold;
-end;
-
-procedure TADListExpanderGeometric.SetCapacityMultiplier(const AMultiplier: Single);
-begin
-  FMultiplier := AMultiplier;
-end;
-
-procedure TADListExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
-begin
-  FThreshold := AThreshold;
-end;
-
-{ TADListExpanderGeometricTS }
-
-constructor TADListExpanderGeometricTS.Create;
-begin
-  inherited;
-  FLock := TADReadWriteLock.Create(Self);
-end;
-
-destructor TADListExpanderGeometricTS.Destroy;
-begin
-  FLock.Free;
-  inherited;
-end;
-
-function TADListExpanderGeometricTS.GetCapacityMultiplier: Single;
-begin
-  FLock.AcquireRead;
-  try
-    Result := inherited;
-  finally
-    FLock.ReleaseRead;
-  end;
-end;
-
-function TADListExpanderGeometricTS.GetCapacityThreshold: Integer;
-begin
-  FLock.AcquireRead;
-  try
-    Result := inherited;
-  finally
-    FLock.ReleaseRead;
-  end;
-end;
-
-function TADListExpanderGeometricTS.GetLock: IADReadWriteLock;
-begin
-  Result := FLock;
-end;
-
-procedure TADListExpanderGeometricTS.SetCapacityMultiplier(const AMultiplier: Single);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
-end;
-
-procedure TADListExpanderGeometricTS.SetCapacityThreshold(const AThreshold: Integer);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
-end;
-
-{ TADListCompactorDefault }
-
-function TADListCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
-begin
-  Result := AVacating;
-end;
 
 { TADList<T> }
 

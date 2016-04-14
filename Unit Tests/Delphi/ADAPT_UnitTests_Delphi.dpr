@@ -32,7 +32,9 @@ uses
   ADAPT.UnitTests.Generics.Arrays in 'ADAPT.UnitTests.Generics.Arrays.pas',
   ADAPT.UnitTests.Generics.Common in 'ADAPT.UnitTests.Generics.Common.pas',
   ADAPT.Generics.Maps.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Intf.pas',
-  ADAPT.Generics.Maps in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas';
+  ADAPT.Generics.Maps in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas',
+  ADAPT.Generics.Allocators.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas',
+  ADAPT.Generics.Allocators in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas';
 
 var
   runner : ITestRunner;
