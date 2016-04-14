@@ -187,6 +187,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

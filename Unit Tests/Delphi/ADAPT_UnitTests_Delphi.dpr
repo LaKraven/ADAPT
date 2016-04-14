@@ -34,7 +34,8 @@ uses
   ADAPT.Generics.Maps.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Intf.pas',
   ADAPT.Generics.Maps in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas',
   ADAPT.Generics.Allocators.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas',
-  ADAPT.Generics.Allocators in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas';
+  ADAPT.Generics.Allocators in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas',
+  ADAPT.Streams.Intf in '..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas';
 
 var
   runner : ITestRunner;
