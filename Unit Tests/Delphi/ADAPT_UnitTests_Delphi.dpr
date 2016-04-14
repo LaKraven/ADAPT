@@ -30,7 +30,9 @@ uses
   ADAPT.Generics.Trees in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.pas',
   ADAPT.Generics.Trees.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas',
   ADAPT.UnitTests.Generics.Arrays in 'ADAPT.UnitTests.Generics.Arrays.pas',
-  ADAPT.UnitTests.Generics.Common in 'ADAPT.UnitTests.Generics.Common.pas';
+  ADAPT.UnitTests.Generics.Common in 'ADAPT.UnitTests.Generics.Common.pas',
+  ADAPT.Generics.Maps.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Intf.pas',
+  ADAPT.Generics.Maps in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas';
 
 var
   runner : ITestRunner;

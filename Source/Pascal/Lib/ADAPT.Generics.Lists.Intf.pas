@@ -54,7 +54,6 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
   IADListExpander = interface(IADInterface)

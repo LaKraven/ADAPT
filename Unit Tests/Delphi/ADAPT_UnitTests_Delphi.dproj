@@ -183,6 +183,8 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Arrays.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Common.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
