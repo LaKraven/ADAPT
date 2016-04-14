@@ -240,6 +240,7 @@ end;
 
 constructor TADPersistent.Create;
 begin
+  inherited Create;
   CreateGUID(FInstanceGUID);
 end;
 
