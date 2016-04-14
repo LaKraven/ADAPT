@@ -10,7 +10,7 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  ADAPT.UnitTests.Generics.Collections in 'ADAPT.UnitTests.Generics.Collections.pas',
+  ADAPT.UnitTests.Generics.Lists in 'ADAPT.UnitTests.Generics.Lists.pas',
   ADAPT.Common in '..\..\Source\Pascal\Lib\ADAPT.Common.pas',
   ADAPT.Threads in '..\..\Source\Pascal\Lib\ADAPT.Threads.pas',
   ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas',
