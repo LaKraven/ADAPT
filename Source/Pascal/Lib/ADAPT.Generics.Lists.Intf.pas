@@ -59,15 +59,15 @@ type
   IADList<T> = interface
     // Getters
     function GetCapacity: Integer;
-    function GetCompactor: IADListCompactor;
+    function GetCompactor: IADCollectionCompactor;
     function GetCount: Integer;
-    function GetExpander: IADListExpander;
+    function GetExpander: IADCollectionExpander;
     function GetInitialCapacity: Integer;
     function GetItem(const AIndex: Integer): T;
     // Setters
     procedure SetCapacity(const ACapacity: Integer);
-    procedure SetCompactor(const ACompactor: IADListCompactor);
-    procedure SetExpander(const AExpander: IADListExpander);
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor);
+    procedure SetExpander(const AExpander: IADCollectionExpander);
     procedure SetItem(const AIndex: Integer; const AItem: T);
     // Management Methods
     procedure Add(const AItem: T); overload;
@@ -80,9 +80,9 @@ type
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
-    property Compactor: IADListCompactor read GetCompactor;
+    property Compactor: IADCollectionCompactor read GetCompactor;
     property Count: Integer read GetCount;
-    property Expander: IADListExpander read GetExpander;
+    property Expander: IADCollectionExpander read GetExpander;
     property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
