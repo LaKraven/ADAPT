@@ -732,7 +732,7 @@ end;
 
 function TADListTS<T>.GetLock: IADReadWriteLock;
 begin
-
+  Result := FLock;
 end;
 
 { TADObjectList<T> }
