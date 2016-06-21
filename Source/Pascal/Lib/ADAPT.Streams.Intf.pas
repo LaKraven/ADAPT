@@ -59,47 +59,37 @@ type
 
   IADStreamCaret = interface(IADInterface)
   ['{D8E849E5-A5A1-4B4F-9AF6-BBD397216C5B}']
+    // Getters
     function GetIsInvalid: Boolean;
     function GetIsValid: Boolean;
     function GetPosition: Int64;
+    function GetStream: IADStream;
+    // Setters
     procedure SetPosition(const APosition: Int64);
 
-    function GetStream: IADStream;
-
+    // Management Methods
     ///  <summary><c>Deletes the given number of Bytes from the current Position in the Stream, then compacts the Stream by that number of Bytes (shifting any subsequent Bytes to the left)</c></summary>
     ///  <returns><c>Returns the number of Bytes deleted.</c></returns>
     ///  <remarks>
-    ///    <para><c>Locks the Stream for duration of operation</c></para>
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes deleted.</c></para>
     ///  </remarks>
     function Delete(const ALength: Int64): Int64;
-
     ///  <summary><c>Inserts the given Buffer into the current Position within the Stream (shifting any subsequent Bytes to the right)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     ///  <remarks>
-    ///    <para><c>Locks the Stream for duration of operation</c></para>
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes inserted.</c></para>
     ///  </remarks>
     function Insert(const ABuffer; const ALength: Int64): Int64;
-
     ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
     ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Locks the Stream only when reading each Byte (releases Lock between Bytes)</c></para>
-    ///  </remarks>
     function Read(var ABuffer; const ALength: Int64): Int64;
-
     ///  <summary><c>Writes the given Buffer into the current Position within the Stream (overwriting any existing data, and expanding the Size of the Stream if required)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Locks the Stream for duration of operation</c></para>
-    ///    <para><c>DOES NOT shift the position of any subsequent Carets!</c></para>
-    ///  </remarks>
     function Write(const ABuffer; const ALength: Int64): Int64;
-
     ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
     function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
 
+    // Properties
     ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
     property IsInvalid: Boolean read GetIsInvalid;
     ///  <summary><c>If </c>True<c>, this Caret is still Valid.</c></summary>
@@ -112,29 +102,33 @@ type
 
   IADStream = interface(IADInterface)
   ['{07F45B12-1DFC-453A-B95C-E00C9F5F4285}']
+    // Getters
     function GetSize: Int64;
+    // Setters
     procedure SetSize(const ASize: Int64);
 
-    ///  <summary><c>Waits for all Writes to be completed, then increments the Read Count (locking Write access)</c></summary>
-    procedure AcquireReadLock;
-    ///  <summary><c>Waits for all Reads to be completed, then increments the Write Count (locking Read access)</c></summary>
-    procedure AcquireWriteLock;
-    ///  <summary><c>Decrements the Read Count (unlocking Write access if that count hits 0)</c></summary>
-    procedure ReleaseReadLock;
-    ///  <summary><c>Decrements the Write Count (unlocking Read access if that count hits 0)</c></summary>
-    procedure ReleaseWriteLock;
-
+    // Management Methods
+    ///  <summary><c>Populate the Stream from a File.</c></summary>
     procedure LoadFromFile(const AFileName: String);
+    ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
     procedure LoadFromStream(const AStream: IADStream); overload;
+    ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
     procedure LoadFromStream(const AStream: TStream); overload;
 
+    ///  <returns><c>A new Stream Caret.</c></returns>
     function NewCaret: IADStreamCaret; overload;
+    ///  <returns><c>A new Stream Caret.</c></returns>
     function NewCaret(const APosition: Int64): IADStreamCaret; overload;
 
+    ///  <summary><c>Save contents of the Stream to a File.</c></summary>
     procedure SaveToFile(const AFileName: String);
+    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: IADStream); overload;
+    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: TStream); overload;
 
+    // Properties
+    ///  <summary><c>Size of the Stream.</c></summary>
     property Size: Int64 read GetSize write SetSize;
   end;
 
