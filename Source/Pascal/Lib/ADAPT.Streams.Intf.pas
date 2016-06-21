@@ -89,6 +89,10 @@ type
     ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
     function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
 
+    ///  <summary><c>Invalidates the Caret.</c></summary>
+    ///  <remarks><c>This is usually called by the owning Stream when a Caret has been Invalidated by an operation from another Caret.</c></remarks>
+    procedure Invalidate;
+
     // Properties
     ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
     property IsInvalid: Boolean read GetIsInvalid;
@@ -126,6 +130,13 @@ type
     procedure SaveToStream(const AStream: IADStream); overload;
     ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: TStream); overload;
+
+    ///  <summary><c>Removes a Caret from Stream's internal Caret List.</c></summary>
+    ///  <remarks>
+    ///    <para><c>WARNING - The Stream will no longer be able to manage this Caret.</c></para>
+    ///    <para><c>This is called internally by a Caret when it is destroyed.</c></para>
+    ///  </remarks>
+    procedure UnregisterCaret(const ACaret: IADStreamCaret);
 
     // Properties
     ///  <summary><c>Size of the Stream.</c></summary>

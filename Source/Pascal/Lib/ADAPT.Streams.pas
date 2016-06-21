@@ -64,7 +64,7 @@ type
   TADStreamCaretClass = class of TADStreamCaret;
 
   { Collection Types }
-  IADStreamCaretList = IADList<IADStreamCaret>;
+  IADStreamCaretList = IADList<IADStreamCaret>; //TODO -oDaniel -cStreams, Optimization: Replace IADList with IADLookupList for better performance!
 
   ///  <summary><c>Abstract Base Class for all Stream Caret Types.</c></summary>
   TADStreamCaret = class(TADObject, IADStreamCaret)
@@ -72,6 +72,7 @@ type
     ///  <summary><c>Weak Rerefence to the owning Stream object.</c></summary>
     ///  <remarks><c>Use </c>GetStream<c> to cast the Reference back to </c>IADStream<c>.</c></remarks>
     FStream: Pointer;
+    FValid: Boolean;
     { IADStreamCaret }
     function GetIsInvalid: Boolean;
     function GetIsValid: Boolean;
@@ -80,6 +81,9 @@ type
 
     function GetStream: IADStream;
   public
+    constructor Create(const AStream: IADStream); reintroduce; overload;
+    constructor Create(const AStream: IADStream; const APosition: Int64); reintroduce; overload;
+    destructor Destroy; override;
     { IADStreamCaret }
     ///  <summary><c>Deletes the given number of Bytes from the current Position in the Stream, then compacts the Stream by that number of Bytes (shifting any subsequent Bytes to the left)</c></summary>
     ///  <returns><c>Returns the number of Bytes deleted.</c></returns>
@@ -109,6 +113,10 @@ type
     ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
     function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
 
+    ///  <summary><c>Invalidates the Caret.</c></summary>
+    ///  <remarks><c>This is usually called by the owning Stream when a Caret has been Invalidated by an operation from another Caret.</c></remarks>
+    procedure Invalidate;
+
     ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
     property IsInvalid: Boolean read GetIsInvalid;
     ///  <summary><c>If </c>True<c>, this Caret is still Valid.</c></summary>
@@ -123,22 +131,29 @@ type
   TADStream = class(TADObject, IADStream)
   private
     FCaretList: IADStreamCaretList;
-    { IADStream }
-    function GetSize: Int64;
-    procedure SetSize(const ASize: Int64);
   protected
+    { IADStream }
+    function GetSize: Int64; virtual; abstract;
+    procedure SetSize(const ASize: Int64); virtual; abstract;
+    { Internal Methods }
     function GetCaretType: TADStreamCaretClass; virtual; abstract;
+    procedure UnregisterCaret(const ACaret: IADStreamCaret); virtual;
+
+    procedure InvalidateCarets(const AFromPosition, ACount: Int64); virtual;
+
+    procedure ShiftCaretsLeft(const AFromPosition, ACount: Int64); virtual;
+    procedure ShiftCaretsRight(const AFromPosition, ACount: Int64); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
 
     { IADStream }
     ///  <summary><c>Populate the Stream from a File.</c></summary>
-    procedure LoadFromFile(const AFileName: String);
+    procedure LoadFromFile(const AFileName: String); virtual; abstract;
     ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
-    procedure LoadFromStream(const AStream: IADStream); overload;
+    procedure LoadFromStream(const AStream: IADStream); overload; virtual; abstract;
     ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
-    procedure LoadFromStream(const AStream: TStream); overload;
+    procedure LoadFromStream(const AStream: TStream); overload; virtual; abstract;
 
     ///  <returns><c>A new Stream Caret.</c></returns>
     function NewCaret: IADStreamCaret; overload;
@@ -146,11 +161,11 @@ type
     function NewCaret(const APosition: Int64): IADStreamCaret; overload;
 
     ///  <summary><c>Save contents of the Stream to a File.</c></summary>
-    procedure SaveToFile(const AFileName: String);
+    procedure SaveToFile(const AFileName: String); virtual; abstract;
     ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
-    procedure SaveToStream(const AStream: IADStream); overload;
+    procedure SaveToStream(const AStream: IADStream); overload; virtual; abstract;
     ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
-    procedure SaveToStream(const AStream: TStream); overload;
+    procedure SaveToStream(const AStream: TStream); overload; virtual; abstract;
 
     // Properties
     ///  <summary><c>Size of the Stream.</c></summary>
@@ -169,19 +184,37 @@ type
 
 { TADStreamCaret }
 
+constructor TADStreamCaret.Create(const AStream: IADStream);
+begin
+  inherited Create;
+  FStream := @AStream;
+end;
+
+constructor TADStreamCaret.Create(const AStream: IADStream; const APosition: Int64);
+begin
+  Create(AStream);
+  SetPosition(APosition);
+end;
+
 function TADStreamCaret.Delete(const ALength: Int64): Int64;
 begin
 
 end;
 
+destructor TADStreamCaret.Destroy;
+begin
+  GetStream.UnregisterCaret(Self);
+  inherited;
+end;
+
 function TADStreamCaret.GetIsInvalid: Boolean;
 begin
-
+  Result := (not FValid);
 end;
 
 function TADStreamCaret.GetIsValid: Boolean;
 begin
-
+  Result := FValid;
 end;
 
 function TADStreamCaret.GetPosition: Int64;
@@ -197,6 +230,11 @@ end;
 function TADStreamCaret.Insert(const ABuffer; const ALength: Int64): Int64;
 begin
 
+end;
+
+procedure TADStreamCaret.Invalidate;
+begin
+  FValid := False;
 end;
 
 function TADStreamCaret.Read(var ABuffer; const ALength: Int64): Int64;
@@ -229,58 +267,63 @@ end;
 
 destructor TADStream.Destroy;
 begin
-
+  InvalidateCarets(0, GetSize);
   inherited;
 end;
 
-function TADStream.GetSize: Int64;
+procedure TADStream.InvalidateCarets(const AFromPosition, ACount: Int64);
+var
+  I: Integer;
 begin
-
-end;
-
-procedure TADStream.LoadFromFile(const AFileName: String);
-begin
-
-end;
-
-procedure TADStream.LoadFromStream(const AStream: IADStream);
-begin
-
-end;
-
-procedure TADStream.LoadFromStream(const AStream: TStream);
-begin
-
-end;
-
-function TADStream.NewCaret(const APosition: Int64): IADStreamCaret;
-begin
-
+  for I := 0 to FCaretList.Count - 1 do
+  begin
+    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
+      FCaretList[I].Invalidate;
+  end;
 end;
 
 function TADStream.NewCaret: IADStreamCaret;
 begin
-
+  Result := GetCaretType.Create(Self);
+  FCaretList.Add(Result);
 end;
 
-procedure TADStream.SaveToFile(const AFileName: String);
+function TADStream.NewCaret(const APosition: Int64): IADStreamCaret;
 begin
-
+  Result := GetCaretType.Create(Self, APosition);
+  FCaretList.Add(Result);
 end;
 
-procedure TADStream.SaveToStream(const AStream: TStream);
+procedure TADStream.ShiftCaretsLeft(const AFromPosition, ACount: Int64);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCaretList.Count - 1 do
+  begin
+    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
+      FCaretList[I].Position := FCaretList[I].Position - ACount;
+  end;
 end;
 
-procedure TADStream.SaveToStream(const AStream: IADStream);
+procedure TADStream.ShiftCaretsRight(const AFromPosition, ACount: Int64);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCaretList.Count - 1 do
+  begin
+    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
+      FCaretList[I].Position := FCaretList[I].Position + ACount;
+  end;
 end;
 
-procedure TADStream.SetSize(const ASize: Int64);
+procedure TADStream.UnregisterCaret(const ACaret: IADStreamCaret);
+var
+  LIndex: Integer;
 begin
-
+  //TODO -oDaniel -cStreams: Can't implement this until "Lookup Lists" are available! BUGGER!
+//  LIndex := FCaretList.IndexOf(ACaret);
+  if LIndex > -1 then
+    FCaretList.Delete(LIndex);
 end;
 
 end.
