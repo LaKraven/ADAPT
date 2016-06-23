@@ -57,6 +57,11 @@ type
   { Forward Delcarations }
   IADStream = interface;
 
+  { Exceptions }
+  EADStreamException = class(EADException);
+    EADStreamCaretException = class(EADStreamException);
+      EADStreamCaretInvalid = class(EADStreamCaretException);
+
   IADStreamCaret = interface(IADInterface)
   ['{D8E849E5-A5A1-4B4F-9AF6-BBD397216C5B}']
     // Getters

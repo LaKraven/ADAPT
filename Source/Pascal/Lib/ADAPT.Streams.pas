@@ -69,17 +69,19 @@ type
   ///  <summary><c>Abstract Base Class for all Stream Caret Types.</c></summary>
   TADStreamCaret = class(TADObject, IADStreamCaret)
   private
+    FPosition: Int64;
     ///  <summary><c>Weak Rerefence to the owning Stream object.</c></summary>
     ///  <remarks><c>Use </c>GetStream<c> to cast the Reference back to </c>IADStream<c>.</c></remarks>
     FStream: Pointer;
     FValid: Boolean;
+  protected
+    procedure CheckCaretValid;
     { IADStreamCaret }
-    function GetIsInvalid: Boolean;
-    function GetIsValid: Boolean;
-    function GetPosition: Int64;
-    procedure SetPosition(const APosition: Int64);
-
-    function GetStream: IADStream;
+    function GetIsInvalid: Boolean; virtual;
+    function GetIsValid: Boolean; virtual;
+    function GetPosition: Int64; virtual;
+    function GetStream: IADStream; virtual;
+    procedure SetPosition(const APosition: Int64); virtual;
   public
     constructor Create(const AStream: IADStream); reintroduce; overload;
     constructor Create(const AStream: IADStream; const APosition: Int64); reintroduce; overload;
@@ -90,32 +92,32 @@ type
     ///  <remarks>
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes deleted.</c></para>
     ///  </remarks>
-    function Delete(const ALength: Int64): Int64;
+    function Delete(const ALength: Int64): Int64; virtual;
 
     ///  <summary><c>Inserts the given Buffer into the current Position within the Stream (shifting any subsequent Bytes to the right)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     ///  <remarks>
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes inserted.</c></para>
     ///  </remarks>
-    function Insert(const ABuffer; const ALength: Int64): Int64;
+    function Insert(const ABuffer; const ALength: Int64): Int64; virtual;
 
     ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
     ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
-    function Read(var ABuffer; const ALength: Int64): Int64;
+    function Read(var ABuffer; const ALength: Int64): Int64; virtual;
 
     ///  <summary><c>Writes the given Buffer into the current Position within the Stream (overwriting any existing data, and expanding the Size of the Stream if required)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     ///  <remarks>
     ///    <para><c>DOES NOT shift the position of any subsequent Carets!</c></para>
     ///  </remarks>
-    function Write(const ABuffer; const ALength: Int64): Int64;
+    function Write(const ABuffer; const ALength: Int64): Int64; virtual;
 
     ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
-    function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
+    function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64; virtual;
 
     ///  <summary><c>Invalidates the Caret.</c></summary>
     ///  <remarks><c>This is usually called by the owning Stream when a Caret has been Invalidated by an operation from another Caret.</c></remarks>
-    procedure Invalidate;
+    procedure Invalidate; virtual;
 
     ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
     property IsInvalid: Boolean read GetIsInvalid;
@@ -199,9 +201,16 @@ begin
   SetPosition(APosition);
 end;
 
+procedure TADStreamCaret.CheckCaretValid;
+begin
+  if IsInvalid then
+    raise EADStreamCaretInvalid.CreateFmt('The binary data at position %d as referenced by this Caret has been removed or modified.', [GetPosition]);
+end;
+
 function TADStreamCaret.Delete(const ALength: Int64): Int64;
 begin
-
+  Result := 0;
+  CheckCaretValid;
 end;
 
 destructor TADStreamCaret.Destroy;
@@ -222,7 +231,7 @@ end;
 
 function TADStreamCaret.GetPosition: Int64;
 begin
-
+  Result := Seek(0, soCurrent);
 end;
 
 function TADStreamCaret.GetStream: IADStream;
@@ -232,7 +241,8 @@ end;
 
 function TADStreamCaret.Insert(const ABuffer; const ALength: Int64): Int64;
 begin
-
+  Result := 0;
+  CheckCaretValid;
 end;
 
 procedure TADStreamCaret.Invalidate;
@@ -242,22 +252,25 @@ end;
 
 function TADStreamCaret.Read(var ABuffer; const ALength: Int64): Int64;
 begin
-
+  Result := 0;
+  CheckCaretValid;
 end;
 
 function TADStreamCaret.Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
 begin
-
+  Result := 0;
+  CheckCaretValid;
 end;
 
 procedure TADStreamCaret.SetPosition(const APosition: Int64);
 begin
-
+  FPosition := Seek(APosition, soBeginning);
 end;
 
 function TADStreamCaret.Write(const ABuffer; const ALength: Int64): Int64;
 begin
-
+  Result := 0;
+  CheckCaretValid;
 end;
 
 { TADStream }
