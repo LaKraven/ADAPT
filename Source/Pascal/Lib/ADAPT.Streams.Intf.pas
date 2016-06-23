@@ -148,36 +148,6 @@ type
     property Size: Int64 read GetSize write SetSize;
   end;
 
-  IADHandleStreamCaret = interface(IADStreamCaret)
-  ['{292415DC-68E3-4317-8EE1-5DF1E36097DB}']
-
-  end;
-
-  IADHandleStream = interface(IADStream)
-  ['{88BE52C5-0BAD-4E05-A0B3-9DA2C0330F22}']
-
-  end;
-
-  IADFileStreamCaret = interface(IADHandleStreamCaret)
-  ['{D3D56456-E6A6-49CE-985A-3407009EA2C9}']
-
-  end;
-
-  IADFileStream = interface(IADHandleStream)
-  ['{62B111EB-938E-4F2D-BA94-30504646F90F}']
-
-  end;
-
-  IADMemoryStreamCaret = interface(IADStreamCaret)
-  ['{1FB5A4F9-8FFB-4A79-B364-01D6E428A718}']
-
-  end;
-
-  IADMemoryStream  = interface(IADStream)
-  ['{289F1193-AE69-47D6-B66B-0174070963B5}']
-
-  end;
-
 implementation
 
 end.
