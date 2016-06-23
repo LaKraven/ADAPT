@@ -67,7 +67,10 @@ type
   IADStreamCaretList = IADList<IADStreamCaret>; //TODO -oDaniel -cStreams, Optimization: Replace IADList with IADLookupList for better performance!
 
   ///  <summary><c>Abstract Base Class for all Stream Caret Types.</c></summary>
-  TADStreamCaret = class(TADObject, IADStreamCaret)
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADStreamCaret = class abstract(TADObject, IADStreamCaret)
   private
     FPosition: Int64;
     ///  <summary><c>Weak Rerefence to the owning Stream object.</c></summary>
@@ -130,7 +133,10 @@ type
   end;
 
   ///  <summary><c>Abstract Base Class for all Stream Types.</c></summary>
-  TADStream = class(TADObject, IADStream)
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADStream = class abstract(TADObject, IADStream)
   private
     FCaretList: IADStreamCaretList;
   protected
