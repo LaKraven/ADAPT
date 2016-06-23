@@ -139,8 +139,11 @@ type
     function GetCaretType: TADStreamCaretClass; virtual; abstract;
     procedure UnregisterCaret(const ACaret: IADStreamCaret); virtual;
 
+    procedure InvalidateCaret(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
     procedure InvalidateCarets(const AFromPosition, ACount: Int64); virtual;
 
+    procedure ShiftCaretLeft(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
+    procedure ShiftCaretRight(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
     procedure ShiftCaretsLeft(const AFromPosition, ACount: Int64); virtual;
     procedure ShiftCaretsRight(const AFromPosition, ACount: Int64); virtual;
   public
@@ -271,15 +274,18 @@ begin
   inherited;
 end;
 
+procedure TADStream.InvalidateCaret(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+begin
+  if (ACaret.Position >= AFromPosition) and (ACaret.Position < AFromPosition + ACount) then
+    ACaret.Invalidate;
+end;
+
 procedure TADStream.InvalidateCarets(const AFromPosition, ACount: Int64);
 var
   I: Integer;
 begin
   for I := 0 to FCaretList.Count - 1 do
-  begin
-    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
-      FCaretList[I].Invalidate;
-  end;
+    InvalidateCaret(FCaretList[I], AFromPosition, ACount);
 end;
 
 function TADStream.NewCaret: IADStreamCaret;
@@ -294,15 +300,24 @@ begin
   FCaretList.Add(Result);
 end;
 
+procedure TADStream.ShiftCaretLeft(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+begin
+  if (ACaret.Position >= AFromPosition) and (ACaret.Position < AFromPosition + ACount) then
+    ACaret.Position := ACaret.Position - ACount;
+end;
+
+procedure TADStream.ShiftCaretRight(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+begin
+  if (ACaret.Position >= AFromPosition) and (ACaret.Position < AFromPosition + ACount) then
+    ACaret.Position := ACaret.Position + ACount;
+end;
+
 procedure TADStream.ShiftCaretsLeft(const AFromPosition, ACount: Int64);
 var
   I: Integer;
 begin
   for I := 0 to FCaretList.Count - 1 do
-  begin
-    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
-      FCaretList[I].Position := FCaretList[I].Position - ACount;
-  end;
+    ShiftCaretLeft(FCaretList[I], AFromPosition, ACount);
 end;
 
 procedure TADStream.ShiftCaretsRight(const AFromPosition, ACount: Int64);
@@ -310,10 +325,7 @@ var
   I: Integer;
 begin
   for I := 0 to FCaretList.Count - 1 do
-  begin
-    if (FCaretList[I].Position >= AFromPosition) and (FCaretList[I].Position < AFromPosition + ACount) then
-      FCaretList[I].Position := FCaretList[I].Position + ACount;
-  end;
+    ShiftCaretRight(FCaretList[I], AFromPosition, ACount);
 end;
 
 procedure TADStream.UnregisterCaret(const ACaret: IADStreamCaret);
