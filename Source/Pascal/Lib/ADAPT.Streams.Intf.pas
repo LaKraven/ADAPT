@@ -167,6 +167,17 @@ type
     procedure UnregisterCaret(const ACaret: IADStreamCaret);
   end;
 
+  IADMemoryStream = interface(IADStream)
+  ['{DD2B94EB-B752-4973-8639-833298CD410C}']
+  // Getters
+  function GetCapacity: Int64;
+  // Setters
+  procedure SetCapacity(ACapacity: Int64);
+
+  // Properties
+  property Capacity: Int64 read GetCapacity write SetCapacity;
+  end;
+
 implementation
 
 end.
