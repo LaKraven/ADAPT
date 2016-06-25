@@ -59,6 +59,12 @@ type
   { Forward Declarations }
   TADStreamCaret = class;
   TADStream = class;
+  TADHandleStreamCaret = class;
+  TADHandleStream = class;
+  TADFileStreamCaret = class;
+  TADFileStream = class;
+  TADMemoryStreamCaret = class;
+  TADMemoryStream = class;
 
   { Class Reference Types }
   TADStreamCaretClass = class of TADStreamCaret;
@@ -84,6 +90,7 @@ type
     function GetIsValid: Boolean; virtual;
     function GetPosition: Int64; virtual;
     function GetStream: IADStream; virtual;
+    function GetStreamManagement: IADStreamManagement; virtual;
     procedure SetPosition(const APosition: Int64); virtual;
   public
     constructor Create(const AStream: IADStream); reintroduce; overload;
@@ -96,28 +103,23 @@ type
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes deleted.</c></para>
     ///  </remarks>
     function Delete(const ALength: Int64): Int64; virtual;
-
     ///  <summary><c>Inserts the given Buffer into the current Position within the Stream (shifting any subsequent Bytes to the right)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     ///  <remarks>
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes inserted.</c></para>
     ///  </remarks>
     function Insert(const ABuffer; const ALength: Int64): Int64; virtual;
-
     ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
     ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
     function Read(var ABuffer; const ALength: Int64): Int64; virtual;
-
     ///  <summary><c>Writes the given Buffer into the current Position within the Stream (overwriting any existing data, and expanding the Size of the Stream if required)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     ///  <remarks>
     ///    <para><c>DOES NOT shift the position of any subsequent Carets!</c></para>
     ///  </remarks>
     function Write(const ABuffer; const ALength: Int64): Int64; virtual;
-
     ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
     function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64; virtual;
-
     ///  <summary><c>Invalidates the Caret.</c></summary>
     ///  <remarks><c>This is usually called by the owning Stream when a Caret has been Invalidated by an operation from another Caret.</c></remarks>
     procedure Invalidate; virtual;
@@ -130,30 +132,31 @@ type
     property Position: Int64 read GetPosition write SetPosition;
     ///  <summary><c>Reference to the Caret's owning Stream</c></summary>
     property Stream: IADStream read GetStream;
+    ///  <summary><c>Reference to the Caret's owning Stream's Management Methods.</c><summary>
+    property StreamManagement: IADStreamManagement read GetStreamManagement;
   end;
 
   ///  <summary><c>Abstract Base Class for all Stream Types.</c></summary>
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADStream = class abstract(TADObject, IADStream)
+  TADStream = class abstract(TADObject, IADStream, IADStreamManagement)
   private
     FCaretList: IADStreamCaretList;
   protected
     { IADStream }
     function GetSize: Int64; virtual; abstract;
     procedure SetSize(const ASize: Int64); virtual; abstract;
-    { Internal Methods }
-    function GetCaretType: TADStreamCaretClass; virtual; abstract;
-    procedure UnregisterCaret(const ACaret: IADStreamCaret); virtual;
-
+    { IADStreamManagement }
     procedure InvalidateCaret(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
     procedure InvalidateCarets(const AFromPosition, ACount: Int64); virtual;
-
     procedure ShiftCaretLeft(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
     procedure ShiftCaretRight(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64); virtual;
     procedure ShiftCaretsLeft(const AFromPosition, ACount: Int64); virtual;
     procedure ShiftCaretsRight(const AFromPosition, ACount: Int64); virtual;
+    procedure UnregisterCaret(const ACaret: IADStreamCaret); virtual;
+    { Internal Methods }
+    function GetCaretType: TADStreamCaretClass; virtual; abstract;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -181,6 +184,65 @@ type
     // Properties
     ///  <summary><c>Size of the Stream.</c></summary>
     property Size: Int64 read GetSize write SetSize;
+  end;
+
+  ///  <summary><c>Caret specifically set up for Handle Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADHandleStreamCaret = class(TADStreamCaret)
+  protected
+    FHandle: THandle;
+    { IADStreamCaret }
+    function GetPosition: Int64; override;
+    procedure SetPosition(const APosition: Int64); override;
+  public
+    { IADStreamCaret }
+    function Delete(const ALength: Int64): Int64; override;
+    function Insert(const ABuffer; const ALength: Int64): Int64; override;
+    function Read(var ABuffer; const ALength: Int64): Int64; override;
+    function Write(const ABuffer; const ALength: Int64): Int64; override;
+    function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64; override;
+  end;
+
+  ///  <summary><c>Specialized Stream Type for Handle Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADHandleStream = class(TADStream)
+
+  end;
+
+  ///  <summary><c>Caret specifically set up for File Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADFileStreamCaret = class(TADStreamCaret)
+
+  end;
+
+  ///  <summary><c>Specialized Stream Type for File Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADFileStream = class(TADStream)
+
+  end;
+
+  ///  <summary><c>Caret specifically set up for Memory Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADMemoryStreamCaret = class(TADStreamCaret)
+
+  end;
+
+  ///  <summary><c>Specialized Stream Type for Memory Streams.</c></summary>
+  ///  <remarks>
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADMemoryStream = class(TADStream)
+
   end;
 
 implementation
@@ -221,7 +283,7 @@ end;
 
 destructor TADStreamCaret.Destroy;
 begin
-  GetStream.UnregisterCaret(Self);
+  GetStreamManagement.UnregisterCaret(Self);
   inherited;
 end;
 
@@ -243,6 +305,11 @@ end;
 function TADStreamCaret.GetStream: IADStream;
 begin
   Result := IADStream(FStream^);
+end;
+
+function TADStreamCaret.GetStreamManagement: IADStreamManagement;
+begin
+  Result := GetStream as IADStreamManagement;
 end;
 
 function TADStreamCaret.Insert(const ABuffer; const ALength: Int64): Int64;
@@ -355,6 +422,107 @@ begin
 //  LIndex := FCaretList.IndexOf(ACaret);
   if LIndex > -1 then
     FCaretList.Delete(LIndex);
+end;
+
+{ TADHandleStreamCaret }
+
+function TADHandleStreamCaret.Delete(const ALength: Int64): Int64;
+var
+  LStartPosition, LSize: Int64;
+  LValue: TBytes;
+begin
+  inherited;
+  LStartPosition := Position;
+  LSize := GetStream.Size;
+  if GetStream.Size > Position + ALength then
+  begin
+    SetLength(LValue, LSize - ALength);
+    Position := Position + ALength;
+    Read(LValue[0], LSize - ALength);
+    Position := LStartPosition;
+    Write(LValue[0], ALength);
+  end;
+  GetStream.Size := LSize - ALength;
+  // Invalidate the Carets representing the Bytes we've deleted
+  GetStreamManagement.InvalidateCarets(LStartPosition, ALength);
+  // Shift subsequent Carets to the left
+  GetStreamManagement.ShiftCaretsLeft(LStartPosition + ALength, LSize - (LStartPosition + ALength));
+  if LStartPosition < GetStream.Size then // If this Caret is still in range...
+    Position := LStartPosition // ...set this Caret's position back to where it began
+  else // otherwise, if this Caret is NOT in range...
+    Invalidate; // ...invalidate this Caret
+  Result := ALength;
+end;
+
+function TADHandleStreamCaret.GetPosition: Int64;
+begin
+  Result := FPosition;
+end;
+
+function TADHandleStreamCaret.Insert(const ABuffer; const ALength: Int64): Int64;
+var
+  I, LStartPosition, LNewSize: Int64;
+  LByte: Byte;
+begin
+  Result := inherited;
+  LStartPosition := FPosition;
+  // Expand the Stream
+  LNewSize := GetStream.Size + ALength;
+  GetStream.Size := LNewSize;
+  // Move subsequent Bytes to the Right
+  I := LStartPosition;
+  repeat
+    Seek(I, soBeginning); // Navigate to the Byte
+    Read(LByte, 1); // Read this byte
+    Seek(I + ALength + 1, soBeginning); // Navigate to this Byte's new location
+    Write(LByte, 1); // Write this byte
+    Inc(I); // On to the next
+    Inc(Result);
+  until I > LNewSize;
+  // Insert the Value
+  Position := LStartPosition;
+  Write(ABuffer, ALength);
+  // Shift overlapping Carets to the Right
+  GetStreamManagement.ShiftCaretsRight(LStartPosition, ALength);
+  Position := LStartPosition + ALength;
+end;
+
+function TADHandleStreamCaret.Read(var ABuffer; const ALength: Int64): Int64;
+begin
+  inherited;
+  Seek(FPosition, soBeginning);
+  Result := FileRead(FHandle, ABuffer, ALength);
+  if Result = -1 then
+    Result := 0
+  else
+    Inc(FPosition, ALength);
+end;
+
+function TADHandleStreamCaret.Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64;
+begin
+  inherited;
+  Result := FileSeek(FHandle, AOffset, Ord(AOrigin));
+end;
+
+procedure TADHandleStreamCaret.SetPosition(const APosition: Int64);
+begin
+  FPosition := APosition;
+end;
+
+function TADHandleStreamCaret.Write(const ABuffer; const ALength: Int64): Int64;
+var
+  LStartPosition: Int64;
+begin
+  inherited;
+  LStartPosition := FPosition;
+  Seek(FPosition, soBeginning);
+  Result := FileWrite(FHandle, ABuffer, ALength);
+  if Result = -1 then
+    Result := 0
+  else begin
+    Inc(FPosition, ALength);
+    GetStreamManagement.InvalidateCarets(LStartPosition, ALength);
+  end;
 end;
 
 end.

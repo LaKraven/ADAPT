@@ -56,12 +56,15 @@ uses
 type
   { Forward Delcarations }
   IADStream = interface;
+  IADStreamManagement = interface;
 
   { Exceptions }
   EADStreamException = class(EADException);
     EADStreamCaretException = class(EADStreamException);
       EADStreamCaretInvalid = class(EADStreamCaretException);
 
+  ///  <summary><c>A Caret for operating on a Stream at a particular position.</c></summary>
+  ///  <remarks><c>A Caret should take responsibility for ensuring any operation affecting OTHER Carets updates those Carets as necessary.</c></remarks>
   IADStreamCaret = interface(IADInterface)
   ['{D8E849E5-A5A1-4B4F-9AF6-BBD397216C5B}']
     // Getters
@@ -69,6 +72,7 @@ type
     function GetIsValid: Boolean;
     function GetPosition: Int64;
     function GetStream: IADStream;
+    function GetStreamManagement: IADStreamManagement;
     // Setters
     procedure SetPosition(const APosition: Int64);
 
@@ -107,8 +111,12 @@ type
     property Position: Int64 read GetPosition write SetPosition;
     ///  <summary><c>Reference to the Caret's owning Stream</c></summary>
     property Stream: IADStream read GetStream;
+    ///  <summary><c>Reference to the Caret's owning Stream's Management Methods.</c><summary>
+    property StreamManagement: IADStreamManagement read GetStreamManagement;
   end;
 
+  ///  <summary><c>A Stream.</c></summary>
+  ///  <remarks><c>The Stream enables you to request one or more Carets, and these Carets are used to operate on the Stream.</c></remarks>
   IADStream = interface(IADInterface)
   ['{07F45B12-1DFC-453A-B95C-E00C9F5F4285}']
     // Getters
@@ -136,16 +144,27 @@ type
     ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: TStream); overload;
 
+    // Properties
+    ///  <summary><c>Size of the Stream.</c></summary>
+    property Size: Int64 read GetSize write SetSize;
+  end;
+
+  ///  <summary><c>The Stream Management Interface provides access to methods that need to be called internally by a Caret in order to manage other Carets contained by that Stream.</c></summary>
+  ///  <remarks><c>This interface is separated to protect an implementing developer from accidentally calling internal Stream Management Methods.</c></remarks>
+  IADStreamManagement = interface(IADInterface)
+  ['{3FBBB8FD-D115-40FC-9269-FB3C6820794B}']
+    procedure InvalidateCaret(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+    procedure InvalidateCarets(const AFromPosition, ACount: Int64);
+    procedure ShiftCaretLeft(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+    procedure ShiftCaretRight(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);
+    procedure ShiftCaretsLeft(const AFromPosition, ACount: Int64);
+    procedure ShiftCaretsRight(const AFromPosition, ACount: Int64);
     ///  <summary><c>Removes a Caret from Stream's internal Caret List.</c></summary>
     ///  <remarks>
     ///    <para><c>WARNING - The Stream will no longer be able to manage this Caret.</c></para>
     ///    <para><c>This is called internally by a Caret when it is destroyed.</c></para>
     ///  </remarks>
     procedure UnregisterCaret(const ACaret: IADStreamCaret);
-
-    // Properties
-    ///  <summary><c>Size of the Stream.</c></summary>
-    property Size: Int64 read GetSize write SetSize;
   end;
 
 implementation
