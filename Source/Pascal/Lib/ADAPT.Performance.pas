@@ -100,6 +100,36 @@ type
     property InstantRate: ADFloat read GetInstantRate;
   end;
 
+  ///  <summary><c>Non-Threadsafe Performance Limiter Type.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Enforces a given Performance Limit, handling all of the Delta Extrapolation Mathematics.</c></para>
+  ///    <para><c>CAUTION - THIS CLASS IS NOT THREADSAFE.</c></para>
+  ///  </remarks>
+  TADPerformanceLimiter = class(TADAggregatedObject, IADPerformanceLimiter)
+  private
+    FNextDelta: ADFloat;
+    FRateDesired: ADFloat;
+    FRateLimit: ADFloat;
+    FThrottleInterval: Cardinal;
+  protected
+    { IADPerformanceLimiter Getters }
+    function GetNextDelta: ADFloat; virtual;
+    function GetRateDesired: ADFloat; virtual;
+    function GetRateLimit: ADFloat; virtual;
+    function GetThrottleInterval: Cardinal; virtual;
+    { IADPerformanceLimiter Setters }
+    procedure SetRateDesired(const ARateDesired: ADFloat); virtual;
+    procedure SetRateLimit(const ARateLimit: ADFloat); virtual;
+    procedure SetThrottleInterval(const AThrottleInterval: Cardinal); virtual;
+  public
+
+    { IADPerformanceLimiter Properties }
+    property NextDelta: ADFloat read GetNextDelta;
+    property RateDesired: ADFloat read GetRateDesired write SetRateDesired;
+    property RateLimit: ADFloat read GetRateLimit write SetRateLimit;
+    property ThrottleInterval: Cardinal read GetThrottleInterval write SetThrottleInterval;
+  end;
+
 implementation
 
 { TADPerformanceCounter }
@@ -168,6 +198,43 @@ procedure TADPerformanceCounter.SetAverageOver(const AAverageOver: Cardinal);
 begin
   FAverageOver := AAverageOver;
   Reset;
+end;
+
+{ TADPerformanceLimiter }
+
+function TADPerformanceLimiter.GetNextDelta: ADFloat;
+begin
+  Result := FNextDelta;
+end;
+
+function TADPerformanceLimiter.GetRateDesired: ADFloat;
+begin
+  Result := FRateDesired;
+end;
+
+function TADPerformanceLimiter.GetRateLimit: ADFloat;
+begin
+  Result := FRateLimit;
+end;
+
+function TADPerformanceLimiter.GetThrottleInterval: Cardinal;
+begin
+  Result := FThrottleInterval;
+end;
+
+procedure TADPerformanceLimiter.SetRateDesired(const ARateDesired: ADFloat);
+begin
+  FRateDesired := ARateDesired;
+end;
+
+procedure TADPerformanceLimiter.SetRateLimit(const ARateLimit: ADFloat);
+begin
+  FRateLimit := ARateLimit;
+end;
+
+procedure TADPerformanceLimiter.SetThrottleInterval(const AThrottleInterval: Cardinal);
+begin
+  FThrottleInterval := AThrottleInterval;
 end;
 
 end.

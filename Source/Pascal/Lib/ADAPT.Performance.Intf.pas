@@ -54,7 +54,6 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-
   ///  <summary><c>Common Interface for all Performance Counter Types.</c></summary>
   ///  <remarks>
   ///    <para><c>Keeps track of Performance both Instant and Average, in units of Things Per Second.</c></para>
@@ -80,6 +79,30 @@ type
     property AverageRate: ADFloat read GetAverageRate;
     ///  <summary><c>The Instant Rate (based only on the last given Sample)</c></summary>
     property InstantRate: ADFloat read GetInstantRate;
+  end;
+
+  ///  <summary><c>Common Interface for all Performance Limiter Types.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Limiters serve to enforce precise-as-possible Time Differential Based (Delta-Based) calculations.</c></para>
+  ///  </remarks>
+  IADPerformanceLimiter = interface(IADInterface)
+  ['{279704C6-BBAF-415F-897D-77953D049E8E}']
+    { Getters }
+    function GetNextDelta: ADFloat;
+    function GetRateDesired: ADFloat;
+    function GetRateLimit: ADFloat;
+    function GetThrottleInterval: Cardinal;
+    { Setters }
+    procedure SetRateDesired(const ARateDesired: ADFloat);
+    procedure SetRateLimit(const ARateLimit: ADFloat);
+    procedure SetThrottleInterval(const AThrottleInterval: Cardinal);
+    { Public Methods }
+
+    { Properties }
+    property NextDelta: ADFloat read GetNextDelta;
+    property RateDesired: ADFloat read GetRateDesired write SetRateDesired;
+    property RateLimit: ADFloat read GetRateLimit write SetRateLimit;
+    property ThrottleInterval: Cardinal read GetThrottleInterval write SetThrottleInterval;
   end;
 
 implementation

@@ -99,7 +99,8 @@ type
   TADPrecisionThread = class abstract(TADThread, IADPrecisionThread)
   private
     FNextTickTime: ADFloat;
-    FPerformance: IADPerformanceCounter;
+    FPerformanceCounter: IADPerformanceCounter;
+    FPerformanceLimiter: IADPerformanceLimiter;
     FThreadState: TADThreadState;
     FTickRateDesired: ADFloat; // The DESIRED rate at which you want the Thread to Tick (minimum)
     FTickRateLimit: ADFloat; // The current Tick Rate Limit (in "Ticks per Second"), 0 = no limit.
@@ -341,7 +342,7 @@ const
   THREAD_STATES: Array[TADThreadState] of Boolean = (True, False);
 begin
   inherited Create(ACreateSuspended);
-  FPerformance := TADPerformanceCounterTS.Create(GetDefaultTickRateAverageOver);
+  FPerformanceCounter := TADPerformanceCounterTS.Create(GetDefaultTickRateAverageOver);
   FThrottleInterval := GetDefaultThrottleInterval;
   FreeOnTerminate := False;
   FThreadState := GetInitialThreadState;
@@ -353,7 +354,7 @@ end;
 destructor TADPrecisionThread.Destroy;
 begin
   FWakeUp.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
-  FPerformance := nil;
+  FPerformanceCounter := nil;
   inherited;
 end;
 
@@ -382,7 +383,7 @@ begin
       if LDelta > 0 then
       begin
         LTickRate := 1 / LDelta; // Calculate the current Tick Rate
-        FPerformance.RecordSample(LTickRate);
+        FPerformanceCounter.RecordSample(LTickRate);
       end;
 
       // Call "PreTick"
@@ -460,17 +461,17 @@ end;
 
 function TADPrecisionThread.GetTickRate: ADFloat;
 begin
-  Result := FPerformance.InstantRate;
+  Result := FPerformanceCounter.InstantRate;
 end;
 
 function TADPrecisionThread.GetTickRateAverage: ADFloat;
 begin
-  Result := FPerformance.AverageRate;
+  Result := FPerformanceCounter.AverageRate;
 end;
 
 function TADPrecisionThread.GetTickRateAverageOver: Cardinal;
 begin
-  Result := FPerformance.AverageOver;
+  Result := FPerformanceCounter.AverageOver;
 end;
 
 function TADPrecisionThread.GetTickRateDesired: ADFloat;
@@ -552,7 +553,7 @@ end;
 
 procedure TADPrecisionThread.SetTickRateAverageOver(const AAverageOver: Cardinal);
 begin
-  FPerformance.AverageOver := AAverageOver;
+  FPerformanceCounter.AverageOver := AAverageOver;
 end;
 
 procedure TADPrecisionThread.SetTickRateDesired(const ADesiredRate: ADFloat);
