@@ -35,7 +35,12 @@ uses
   ADAPT.Generics.Maps in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas',
   ADAPT.Generics.Allocators.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas',
   ADAPT.Generics.Allocators in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas',
-  ADAPT.Streams.Intf in '..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas';
+  ADAPT.Streams.Intf in '..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas',
+  ADAPT.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Common.Threadsafe.pas',
+  ADAPT.Generics.Arrays.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Threadsafe.pas',
+  ADAPT.Generics.Allocators.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Threadsafe.pas',
+  ADAPT.Generics.Lists.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Threadsafe.pas',
+  ADAPT.Performance.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas';
 
 var
   runner : ITestRunner;

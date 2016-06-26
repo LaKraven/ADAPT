@@ -96,29 +96,6 @@ type
     property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
   end;
 
-  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
-  ///    <para><c>This Expander Type is Threadsafe.</c></para>
-  ///  </remarks>
-  TADCollectionExpanderGeometricTS = class(TADCollectionExpanderGeometric, IADReadWriteLock)
-  private
-    FLock: TADReadWriteLock;
-    function GetLock: IADReadWriteLock;
-  protected
-    // Getters
-    function GetCapacityMultiplier: Single; override;
-    function GetCapacityThreshold: Integer; override;
-    // Setters
-    procedure SetCapacityMultiplier(const AMultiplier: Single); override;
-    procedure SetCapacityThreshold(const AThreshold: Integer); override;
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-
-    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
-  end;
-
   ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
   TADCollectionCompactor = class abstract(TADObject, IADCollectionCompactor)
@@ -182,65 +159,6 @@ end;
 procedure TADCollectionExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
 begin
   FThreshold := AThreshold;
-end;
-
-{ TADCollectionExpanderGeometricTS }
-
-constructor TADCollectionExpanderGeometricTS.Create;
-begin
-  inherited;
-  FLock := TADReadWriteLock.Create(Self);
-end;
-
-destructor TADCollectionExpanderGeometricTS.Destroy;
-begin
-  FLock.Free;
-  inherited;
-end;
-
-function TADCollectionExpanderGeometricTS.GetCapacityMultiplier: Single;
-begin
-  FLock.AcquireRead;
-  try
-    Result := inherited;
-  finally
-    FLock.ReleaseRead;
-  end;
-end;
-
-function TADCollectionExpanderGeometricTS.GetCapacityThreshold: Integer;
-begin
-  FLock.AcquireRead;
-  try
-    Result := inherited;
-  finally
-    FLock.ReleaseRead;
-  end;
-end;
-
-function TADCollectionExpanderGeometricTS.GetLock: IADReadWriteLock;
-begin
-  Result := FLock;
-end;
-
-procedure TADCollectionExpanderGeometricTS.SetCapacityMultiplier(const AMultiplier: Single);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
-end;
-
-procedure TADCollectionExpanderGeometricTS.SetCapacityThreshold(const AThreshold: Integer);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
 end;
 
 { TADCollectionCompactorDefault }

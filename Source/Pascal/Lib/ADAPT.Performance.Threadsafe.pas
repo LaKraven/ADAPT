@@ -37,7 +37,7 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Performance;
+unit ADAPT.Performance.Threadsafe;
 
 {$I ADAPT.inc}
 
@@ -49,48 +49,37 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Performance.Intf;
+  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
+  ADAPT.Performance;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  { Class Forward Declarations }
-  TADPerformanceCounter = class;
+  TADPerformanceCounterTS = class;
 
-  ///  <summary><c>Non-Threadsafe Performance Counter Type.</c></summary>
+  ///  <summary><c>Threadsafe Performance Counter Type.</c></summary>
   ///  <remarks>
   ///    <para><c>Keeps track of Performance both Instant and Average, in units of Things Per Second.</c></para>
   ///    <para><c>Note that this does NOT operate like a "Stopwatch", it merely takes the given Time Difference (Delta) Values to calculate smooth averages.</c></para>
-  ///    <para><c>CAUTION - THIS CLASS IS NOT THREADSAFE.</c></para>
+  ///    <para><c>Contains a Threadsafe Lock.</c></para>
   ///  </remarks>
-  TADPerformanceCounter = class(TADObject, IADPerformanceCounter)
+  TADPerformanceCounterTS = class(TADPerformanceCounter, IADReadWriteLock)
   protected
-    FAverageOver: Cardinal;
-    FAverageRate: ADFloat;
-    FInstantRate: ADFloat;
-
-    ///  <summary><c>A humble Dynamic Array, fixed to the specified "Average Over" value, containing each Sample used to determine the Average Rate.</c></summary>
-    FSamples: Array of ADFloat;
-    ///  <summary><c>The number of Samples currently being held. This will reach the "Average Over" value and stay there (unless the "Average Over" value changes)</c></summary>
-    FSampleCount: Cardinal;
-    ///  <summary><c>The Index of the NEXT Sample to be stored. This simply rolls around from 0 to N, replacing each oldest value.</c></summary>
-    FSampleIndex: Integer;
-
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
     { Getters }
-    function GetAverageOver: Cardinal; virtual;
-    function GetAverageRate: ADFloat; virtual;
-    function GetInstantRate: ADFloat; virtual;
+    function GetAverageOver: Cardinal; override;
+    function GetAverageRate: ADFloat; override;
+    function GetInstantRate: ADFloat; override;
 
     { Setters }
-    procedure SetAverageOver(const AAverageOver: Cardinal = 10); virtual;
+    procedure SetAverageOver(const AAverageOver: Cardinal = 10); override;
   public
-    constructor Create(const AAverageOver: Cardinal); reintroduce; virtual;
+    constructor Create(const AAverageOver: Cardinal); override;
+    destructor Destroy; override;
 
-    procedure AfterConstruction; override;
-
-    procedure RecordSample(const AValue: ADFloat); virtual;
-    procedure Reset; virtual;
+    procedure RecordSample(const AValue: ADFloat); override;
+    procedure Reset; override;
 
     ///  <summary><c>The number of Samples over which to calculate the Average</c></summary>
     property AverageOver: Cardinal read GetAverageOver write SetAverageOver;
@@ -98,76 +87,89 @@ type
     property AverageRate: ADFloat read GetAverageRate;
     ///  <summary><c>The Instant Rate (based only on the last given Sample)</c></summary>
     property InstantRate: ADFloat read GetInstantRate;
+    ///  <summary><c>Multi-Read, Exclusive-Write Threadsafe Lock.</c></summary>
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
 implementation
 
-{ TADPerformanceCounter }
+{ TADPerformanceCounterTS }
 
-procedure TADPerformanceCounter.AfterConstruction;
+constructor TADPerformanceCounterTS.Create(const AAverageOver: Cardinal);
 begin
+  FLock := TADReadWriteLock.Create(Self);
   inherited;
-  Reset;
 end;
 
-constructor TADPerformanceCounter.Create(const AAverageOver: Cardinal);
+destructor TADPerformanceCounterTS.Destroy;
 begin
-  inherited Create;
-  FAverageOver := AAverageOver;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
 end;
 
-function TADPerformanceCounter.GetAverageOver: Cardinal;
+function TADPerformanceCounterTS.GetAverageOver: Cardinal;
 begin
-  Result := FAverageOver;
-end;
-
-function TADPerformanceCounter.GetAverageRate: ADFloat;
-begin
-  Result := FAverageRate;
-end;
-
-function TADPerformanceCounter.GetInstantRate: ADFloat;
-begin
-  Result := FInstantRate;
-end;
-
-procedure TADPerformanceCounter.RecordSample(const AValue: ADFloat);
-var
-  I: Integer;
-  LTotal: ADFloat;
-begin
-  if AValue > 0 then // Can't divide by 0
-  begin
-    FInstantRate := 1 / AValue; // Calculate Instant Rate
-    FSamples[FSampleIndex] := AValue; // Add this Sample
-    Inc(FSampleIndex); // Increment the Sample Index
-    if FSampleIndex > High(FSamples) then // If the next sample would be Out Of Bounds...
-      FSampleIndex := 0; // ... roll back around to index 0
-    if FSampleCount < FAverageOver then // If we haven't yet recorded the desired number of Samples...
-      Inc(FSampleCount); // .. increment the Sample Count
-
-    // Now we'll calculate the Average
-    LTotal := 0;
-    for I := 0 to FSampleCount - 1 do
-      LTotal := LTotal + FSamples[I];
-    if LTotal > 0 then // Can't divide by 0
-      FAverageRate := 1 / (LTotal / FSampleCount);
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
   end;
 end;
 
-procedure TADPerformanceCounter.Reset;
+function TADPerformanceCounterTS.GetAverageRate: ADFloat;
 begin
-  SetLength(FSamples, FAverageOver);
-  FSampleCount := 0;
-  FSampleIndex := 0;
-  FInstantRate := 0;
-  FAverageRate := 0;
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
-procedure TADPerformanceCounter.SetAverageOver(const AAverageOver: Cardinal);
+function TADPerformanceCounterTS.GetInstantRate: ADFloat;
 begin
-  FAverageOver := AAverageOver;
-  Reset;
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADPerformanceCounterTS.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+procedure TADPerformanceCounterTS.RecordSample(const AValue: ADFloat);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADPerformanceCounterTS.Reset;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADPerformanceCounterTS.SetAverageOver(const AAverageOver: Cardinal);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 end.

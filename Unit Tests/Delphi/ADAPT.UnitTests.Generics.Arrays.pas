@@ -47,7 +47,7 @@ implementation
 uses
   ADAPT.Common,
   ADAPT.Generics.Defaults.Intf,
-  ADAPT.Generics.Arrays, ADAPT.Generics.Arrays.Intf,
+  ADAPT.Generics.Arrays, ADAPT.Generics.Arrays.Intf, ADAPT.Generics.Arrays.Threadsafe,
   ADAPT.UnitTests.Generics.Common;
 
 type

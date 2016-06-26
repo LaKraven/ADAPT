@@ -49,8 +49,8 @@ uses
   {$ELSE}
     Classes, SysUtils, SyncObjs, {$IFDEF FPC}ADAPT.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Performance, ADAPT.Performance.Intf,
+  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
+  ADAPT.Performance.Intf,
   ADAPT.Threads.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -218,6 +218,10 @@ type
 function GetReferenceTime: ADFloat;
 
 implementation
+
+uses
+  ADAPT.Performance.Threadsafe;
+  {$I ADAPT_RTTI.inc}
 
 var
   ReferenceWatch: TStopwatch;
