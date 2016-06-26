@@ -65,7 +65,7 @@ type
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADObject, IADList<T>)
+  TADList<T> = class(TADObject, IADList<T>, IADExpandable, IADCompactable)
   private
     FCompactor: IADCollectionCompactor;
     FExpander: IADCollectionExpander;

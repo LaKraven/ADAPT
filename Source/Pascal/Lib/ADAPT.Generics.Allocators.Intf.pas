@@ -85,6 +85,27 @@ type
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
   end;
 
+  ///  <summary><c>An Object requiring an Expander.</c></summary>
+  IADExpandable = interface(IADInterface)
+  ['{D14A0D38-48EF-4EAE-A25D-8CAD1F8B1035}']
+    // Getters
+    function GetExpander: IADCollectionExpander;
+    // Setters
+    procedure SetExpander(const AExpander: IADCollectionExpander);
+    // Properties
+    property Expander: IADCollectionExpander read GetExpander write SetExpander;
+  end;
+
+  ///  <summary><c>An Object requiring a Compactor.</c></summary>
+  IADCompactable = interface(IADInterface)
+  ['{F1C40D71-7899-482F-86E2-C052D2735013}']
+    // Getters
+    function GetCompactor: IADCollectionCompactor;
+    // Setters
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor);
+    // Properties
+    property Compactor: IADCollectionCompactor read GetCompactor write SetCompactor;
+  end;
 
 implementation
 
