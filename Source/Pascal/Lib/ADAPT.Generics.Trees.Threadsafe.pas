@@ -37,7 +37,7 @@
     - Donations can be made via PayPal to PayPal [at] LaKraven (dot) Com
                                           ^  Garbled to prevent spam!  ^
 }
-unit ADAPT.Generics.Maps;
+unit ADAPT.Generics.Trees.Threadsafe;
 
 {$I ADAPT.inc}
 
@@ -49,10 +49,9 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
-  ADAPT.Generics.Arrays.Intf,
-  ADAPT.Generics.Maps.Intf;
+  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
+  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Trees;
 
   {$I ADAPT_RTTI.inc}
 
