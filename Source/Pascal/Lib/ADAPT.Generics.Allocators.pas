@@ -110,10 +110,6 @@ type
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
   end;
 
-  // Class Reference Types
-  TADCollectionExpanderType = class of TADCollectionExpander;
-  TADCollectionCompactorType = class of TADCollectionCompactor;
-
   // Exception Types
   EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
   EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);

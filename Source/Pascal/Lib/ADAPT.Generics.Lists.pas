@@ -51,7 +51,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Defaults.Intf,
-  ADAPT.Generics.Allocators.Intf, ADAPT.Generics.Allocators,
+  ADAPT.Generics.Allocators.Intf,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists.Intf;
 
@@ -97,12 +97,6 @@ type
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using a Custom Expander, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADCollectionExpanderType; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using the Default Expander, and a Custom Conpactor Type.</c></summary>
-    constructor Create(const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADCollectionExpanderType; const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
@@ -145,12 +139,6 @@ type
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using a Custom Expander, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADCollectionExpanderType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using the Default Expander, and a Custom Conpactor Type.</c></summary>
-    constructor Create(const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Type.</c></summary>
-    constructor Create(const AExpanderType: TADCollectionExpanderType; const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; overload;
     ///  <summary><c>Creates an instance of your List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
@@ -221,28 +209,14 @@ type
 implementation
 
 uses
+  ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays;
 
 { TADList<T> }
 
 constructor TADList<T>.Create(const AInitialCapacity: Integer = 0);
 begin
-  Create(TADCollectionExpanderDefault, TADCollectionCompactorDefault, AInitialCapacity);
-end;
-
-constructor TADList<T>.Create(const AExpanderType: TADCollectionExpanderType; const AInitialCapacity: Integer = 0);
-begin
-  Create(AExpanderType, TADCollectionCompactorDefault, AInitialCapacity);
-end;
-
-constructor TADList<T>.Create(const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0);
-begin
-  Create(TADCollectionExpanderDefault, ACompactorType, AInitialCapacity);
-end;
-
-constructor TADList<T>.Create(const AExpanderType: TADCollectionExpanderType; const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer = 0);
-begin
-  Create(AExpanderType.Create, ACompactorType.Create, AInitialCapacity);
+  Create(TADCollectionExpanderDefault.Create, TADCollectionCompactorDefault.Create, AInitialCapacity);
 end;
 
 constructor TADList<T>.Create(const AExpander: IADCollectionExpander; const AInitialCapacity: Integer = 0);
@@ -425,22 +399,7 @@ end;
 
 constructor TADObjectList<T>.Create(const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-  Create(TADCollectionExpanderDefault, TADCollectionCompactorDefault, AInitialCapacity, AOwnership);
-end;
-
-constructor TADObjectList<T>.Create(const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
-begin
-  Create(TADCollectionExpanderDefault.Create, ACompactorType.Create, AInitialCapacity, AOwnership);
-end;
-
-constructor TADObjectList<T>.Create(const AExpanderType: TADCollectionExpanderType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
-begin
-  Create(AExpanderType.Create, TADCollectionCompactorDefault.Create, AInitialCapacity, AOwnership);
-end;
-
-constructor TADObjectList<T>.Create(const AExpanderType: TADCollectionExpanderType; const ACompactorType: TADCollectionCompactorType; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
-begin
-  Create(AExpanderType.Create, ACompactorType.Create, AInitialCapacity, AOwnership);
+  Create(TADCollectionExpanderDefault.Create, TADCollectionCompactorDefault.Create, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
