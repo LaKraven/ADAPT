@@ -40,7 +40,10 @@ uses
   ADAPT.Generics.Arrays.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Threadsafe.pas',
   ADAPT.Generics.Allocators.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Threadsafe.pas',
   ADAPT.Generics.Lists.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Threadsafe.pas',
-  ADAPT.Performance.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas';
+  ADAPT.Performance.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas',
+  ADAPT.Generics.Maps.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Threadsafe.pas',
+  ADAPT.Generics.Trees.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas',
+  ADAPT.Streams.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas';
 
 var
   runner : ITestRunner;

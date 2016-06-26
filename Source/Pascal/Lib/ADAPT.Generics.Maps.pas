@@ -39,7 +39,6 @@
 }
 unit ADAPT.Generics.Maps;
 
-
 {$I ADAPT.inc}
 
 interface
