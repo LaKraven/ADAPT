@@ -114,7 +114,12 @@
     {$DEFINE DELPHI10.1BERLIN_UP}
     {$DEFINE DELPHI10.1_UP}
     {$DEFINE DELPHIBERLIN_UP}
-    {$MESSAGE WARN 'Versions newer than Delphi 10 Seattle have not yet been tested. This message will be removed once the version you are using has been officially tested.'}
+  {$IFEND}
+  {$IF COMPILERVERSION > 31}
+    {$DEFINE DELPHI10.2CITY_UP}
+    {$DEFINE DELPHI10.2_UP}
+    {$DEFINE DELPHICITY_UP}
+    {$MESSAGE WARN 'Versions newer than Delphi 10.1 Berlin have not yet been tested. This message will be removed once the version you are using has been officially tested.'}
   {$IFEND}
 // Support Definitions
 

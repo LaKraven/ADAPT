@@ -100,7 +100,6 @@ type
   private
     FNextTickTime: ADFloat;
     FPerformanceCounter: IADPerformanceCounter;
-    FPerformanceLimiter: IADPerformanceLimiter;
     FThreadState: TADThreadState;
     FTickRateDesired: ADFloat; // The DESIRED rate at which you want the Thread to Tick (minimum)
     FTickRateLimit: ADFloat; // The current Tick Rate Limit (in "Ticks per Second"), 0 = no limit.

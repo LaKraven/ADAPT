@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C514A917-400E-45B8-9186-133816C569D8}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Unit Tests\Delphi\ADAPT_UnitTests_Delphi.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\Delphi\FMX\Precision Threads\ADAPT_FMX_PrecisionThreads.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ADAPT_UnitTests_Delphi">
+        <MSBuild Projects="Unit Tests\Delphi\ADAPT_UnitTests_Delphi.dproj"/>
+    </Target>
+    <Target Name="ADAPT_UnitTests_Delphi:Clean">
+        <MSBuild Projects="Unit Tests\Delphi\ADAPT_UnitTests_Delphi.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ADAPT_UnitTests_Delphi:Make">
+        <MSBuild Projects="Unit Tests\Delphi\ADAPT_UnitTests_Delphi.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ADAPT_FMX_PrecisionThreads">
+        <MSBuild Projects="Demos\Delphi\FMX\Precision Threads\ADAPT_FMX_PrecisionThreads.dproj"/>
+    </Target>
+    <Target Name="ADAPT_FMX_PrecisionThreads:Clean">
+        <MSBuild Projects="Demos\Delphi\FMX\Precision Threads\ADAPT_FMX_PrecisionThreads.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ADAPT_FMX_PrecisionThreads:Make">
+        <MSBuild Projects="Demos\Delphi\FMX\Precision Threads\ADAPT_FMX_PrecisionThreads.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ADAPT_UnitTests_Delphi;ADAPT_FMX_PrecisionThreads"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ADAPT_UnitTests_Delphi:Clean;ADAPT_FMX_PrecisionThreads:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ADAPT_UnitTests_Delphi:Make;ADAPT_FMX_PrecisionThreads:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
