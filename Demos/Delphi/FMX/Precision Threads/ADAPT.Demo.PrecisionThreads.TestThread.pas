@@ -7,12 +7,20 @@ interface
 uses
   System.Classes, System.SysUtils,
   ADAPT.Common,
-  ADAPT.Threads;
+  ADAPT.Threads,
+  ADAPT.Generics.Lists.Intf;
 
 type
-  TTestPerformanceData = class(TADObject)
-
+  TTestPerformanceData = record
+    DesiredTickRate: ADFloat;
+    ExtraTime: ADFloat;
+    TickRateLimit: ADFloat;
+    TickRate: ADFloat;
+    TickRateAverage: ADFloat;
+    TickRateAverageOver: Cardinal;
   end;
+
+  ITestPerformanceDataCircularList = IADCircularList<TTestPerformanceData>;
 
   TTestTickCallback = procedure() of object; // Our Callback Type.
 
@@ -24,25 +32,44 @@ type
   }
   TTestThread = class(TADPrecisionThread)
   private
+    FPerformanceData: ITestPerformanceDataCircularList;
     FTickCallback: TTestTickCallback;
     // Getters
+    function GetHistoryLimit: Integer;
     function GetTickCallback: TTestTickCallback;
     // Setters
+    procedure SetHistoryLimit(const AHistoryLimit: Integer);
     procedure SetTickCallback(const ACallback: TTestTickCallback);
     // Internal Methods
     procedure InvokeCallbackIfAssigned;
+    procedure TransferExistingPerformanceData(const Item: TTestPerformanceData);
   protected
     { TADPrecisionThread }
     function GetDefaultTickRateLimit: ADFloat; override;
     function GetDefaultTickRateDesired: ADFloat; override;
     procedure Tick(const ADelta, AStartTime: ADFloat); override;
   public
+    constructor Create(const ACreateSuspended: Boolean); override;
+    // Properties
+    property HistoryLimit: Integer read GetHistoryLimit write SetHistoryLimit;
     property TickCallback: TTestTickCallback read GetTickCallback write SetTickCallback;
   end;
 
 implementation
 
+uses
+  ADAPT.Generics.Lists;
+
+type
+  TTestPerformanceDataCircularList = class(TADCircularList<TTestPerformanceData>);
+
 { TTestThread }
+
+constructor TTestThread.Create(const ACreateSuspended: Boolean);
+begin
+  inherited;
+  FPerformanceData := TTestPerformanceDataCircularList.Create(100);
+end;
 
 function TTestThread.GetDefaultTickRateDesired: ADFloat;
 begin
@@ -56,7 +83,17 @@ end;
 
 function TTestThread.GetDefaultTickRateLimit: ADFloat;
 begin
-  Result := 0; // We default the demo to 30 ticks per second.
+  Result := 30; // We default the demo to 30 ticks per second.
+end;
+
+function TTestThread.GetHistoryLimit: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FPerformanceData.Capacity;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TTestThread.GetTickCallback: TTestTickCallback;
@@ -83,6 +120,20 @@ begin
   end;
 end;
 
+procedure TTestThread.SetHistoryLimit(const AHistoryLimit: Integer);
+var
+  LOldPerformanceData: ITestPerformanceDataCircularList;
+begin
+  FLock.AcquireWrite;
+  try
+    LOldPerformanceData := FPerformanceData; // Store a copy of the old Performance Data container
+    FPerformanceData := TTestPerformanceDataCircularList.Create(AHistoryLimit); // Create our new Performance Data container
+    LOldPerformanceData.IterateOldestToNewest(TransferExistingPerformanceData); // Transfer the content of the OLD container to the NEW.
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
 procedure TTestThread.SetTickCallback(const ACallback: TTestTickCallback);
 begin
   FLock.AcquireWrite; // This needs to be "Threadsafe"
@@ -98,6 +149,11 @@ begin
   // Update Historical Performance Dataset
   // Notify the Callback to consume the updated Performance Dataset
   InvokeCallbackIfAssigned;
+end;
+
+procedure TTestThread.TransferExistingPerformanceData(const Item: TTestPerformanceData);
+begin
+  FPerformanceData.Add(Item);
 end;
 
 end.

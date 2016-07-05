@@ -25,6 +25,5 @@ object DemoForm: TDemoForm
     Size.Width = 640.000000000000000000
     Size.Height = 367.000000000000000000
     Size.PlatformDefault = False
-    OnClick = PerformanceChartClick
   end
 end

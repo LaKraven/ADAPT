@@ -55,6 +55,12 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+    TADListItemCallbackAnon<T> = reference to procedure(const Item: T);
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+  TADListItemCallbackOfObject<T> = procedure(const Item: T) of object;
+  TADListItemCallbackUnbound<T> = procedure(const Item: T);
+
   ///  <summary><c>Generic List Type</c></summary>
   IADList<T> = interface
     // Getters
@@ -103,6 +109,17 @@ type
     procedure AddItems(const AItems: Array of T);
     procedure Clear;
     procedure Delete(const AIndex: Integer);
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload;
     // Properties
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;

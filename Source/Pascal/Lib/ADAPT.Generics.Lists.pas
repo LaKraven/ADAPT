@@ -179,6 +179,17 @@ type
     procedure AddItems(const AItems: Array of T); virtual;
     procedure Clear; virtual;
     procedure Delete(const AIndex: Integer); virtual;
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
     // Properties
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;
@@ -509,6 +520,40 @@ end;
 function TADCircularList<T>.GetItem(const AIndex: Integer): T;
 begin
   Result := FItems[AIndex]; // Index Validation is now performed by TADArray<T>.GetItem
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+
 end;
 
 procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);

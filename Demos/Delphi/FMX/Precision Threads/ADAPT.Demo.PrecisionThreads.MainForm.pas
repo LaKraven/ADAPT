@@ -14,7 +14,6 @@ type
     PerformanceChart: TImage;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure PerformanceChartClick(Sender: TObject);
   private
     FThread: TTestThread;
   public
@@ -34,11 +33,6 @@ end;
 procedure TDemoForm.FormCreate(Sender: TObject);
 begin
   FThread := TTestThread.Create;
-end;
-
-procedure TDemoForm.PerformanceChartClick(Sender: TObject);
-begin
-
 end;
 
 {$R *.fmx}

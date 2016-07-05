@@ -53,7 +53,7 @@ uses
   ADAPT.Generics.Defaults.Intf,
   ADAPT.Generics.Allocators.Intf, ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays.Intf,
-  ADAPT.Generics.Lists;
+  ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf;
 
   {$I ADAPT_RTTI.inc}
 
@@ -115,6 +115,18 @@ type
     procedure AddItems(const AItems: Array of T); override;
     procedure Clear; override;
     procedure Delete(const AIndex: Integer); override;
+
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -265,6 +277,70 @@ end;
 function TADCircularListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 procedure TADCircularListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
