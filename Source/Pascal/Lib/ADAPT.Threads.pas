@@ -65,9 +65,10 @@ type
   ///    <para><c>ALL Threads in the codebase have a Threadsafe Lock.</c></para>
   ///    <para><c>ALL Threads in the codebase are Interfaced Types.</c></para>
   ///  </remarks>
-  TADThread = class abstract(TThread, IADInterface, IADThread, IADReadWriteLock)
+  TADThread = class abstract(TThread, IADInterface, {$IFDEF ADAPT_THREADS_USEINTERFACES}IADThread,{$ENDIF ADAPT_THREADS_USEINTERFACES} IADReadWriteLock)
   private
     FOwnerInterface: IInterface;
+    [volatile] FRefCount: Integer;
     { IInterface }
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
@@ -96,7 +97,7 @@ type
   ///    <para><c>Provides extremely precise Delta Time between Ticks.</c></para>
   ///    <para><c>You can set a precise Tick Rate Limit.</c></para>
   ///  </remarks>
-  TADPrecisionThread = class abstract(TADThread, IADPrecisionThread)
+  TADPrecisionThread = class abstract(TADThread{$IFDEF ADAPT_THREADS_USEINTERFACES}, IADPrecisionThread{$ENDIF ADAPT_THREADS_USEINTERFACES})
   private
     FNextTickTime: ADFloat;
     FPerformanceCounter: IADPerformanceCounter;
@@ -242,7 +243,7 @@ constructor TADThread.Create(const ACreateSuspended: Boolean);
 begin
   inherited Create(ACreateSuspended);
   CreateGUID(FInstanceGUID);
-  FLock := TADReadWriteLock.Create(IADThread(Self));
+  FLock := TADReadWriteLock.Create({$IFDEF ADAPT_THREADS_USEINTERFACES}IADThread{$ELSE}IADInterface{$ENDIF ADAPT_THREADS_USEINTERFACES}(Self));
 end;
 
 destructor TADThread.Destroy;
@@ -263,21 +264,34 @@ end;
 
 function TADThread.QueryInterface(const IID: TGUID; out Obj): HResult;
 begin
-if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE;
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := E_NOINTERFACE;
 end;
 
 function TADThread._AddRef: Integer;
 begin
   if FOwnerInterface <> nil then
-    Result := FOwnerInterface._AddRef else
-    Result := -1;
+    Result := FOwnerInterface._AddRef
+  else
+    Result := AtomicIncrement(FRefCount);
 end;
 
 function TADThread._Release: Integer;
 begin
   if FOwnerInterface <> nil then
-    Result := FOwnerInterface._Release else
-    Result := -1;
+    Result := FOwnerInterface._Release
+  else
+    Result := AtomicDecrement(FRefCount);
+
+  if Result = 0 then
+  begin
+    FLock.AcquireWrite;
+//    Terminate;
+//    WaitFor;
+    Free;
+  end;
 end;
 
 procedure TADThread.AfterConstruction;

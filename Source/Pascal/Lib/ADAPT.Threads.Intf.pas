@@ -57,6 +57,7 @@ type
   { Enums }
   TADThreadState = (tsRunning, tsPaused);
 
+{$IFDEF ADAPT_THREADS_USEINTERFACES}
   ///  <summary><c>Common Interface for ADAPT Thread Types.</c></summary>
   IADThread = interface(IADInterface)
   ['{021D276B-6619-4489-ABD1-56787D0FBF2D}']
@@ -114,7 +115,7 @@ type
     ///  </remarks>
     property ThrottleInterval: Cardinal read GetThrottleInterval write SetThrottleInterval;
   end;
-
+{$ENDIF ADAPT_THREADS_USEINTERFACES}
 implementation
 
 end.
