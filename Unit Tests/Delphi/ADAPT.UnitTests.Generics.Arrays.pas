@@ -69,7 +69,7 @@ begin
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], BASIC_ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestIntegrityThreadsafe;
@@ -81,7 +81,7 @@ begin
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
   for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I], BASIC_ITEMS[I]]));
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsArray.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);

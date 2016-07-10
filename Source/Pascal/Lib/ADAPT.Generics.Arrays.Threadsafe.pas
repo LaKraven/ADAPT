@@ -233,15 +233,14 @@ end;
 
 constructor TADObjectArrayTS<T>.Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0);
 begin
-  inherited;
   FLock := TADReadWriteLock.Create(Self);
+  inherited;
 end;
 
 destructor TADObjectArrayTS<T>.Destroy;
 begin
-  Clear;
-  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
 end;
 
 procedure TADObjectArrayTS<T>.Finalize(const AIndex, ACount: Integer);

@@ -527,10 +527,11 @@ end;
   var
     I: Integer;
   begin
-    for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-      ACallback(FItems[I]);
+    if FIndex > 0 then
+      for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
+        ACallback(FItems[I]);
     if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-      for I := FCount - 1 downto FIndex + 1 do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
+      for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
         ACallback(FItems[I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
@@ -539,10 +540,11 @@ procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemC
 var
   I: Integer;
 begin
-  for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-    ACallback(FItems[I]);
+  if FIndex > 0 then
+    for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
+      ACallback(FItems[I]);
   if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-    for I := FCount - 1 downto FIndex + 1 do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
+    for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
       ACallback(FItems[I]);
 end;
 
@@ -550,15 +552,18 @@ procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemC
 var
   I: Integer;
 begin
-  for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-    ACallback(FItems[I]);
+  if FIndex > 0 then
+    for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
+      ACallback(FItems[I]);
   if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-    for I := FCount - 1 downto FIndex + 1 do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
+    for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
       ACallback(FItems[I]);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    I: Integer;
   begin
 
   end;
@@ -566,12 +571,12 @@ end;
 
 procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
 begin
-
+  {$MESSAGE WARN 'Not Implemented Yet!'}
 end;
 
 procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
 begin
-
+  {$MESSAGE WARN 'Not Implemented Yet!'}
 end;
 
 procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
