@@ -84,6 +84,17 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer);
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Compactor: IADCollectionCompactor read GetCompactor;

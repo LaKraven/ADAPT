@@ -19,6 +19,12 @@ type
     [Test]
     procedure BasicIntegrity;
     [Test]
+    procedure BasicIntegrityStatic;
+    [Test]
+    procedure BasicIteratorBackwardIntegrity;
+    [Test]
+    procedure BasicIteratorForwardIntegrity;
+    [Test]
     [TestCase('In Range at 1', '1,True')]
     [TestCase('Out Of Range at 11', '11,False')]
     [TestCase('In Range at 2', '2,True')]
@@ -67,6 +73,75 @@ type
 
 { TAdaptUnitTestGenericsList }
 
+procedure TAdaptUnitTestGenericsList.BasicIntegrity;
+var
+  I: Integer;
+  LList: IStringList;
+begin
+  LList := TStringList.Create(0);
+  LList.AddItems(BASIC_ITEMS);
+
+  for I := 0 to LList.Count - 1 do
+    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I]]));
+end;
+
+procedure TAdaptUnitTestGenericsList.BasicIntegrityStatic;
+var
+  LList: IStringList;
+begin
+  LList := TStringList.Create(0);
+  LList.AddItems(ALPHABET);
+
+  Assert.IsTrue(LList.Items[0] = 'A', Format('Item 0 should be "A" but has come up as "%s"', [LList.Items[0]]));
+  Assert.IsTrue(LList.Items[1] = 'B', Format('Item 1 should be "B" but has come up as "%s"', [LList.Items[1]]));
+  Assert.IsTrue(LList.Items[2] = 'C', Format('Item 2 should be "C" but has come up as "%s"', [LList.Items[2]]));
+  Assert.IsTrue(LList.Items[3] = 'D', Format('Item 3 should be "D" but has come up as "%s"', [LList.Items[3]]));
+  Assert.IsTrue(LList.Items[4] = 'E', Format('Item 4 should be "E" but has come up as "%s"', [LList.Items[4]]));
+  Assert.IsTrue(LList.Items[5] = 'F', Format('Item 5 should be "F" but has come up as "%s"', [LList.Items[5]]));
+  Assert.IsTrue(LList.Items[6] = 'G', Format('Item 6 should be "G" but has come up as "%s"', [LList.Items[6]]));
+  Assert.IsTrue(LList.Items[7] = 'H', Format('Item 7 should be "H" but has come up as "%s"', [LList.Items[7]]));
+  Assert.IsTrue(LList.Items[8] = 'I', Format('Item 8 should be "I" but has come up as "%s"', [LList.Items[8]]));
+  Assert.IsTrue(LList.Items[9] = 'J', Format('Item 9 should be "J" but has come up as "%s"', [LList.Items[9]]));
+end;
+
+procedure TAdaptUnitTestGenericsList.BasicIteratorBackwardIntegrity;
+var
+  I: Integer;
+  LList: IStringList;
+begin
+  LList := TStringList.Create(0);
+  LList.AddItems(BASIC_ITEMS);
+
+  I := High(BASIC_ITEMS);
+
+  LList.IterateBackward(procedure(const AItem: String)
+                        begin
+                          Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
+                          Dec(I);
+                        end);
+
+  Assert.IsTrue(I = -1, Format('Iterator should have Index of -1 but instead shows Index of %d', [I]));
+end;
+
+procedure TAdaptUnitTestGenericsList.BasicIteratorForwardIntegrity;
+var
+  I: Integer;
+  LList: IStringList;
+begin
+  LList := TStringList.Create(0);
+  LList.AddItems(BASIC_ITEMS);
+
+  I := 0;
+
+  LList.IterateForward(procedure(const AItem: String)
+                       begin
+                         Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
+                         Inc(I);
+                       end);
+
+  Assert.IsTrue(I = Length(BASIC_ITEMS), Format('Iterator should have Index of %d but instead shows Index of %d', [Length(BASIC_ITEMS), I]));
+end;
+
 procedure TAdaptUnitTestGenericsList.TestDummyObjectIntegrity;
 var
   I: Integer;
@@ -77,19 +152,6 @@ begin
     LList.Add(TDummyObject.Create(BASIC_ITEMS[I]));
   for I := 0 to LList.Count - 1 do
     Assert.IsTrue(LList.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I].Foo]));
-end;
-
-procedure TAdaptUnitTestGenericsList.BasicIntegrity;
-var
-  I: Integer;
-  LList: IStringList;
-begin
-  LList := TStringList.Create(0);
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
-
-  for I := 0 to LList.Count - 1 do
-    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I]]));
 end;
 
 procedure TAdaptUnitTestGenericsList.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
@@ -179,8 +241,6 @@ begin
 end;
 
 procedure TAdaptUnitTestGenericsCircularList.CircularIntegrityStatic;
-const
-  ALPHABET: Array[0..25] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 var
   LList: ICircularStringList;
 begin

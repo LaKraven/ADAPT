@@ -113,6 +113,17 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer); virtual;
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual;
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Compactor: IADCollectionCompactor read GetCompactor;
@@ -244,7 +255,6 @@ procedure TADList<T>.Add(const AItem: T);
 begin
   CheckExpand(1);
   AddActual(AItem);
-  Inc(FCount);
 end;
 
 procedure TADList<T>.Add(const AList: IADList<T>);
@@ -254,12 +264,12 @@ begin
   CheckExpand(AList.Count);
   for I := 0 to AList.Count - 1 do
     AddActual(AList[I]);
-  Inc(FCount, AList.Count);
 end;
 
 procedure TADList<T>.AddActual(const AItem: T);
 begin
   FArray[FCount] := AItem;
+  Inc(FCount);
 end;
 
 procedure TADList<T>.AddItems(const AItems: Array of T);
@@ -269,7 +279,6 @@ begin
   CheckExpand(Length(AItems));
   for I := Low(AItems) to High(AItems) do
     AddActual(AItems[I]);
-  Inc(FCount, Length(AItems));
 end;
 
 procedure TADList<T>.CheckCompact(const AAmount: Integer);
@@ -375,6 +384,58 @@ end;
 procedure TADList<T>.InsertItems(const AItems: Array of T; const AIndex: Integer);
 begin
   //TODO -oDaniel -cTADList<T>: Implement InsertItems method
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    I: Integer;
+  begin
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I]);
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  I: Integer;
+begin
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I]);
+end;
+
+procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+var
+  I: Integer;
+begin
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I]);
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADList<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    I: Integer;
+  begin
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I]);
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADList<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  I: Integer;
+begin
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I]);
+end;
+
+procedure TADList<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
+var
+  I: Integer;
+begin
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I]);
 end;
 
 procedure TADList<T>.SetCapacity(const ACapacity: Integer);
