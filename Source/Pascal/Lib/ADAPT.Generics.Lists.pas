@@ -74,26 +74,26 @@ type
     FArray: IADArray<T>;
     FCount: Integer;
     // Getters
-    function GetCapacity: Integer;
-    function GetCompactor: IADCollectionCompactor;
-    function GetCount: Integer;
-    function GetExpander: IADCollectionExpander;
-    function GetInitialCapacity: Integer;
-    function GetItem(const AIndex: Integer): T;
+    function GetCapacity: Integer; virtual;
+    function GetCompactor: IADCollectionCompactor; virtual;
+    function GetCount: Integer; virtual;
+    function GetExpander: IADCollectionExpander; virtual;
+    function GetInitialCapacity: Integer; virtual;
+    function GetItem(const AIndex: Integer): T; virtual;
     // Setters
-    procedure SetCapacity(const ACapacity: Integer);
-    procedure SetCompactor(const ACompactor: IADCollectionCompactor);
-    procedure SetExpander(const AExpander: IADCollectionExpander);
-    procedure SetItem(const AIndex: Integer; const AItem: T);
+    procedure SetCapacity(const ACapacity: Integer); virtual;
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
+    procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
     // Management Methods
     ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
     procedure AddActual(const AItem: T);
     ///  <summary><c>Override to constructor an alternative Array type</c></summary>
     procedure CreateArray(const AInitialCapacity: Integer = 0); virtual;
     ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
-    procedure CheckCompact(const AAmount: Integer);
+    procedure CheckCompact(const AAmount: Integer); virtual;
     ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
-    procedure CheckExpand(const AAmount: Integer);
+    procedure CheckExpand(const AAmount: Integer); virtual;
   public
     ///  <summary><c>Creates an instance of your List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;

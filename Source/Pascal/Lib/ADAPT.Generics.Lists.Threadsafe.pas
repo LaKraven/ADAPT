@@ -66,10 +66,49 @@ type
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
+  protected
+    // Getters
+    function GetCapacity: Integer; override;
+    function GetCompactor: IADCollectionCompactor; override;
+    function GetCount: Integer; override;
+    function GetExpander: IADCollectionExpander; override;
+    function GetInitialCapacity: Integer; override;
+    function GetItem(const AIndex: Integer): T; override;
+    // Setters
+    procedure SetCapacity(const ACapacity: Integer); override;
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor); override;
+    procedure SetExpander(const AExpander: IADCollectionExpander); override;
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
+    // Management Methods
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); override;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); override;
   public
     ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0); overload; override;
     destructor Destroy; override;
+
+    // Management Methods
+    procedure Add(const AItem: T); overload; override;
+    procedure Add(const AList: IADList<T>); overload; override;
+    procedure AddItems(const AItems: Array of T); override;
+    procedure Clear; override;
+    procedure Delete(const AIndex: Integer); override;
+    procedure DeleteRange(const AFirst, ACount: Integer); override;
+    procedure Insert(const AItem: T; const AIndex: Integer); override;
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer); override;
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -83,10 +122,49 @@ type
   private
     FLock: TADReadWriteLock;
     function GetLock: IADReadWriteLock;
+  protected
+    // Getters
+    function GetCapacity: Integer; override;
+    function GetCompactor: IADCollectionCompactor; override;
+    function GetCount: Integer; override;
+    function GetExpander: IADCollectionExpander; override;
+    function GetInitialCapacity: Integer; override;
+    function GetItem(const AIndex: Integer): T; override;
+    // Setters
+    procedure SetCapacity(const ACapacity: Integer); override;
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor); override;
+    procedure SetExpander(const AExpander: IADCollectionExpander); override;
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
+    // Management Methods
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); override;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); override;
   public
     ///  <summary><c>Creates an instance of your List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0; const AOwnership: TADOwnership = oOwnsObjects); overload; override;
     destructor Destroy; override;
+
+    // Management Methods
+    procedure Add(const AItem: T); overload; override;
+    procedure Add(const AList: IADList<T>); overload; override;
+    procedure AddItems(const AItems: Array of T); override;
+    procedure Clear; override;
+    procedure Delete(const AIndex: Integer); override;
+    procedure DeleteRange(const AFirst, ACount: Integer); override;
+    procedure Insert(const AItem: T; const AIndex: Integer); override;
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer); override;
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -176,10 +254,90 @@ implementation
 
 { TADListTS<T> }
 
+procedure TADListTS<T>.Add(const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.Add(const AList: IADList<T>);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.AddItems(const AItems: array of T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.CheckCompact(const AAmount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.CheckExpand(const AAmount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
 constructor TADListTS<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
+end;
+
+procedure TADListTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.DeleteRange(const AFirst, ACount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 destructor TADListTS<T>.Destroy;
@@ -188,17 +346,281 @@ begin
   inherited;
 end;
 
+function TADListTS<T>.GetCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetCompactor: IADCollectionCompactor;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetExpander: IADCollectionExpander;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetInitialCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetItem(const AIndex: Integer): T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
 end;
 
+procedure TADListTS<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.InsertItems(const AItems: array of T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADListTS<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADListTS<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADListTS<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADListTS<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADListTS<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADListTS<T>.SetCapacity(const ACapacity: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.SetExpander(const AExpander: IADCollectionExpander);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 { TADObjectListTS<T> }
+
+procedure TADObjectListTS<T>.Add(const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.Add(const AList: IADList<T>);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.AddItems(const AItems: array of T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.CheckCompact(const AAmount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.CheckExpand(const AAmount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
 
 constructor TADObjectListTS<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
+end;
+
+procedure TADObjectListTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.DeleteRange(const AFirst, ACount: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 destructor TADObjectListTS<T>.Destroy;
@@ -207,9 +629,193 @@ begin
   inherited;
 end;
 
+function TADObjectListTS<T>.GetCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectListTS<T>.GetCompactor: IADCollectionCompactor;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectListTS<T>.GetExpander: IADCollectionExpander;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectListTS<T>.GetInitialCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectListTS<T>.GetItem(const AIndex: Integer): T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADObjectListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+procedure TADObjectListTS<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.InsertItems(const AItems: array of T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+    FLock.AcquireRead;
+    try
+      inherited;
+    finally
+      FLock.ReleaseRead;
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADObjectListTS<T>.SetCapacity(const ACapacity: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.SetExpander(const AExpander: IADCollectionExpander);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 { TADCircularListTS<T> }
