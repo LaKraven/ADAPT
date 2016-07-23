@@ -42,6 +42,8 @@ type
     [Test]
     procedure CircularIntegrity;
     [Test]
+    procedure CircularIntegrityStatic;
+    [Test]
     procedure CircularIteratorIntegrityNewestToOldest;
     [Test]
     procedure CircularIteratorIntegrityOldestToNewest;
@@ -118,8 +120,7 @@ var
   LList: ICircularStringList;
 begin
   LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+  LList.AddItems(BASIC_ITEMS);
 
   for I := 0 to LList.Count - 1 do
     Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I]]));
@@ -131,8 +132,7 @@ var
   LList: ICircularStringList;
 begin
   LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+  LList.AddItems(BASIC_ITEMS);
 
   I := High(BASIC_ITEMS);
 
@@ -151,8 +151,7 @@ var
   LList: ICircularStringList;
 begin
   LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+  LList.AddItems(BASIC_ITEMS);
 
   I := 0;
 
@@ -166,8 +165,38 @@ begin
 end;
 
 procedure TAdaptUnitTestGenericsCircularList.CircularIntegrity;
+const
+  MAX_CAPACITY: Integer = Length(BASIC_ITEMS) div 2;
+var
+  I: Integer;
+  LList: ICircularStringList;
 begin
+  LList := TCircularStringList.Create(MAX_CAPACITY);
+  LList.AddItems(BASIC_ITEMS);
 
+  for I := 0 to LList.Count - 1 do
+    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], LList.Items[I]]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.CircularIntegrityStatic;
+const
+  ALPHABET: Array[0..25] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(10);
+  LList.AddItems(ALPHABET);
+
+  Assert.IsTrue(LList.Items[0] = 'U', Format('Item 0 should be "U" but has come up as "%s"', [LList.Items[0]]));
+  Assert.IsTrue(LList.Items[1] = 'V', Format('Item 1 should be "V" but has come up as "%s"', [LList.Items[1]]));
+  Assert.IsTrue(LList.Items[2] = 'W', Format('Item 2 should be "W" but has come up as "%s"', [LList.Items[2]]));
+  Assert.IsTrue(LList.Items[3] = 'X', Format('Item 3 should be "X" but has come up as "%s"', [LList.Items[3]]));
+  Assert.IsTrue(LList.Items[4] = 'Y', Format('Item 4 should be "Y" but has come up as "%s"', [LList.Items[4]]));
+  Assert.IsTrue(LList.Items[5] = 'Z', Format('Item 5 should be "Z" but has come up as "%s"', [LList.Items[5]]));
+  Assert.IsTrue(LList.Items[6] = 'Q', Format('Item 6 should be "Q" but has come up as "%s"', [LList.Items[6]]));
+  Assert.IsTrue(LList.Items[7] = 'R', Format('Item 7 should be "R" but has come up as "%s"', [LList.Items[7]]));
+  Assert.IsTrue(LList.Items[8] = 'S', Format('Item 8 should be "S" but has come up as "%s"', [LList.Items[8]]));
+  Assert.IsTrue(LList.Items[9] = 'T', Format('Item 9 should be "T" but has come up as "%s"', [LList.Items[9]]));
 end;
 
 procedure TAdaptUnitTestGenericsCircularList.CircularIteratorIntegrityNewestToOldest;
@@ -178,8 +207,7 @@ var
   LList: ICircularStringList;
 begin
   LList := TCircularStringList.Create(MAX_CAPACITY);
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+  LList.AddItems(BASIC_ITEMS);
 
   I := MAX_CAPACITY;
 
@@ -200,8 +228,7 @@ var
   LList: ICircularStringList;
 begin
   LList := TCircularStringList.Create(MAX_CAPACITY);
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+  LList.AddItems(BASIC_ITEMS);
 
   I := 0;
 

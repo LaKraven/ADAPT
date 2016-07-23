@@ -565,18 +565,52 @@ end;
   var
     I: Integer;
   begin
-
+    if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
+    begin
+      for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
+        ACallback(FItems[I]);
+    end else                       // if the Index <> Count - 1 (as in, NOT top item)
+    begin
+      for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
+        ACallback(FItems[I]);
+      for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
+        ACallback(FItems[I]);
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  I: Integer;
 begin
-  {$MESSAGE WARN 'Not Implemented Yet!'}
+  if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
+  begin
+    for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
+      ACallback(FItems[I]);
+  end else                       // if the Index <> Count - 1 (as in, NOT top item)
+  begin
+    for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
+      ACallback(FItems[I]);
+    for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
+      ACallback(FItems[I]);
+  end;
 end;
 
 procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+var
+  I: Integer;
 begin
-  {$MESSAGE WARN 'Not Implemented Yet!'}
+  if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
+  begin
+    for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
+      ACallback(FItems[I]);
+  end else                       // if the Index <> Count - 1 (as in, NOT top item)
+  begin
+    for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
+      ACallback(FItems[I]);
+    for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
+      ACallback(FItems[I]);
+  end;
 end;
 
 procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
