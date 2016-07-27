@@ -41,6 +41,10 @@ function ADFloatComparer: IADFloatComparer;
 
 implementation
 
+var
+  GStringComparer: IADStringComparer;
+  GFloatComparer: IADFloatComparer;
+
 type
   ///  <summary><c>Specialized Comparer for String values.</c></summary>
   TADStringComparer = class(TADComparer<String>)
@@ -62,23 +66,13 @@ type
     function ALessThanOrEqualToB(const A, B: ADFloat): Boolean; override;
   end;
 
-var
-  GStringComparer: IADStringComparer = nil;
-  GFloatComparer: IADFloatComparer = nil;
-
 function ADStringComparer: IADStringComparer;
 begin
-  if GStringComparer = nil then
-    GStringComparer := TADStringComparer.Create;
-
   Result := GStringComparer;
 end;
 
 function ADFloatComparer: IADFloatComparer;
 begin
-  if GFloatComparer = nil then
-    GFloatComparer := TADFloatComparer.Create;
-
   Result := GFloatComparer;
 end;
 
@@ -136,5 +130,8 @@ begin
   Result := (A <= B);
 end;
 
+initialization
+  GStringComparer := TADStringComparer.Create;
+  GFloatComparer := TADFloatComparer.Create;
 
 end.
