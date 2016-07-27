@@ -201,6 +201,7 @@
         <DCCReference Include="ADAPT.UnitTests.Generics.Maps.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas"/>
+        <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

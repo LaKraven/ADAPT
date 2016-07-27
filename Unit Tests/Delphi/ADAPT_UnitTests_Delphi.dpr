@@ -46,7 +46,8 @@ uses
   ADAPT.Streams.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas',
   ADAPT.UnitTests.Generics.Maps in 'ADAPT.UnitTests.Generics.Maps.pas',
   ADAPT.Generics.Comparers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas',
-  ADAPT.Generics.Comparers in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas';
+  ADAPT.Generics.Comparers in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas',
+  ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas';
 
 var
   runner : ITestRunner;
