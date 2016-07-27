@@ -198,6 +198,9 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas"/>
+        <DCCReference Include="ADAPT.UnitTests.Generics.Maps.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

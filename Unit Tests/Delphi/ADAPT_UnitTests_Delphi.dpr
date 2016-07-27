@@ -43,7 +43,10 @@ uses
   ADAPT.Performance.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas',
   ADAPT.Generics.Maps.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Threadsafe.pas',
   ADAPT.Generics.Trees.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas',
-  ADAPT.Streams.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas';
+  ADAPT.Streams.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas',
+  ADAPT.UnitTests.Generics.Maps in 'ADAPT.UnitTests.Generics.Maps.pas',
+  ADAPT.Generics.Comparers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas',
+  ADAPT.Generics.Comparers in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas';
 
 var
   runner : ITestRunner;
