@@ -223,6 +223,7 @@ begin
 end;
 
 initialization
+  GCardinalComparer = TADCardinalComparer.Create;
   GIntegerComparer := TADIntegerComparer.Create;
   GFloatComparer := TADFloatComparer.Create;
   GStringComparer := TADStringComparer.Create;
