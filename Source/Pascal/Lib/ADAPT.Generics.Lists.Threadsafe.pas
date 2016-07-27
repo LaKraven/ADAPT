@@ -150,6 +150,10 @@ type
     // Getters
     function GetCount: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
+    function GetNewest: T; override;
+    function GetNewestIndex: Integer; override;
+    function GetOldest: T; override;
+    function GetOldestIndex: Integer; override;
     // Setters
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
@@ -191,6 +195,10 @@ type
     // Getters
     function GetCount: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
+    function GetNewest: T; override;
+    function GetNewestIndex: Integer; override;
+    function GetOldest: T; override;
+    function GetOldestIndex: Integer; override;
     // Setters
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
@@ -865,6 +873,46 @@ begin
   Result := FLock;
 end;
 
+function TADCircularListTS<T>.GetNewest: T;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetNewestIndex: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetOldest: T;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetOldestIndex: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
   begin
@@ -1016,6 +1064,46 @@ end;
 function TADCircularObjectListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+function TADCircularObjectListTS<T>.GetNewest: T;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetNewestIndex: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetOldest: T;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetOldestIndex: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
