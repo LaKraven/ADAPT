@@ -23,8 +23,10 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  IADStringComparer = IADComparer<String>;
+  IADCardinalComparer = IADComparer<Cardinal>;
+  IADIntegerComparer = IADComparer<Integer>;
   IADFloatComparer = IADComparer<ADFloat>;
+  IADStringComparer = IADComparer<String>;
 
   ///  <summary><c>Abstract Base Class for Generic Comparers.</c></summary>
   TADComparer<T> = class abstract(TADObject, IADComparer<T>)
@@ -36,24 +38,38 @@ type
     function ALessThanOrEqualToB(const A, B: T): Boolean; virtual; abstract;
   end;
 
-function ADStringComparer: IADStringComparer;
+function ADCardinalComparer: IADCardinalComparer;
+function ADIntegerComparer: IADIntegerComparer;
 function ADFloatComparer: IADFloatComparer;
+function ADStringComparer: IADStringComparer;
 
 implementation
 
 var
-  GStringComparer: IADStringComparer;
+  GCardinalComparer: IADCardinalComparer;
+  GIntegerComparer: IADIntegerComparer;
   GFloatComparer: IADFloatComparer;
+  GStringComparer: IADStringComparer;
 
 type
-  ///  <summary><c>Specialized Comparer for String values.</c></summary>
-  TADStringComparer = class(TADComparer<String>)
+  ///  <summary><c>Specialized Comparer for Cardinal values.</c></summary>
+  TADCardinalComparer = class(TADComparer<Cardinal>)
   public
-    function AEqualToB(const A, B: String): Boolean; override;
-    function AGreaterThanB(const A, B: String): Boolean; override;
-    function AGreaterThanOrEqualToB(const A, B: String): Boolean; override;
-    function ALessThanB(const A, B: String): Boolean; override;
-    function ALessThanOrEqualToB(const A, B: String): Boolean; override;
+    function AEqualToB(const A, B: Cardinal): Boolean; override;
+    function AGreaterThanB(const A, B: Cardinal): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: Cardinal): Boolean; override;
+    function ALessThanB(const A, B: Cardinal): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: Cardinal): Boolean; override;
+  end;
+
+  ///  <summary><c>Specialized Comparer for Integer values.</c></summary>
+  TADIntegerComparer = class(TADComparer<Integer>)
+  public
+    function AEqualToB(const A, B: Integer): Boolean; override;
+    function AGreaterThanB(const A, B: Integer): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: Integer): Boolean; override;
+    function ALessThanB(const A, B: Integer): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: Integer): Boolean; override;
   end;
 
   ///  <summary><c>Specialized Comparer for ADFloat values.</c></summary>
@@ -66,9 +82,26 @@ type
     function ALessThanOrEqualToB(const A, B: ADFloat): Boolean; override;
   end;
 
-function ADStringComparer: IADStringComparer;
+  ///  <summary><c>Specialized Comparer for String values.</c></summary>
+  TADStringComparer = class(TADComparer<String>)
+  public
+    function AEqualToB(const A, B: String): Boolean; override;
+    function AGreaterThanB(const A, B: String): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: String): Boolean; override;
+    function ALessThanB(const A, B: String): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: String): Boolean; override;
+  end;
+
+{ Singleton Getters }
+
+function ADCardinalComparer: IADCardinalComparer;
 begin
-  Result := GStringComparer;
+  Result := GCardinalComparer;
+end;
+
+function ADIntegerComparer: IADIntegerComparer;
+begin
+  Result := GIntegerComparer;
 end;
 
 function ADFloatComparer: IADFloatComparer;
@@ -76,29 +109,61 @@ begin
   Result := GFloatComparer;
 end;
 
-{ TADStringComparer }
+function ADStringComparer: IADStringComparer;
+begin
+  Result := GStringComparer;
+end;
 
-function TADStringComparer.AEqualToB(const A, B: String): Boolean;
+{ TADCardinalComparer }
+
+function TADCardinalComparer.AEqualToB(const A, B: Cardinal): Boolean;
 begin
   Result := (A = B);
 end;
 
-function TADStringComparer.AGreaterThanB(const A, B: String): Boolean;
+function TADCardinalComparer.AGreaterThanB(const A, B: Cardinal): Boolean;
 begin
   Result := (A > B);
 end;
 
-function TADStringComparer.AGreaterThanOrEqualToB(const A, B: String): Boolean;
+function TADCardinalComparer.AGreaterThanOrEqualToB(const A, B: Cardinal): Boolean;
 begin
   Result := (A >= B);
 end;
 
-function TADStringComparer.ALessThanB(const A, B: String): Boolean;
+function TADCardinalComparer.ALessThanB(const A, B: Cardinal): Boolean;
 begin
   Result := (A < B);
 end;
 
-function TADStringComparer.ALessThanOrEqualToB(const A, B: String): Boolean;
+function TADCardinalComparer.ALessThanOrEqualToB(const A, B: Cardinal): Boolean;
+begin
+  Result := (A <= B);
+end;
+
+{ TADIntegerComparer }
+
+function TADIntegerComparer.AEqualToB(const A, B: Integer): Boolean;
+begin
+  Result := (A = B);
+end;
+
+function TADIntegerComparer.AGreaterThanB(const A, B: Integer): Boolean;
+begin
+  Result := (A > B);
+end;
+
+function TADIntegerComparer.AGreaterThanOrEqualToB(const A, B: Integer): Boolean;
+begin
+  Result := (A >= B);
+end;
+
+function TADIntegerComparer.ALessThanB(const A, B: Integer): Boolean;
+begin
+  Result := (A < B);
+end;
+
+function TADIntegerComparer.ALessThanOrEqualToB(const A, B: Integer): Boolean;
 begin
   Result := (A <= B);
 end;
@@ -130,8 +195,36 @@ begin
   Result := (A <= B);
 end;
 
+{ TADStringComparer }
+
+function TADStringComparer.AEqualToB(const A, B: String): Boolean;
+begin
+  Result := (A = B);
+end;
+
+function TADStringComparer.AGreaterThanB(const A, B: String): Boolean;
+begin
+  Result := (A > B);
+end;
+
+function TADStringComparer.AGreaterThanOrEqualToB(const A, B: String): Boolean;
+begin
+  Result := (A >= B);
+end;
+
+function TADStringComparer.ALessThanB(const A, B: String): Boolean;
+begin
+  Result := (A < B);
+end;
+
+function TADStringComparer.ALessThanOrEqualToB(const A, B: String): Boolean;
+begin
+  Result := (A <= B);
+end;
+
 initialization
-  GStringComparer := TADStringComparer.Create;
+  GIntegerComparer := TADIntegerComparer.Create;
   GFloatComparer := TADFloatComparer.Create;
+  GStringComparer := TADStringComparer.Create;
 
 end.
