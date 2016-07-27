@@ -48,64 +48,46 @@ implementation
 uses
   ADAPT.Generics.Comparers.Intf, ADAPT.Generics.Comparers;
 
-type
-  IStringComparer = IADComparer<String>;
-
 { TAdaptUnitTestGenericsComparer }
 
 procedure TAdaptUnitTestGenericsComparer.AEqualToB(const AValueA, AValueB: String; const AExpectedResult: Boolean);
-var
-  LComparer: IStringComparer;
 begin
-  LComparer := TADStringComparer.Create;
   if AExpectedResult then
-    Assert.IsTrue(LComparer.AEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... these SHOULD evaluate as Matching, but do not!', [AValueA, AValueB]))
+    Assert.IsTrue(ADStringComparer.AEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... these SHOULD evaluate as Matching, but do not!', [AValueA, AValueB]))
   else
-    Assert.IsFalse(LComparer.AEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... these SHOULD evaluate as NOT Matching, but evaluate as Matching!', [AValueA, AValueB]))
+    Assert.IsFalse(ADStringComparer.AEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... these SHOULD evaluate as NOT Matching, but evaluate as Matching!', [AValueA, AValueB]))
 end;
 
 procedure TAdaptUnitTestGenericsComparer.AGreaterThanB(const AValueA, AValueB: String; const AExpectedResult: Boolean);
-var
-  LComparer: IStringComparer;
 begin
-  LComparer := TADStringComparer.Create;
   if AExpectedResult then
-    Assert.IsTrue(LComparer.AGreaterThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be GREATER THAN ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsTrue(ADStringComparer.AGreaterThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be GREATER THAN ValueB, but is not!', [AValueA, AValueB]))
   else
-    Assert.IsFalse(LComparer.AGreaterThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueB SHOULD be GREATER THAN ValueA, but is not!', [AValueA, AValueB]))
+    Assert.IsFalse(ADStringComparer.AGreaterThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueB SHOULD be GREATER THAN ValueA, but is not!', [AValueA, AValueB]))
 end;
 
 procedure TAdaptUnitTestGenericsComparer.AGreaterThanOrEqualToB(const AValueA, AValueB: String; const AExpectedResult: Boolean);
-var
-  LComparer: IStringComparer;
 begin
-  LComparer := TADStringComparer.Create;
   if AExpectedResult then
-    Assert.IsTrue(LComparer.AGreaterThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be GREATER THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsTrue(ADStringComparer.AGreaterThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be GREATER THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
   else
-    Assert.IsFalse(LComparer.AGreaterThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA should NOT be GREATER THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsFalse(ADStringComparer.AGreaterThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA should NOT be GREATER THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
 end;
 
 procedure TAdaptUnitTestGenericsComparer.ALessThanB(const AValueA, AValueB: String; const AExpectedResult: Boolean);
-var
-  LComparer: IStringComparer;
 begin
-  LComparer := TADStringComparer.Create;
   if AExpectedResult then
-    Assert.IsTrue(LComparer.ALessThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be LESS THAN ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsTrue(ADStringComparer.ALessThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be LESS THAN ValueB, but is not!', [AValueA, AValueB]))
   else
-    Assert.IsFalse(LComparer.ALessThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueB SHOULD be LESS THAN ValueA, but is not!', [AValueA, AValueB]))
+    Assert.IsFalse(ADStringComparer.ALessThanB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueB SHOULD be LESS THAN ValueA, but is not!', [AValueA, AValueB]))
 end;
 
 procedure TAdaptUnitTestGenericsComparer.ALessThanOrEqualToB(const AValueA, AValueB: String; const AExpectedResult: Boolean);
-var
-  LComparer: IStringComparer;
 begin
-  LComparer := TADStringComparer.Create;
   if AExpectedResult then
-    Assert.IsTrue(LComparer.ALessThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be LESS THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsTrue(ADStringComparer.ALessThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA SHOULD be LESS THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
   else
-    Assert.IsFalse(LComparer.ALessThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA should NOT be LESS THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
+    Assert.IsFalse(ADStringComparer.ALessThanOrEqualToB(AValueA, AValueB), Format('ValueA is "%s", ValueB is "%s"... ValueA should NOT be LESS THAN OR EQUAL TO ValueB, but is not!', [AValueA, AValueB]))
 end;
 
 initialization

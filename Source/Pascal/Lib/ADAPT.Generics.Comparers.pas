@@ -23,6 +23,9 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  IADStringComparer = IADComparer<String>;
+  IADFloatComparer = IADComparer<ADFloat>;
+
   ///  <summary><c>Abstract Base Class for Generic Comparers.</c></summary>
   TADComparer<T> = class abstract(TADObject, IADComparer<T>)
   public
@@ -33,6 +36,12 @@ type
     function ALessThanOrEqualToB(const A, B: T): Boolean; virtual; abstract;
   end;
 
+function ADStringComparer: IADStringComparer;
+function ADFloatComparer: IADFloatComparer;
+
+implementation
+
+type
   ///  <summary><c>Specialized Comparer for String values.</c></summary>
   TADStringComparer = class(TADComparer<String>)
   public
@@ -53,7 +62,25 @@ type
     function ALessThanOrEqualToB(const A, B: ADFloat): Boolean; override;
   end;
 
-implementation
+var
+  GStringComparer: IADStringComparer = nil;
+  GFloatComparer: IADFloatComparer = nil;
+
+function ADStringComparer: IADStringComparer;
+begin
+  if GStringComparer = nil then
+    GStringComparer := TADStringComparer.Create;
+
+  Result := GStringComparer;
+end;
+
+function ADFloatComparer: IADFloatComparer;
+begin
+  if GFloatComparer = nil then
+    GFloatComparer := TADFloatComparer.Create;
+
+  Result := GFloatComparer;
+end;
 
 { TADStringComparer }
 
