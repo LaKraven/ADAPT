@@ -43,6 +43,16 @@ type
     function ALessThanOrEqualToB(const A, B: String): Boolean; override;
   end;
 
+  ///  <summary><c>Specialized Comparer for ADFloat values.</c></summary>
+  TADFloatComparer = class(TADComparer<ADFloat>)
+  public
+    function AEqualToB(const A, B: ADFloat): Boolean; override;
+    function AGreaterThanB(const A, B: ADFloat): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: ADFloat): Boolean; override;
+    function ALessThanB(const A, B: ADFloat): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: ADFloat): Boolean; override;
+  end;
+
 implementation
 
 { TADStringComparer }
@@ -71,5 +81,33 @@ function TADStringComparer.ALessThanOrEqualToB(const A, B: String): Boolean;
 begin
   Result := (A <= B);
 end;
+
+{ TADFloatComparer }
+
+function TADFloatComparer.AEqualToB(const A, B: ADFloat): Boolean;
+begin
+  Result := (A = B);
+end;
+
+function TADFloatComparer.AGreaterThanB(const A, B: ADFloat): Boolean;
+begin
+  Result := (A > B);
+end;
+
+function TADFloatComparer.AGreaterThanOrEqualToB(const A, B: ADFloat): Boolean;
+begin
+  Result := (A >= B);
+end;
+
+function TADFloatComparer.ALessThanB(const A, B: ADFloat): Boolean;
+begin
+  Result := (A < B);
+end;
+
+function TADFloatComparer.ALessThanOrEqualToB(const A, B: ADFloat): Boolean;
+begin
+  Result := (A <= B);
+end;
+
 
 end.
