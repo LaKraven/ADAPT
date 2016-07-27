@@ -53,6 +53,22 @@ type
     procedure CircularIteratorIntegrityNewestToOldest;
     [Test]
     procedure CircularIteratorIntegrityOldestToNewest;
+    [Test]
+    procedure VerifyNewestItemAfterCycle;
+    [Test]
+    procedure VeryifyNewestItemEnd;
+    [Test]
+    procedure VerifyNewestItemIncompleteList;
+    [Test]
+    procedure VerifyNewestItemOnly;
+    [Test]
+    procedure VerifyOldestItemAfterCycle;
+    [Test]
+    procedure VeryifyOldestItemEnd;
+    [Test]
+    procedure VerifyOldestItemIncompleteList;
+    [Test]
+    procedure VerifyOldestItemOnly;
   end;
 
 implementation
@@ -299,6 +315,86 @@ begin
                               end);
 
   Assert.IsTrue(I = MAX_CAPACITY, Format('Iterator should have Index of %d but instead shows Index of %d', [MAX_CAPACITY, I]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemAfterCycle;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(5);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+  Assert.IsTrue(LList.NewestIndex = 2, Format('Newest Item Index should be 2 but instead got %d', [LList.NewestIndex]));
+  Assert.IsTrue(LList.Newest = 'H', Format('Newest Item should be "H" but instead got "%s"', [LList.Newest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VeryifyNewestItemEnd;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(5);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
+  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
+  Assert.IsTrue(LList.Newest = 'E', Format('Newest Item should be "E" but instead got "%s"', [LList.Newest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemIncompleteList;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(10);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
+  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
+  Assert.IsTrue(LList.Newest = 'E', Format('Newest Item should be "E" but instead got "%s"', [LList.Newest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemOnly;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(10);
+  LList.Add('Foo');
+  Assert.IsTrue(LList.NewestIndex = 0, Format('Newest Item Index should be 0 but instead got %d', [LList.NewestIndex]));
+  Assert.IsTrue(LList.Newest = 'Foo', Format('Newest Item should be "Foo" but instead got "%s"', [LList.Newest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemAfterCycle;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(5);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+  Assert.IsTrue(LList.OldestIndex = 3, Format('Oldest Item Index should be 3 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.Oldest = 'D', Format('Oldest Item should be "D" but instead got "%s"', [LList.Oldest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VeryifyOldestItemEnd;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(5);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']);
+  Assert.IsTrue(LList.OldestIndex = 4, Format('Oldest Item Index should be 4 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.Oldest = 'E', Format('Oldest Item should be "E" but instead got "%s"', [LList.Oldest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemIncompleteList;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(10);
+  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
+  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.Oldest = 'A', Format('Oldest Item should be "A" but instead got "%s"', [LList.Oldest]));
+end;
+
+procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemOnly;
+var
+  LList: ICircularStringList;
+begin
+  LList := TCircularStringList.Create(10);
+  LList.Add('Foo');
+  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.Oldest = 'Foo', Format('Oldest Item should be "Foo" but instead got "%s"', [LList.Oldest]));
 end;
 
 initialization

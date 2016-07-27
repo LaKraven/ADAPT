@@ -22,7 +22,7 @@ type
 
   ITestPerformanceDataCircularList = IADCircularList<TTestPerformanceData>;
 
-  TTestTickCallback = procedure() of object; // Our Callback Type.
+  TTestTickCallback = procedure(const APerformanceLog: ITestPerformanceDataCircularList) of object; // Our Callback Type.
 
   {
     This Test Thread simply builds a historical dataset of Thread Performance Data.
@@ -41,6 +41,7 @@ type
     procedure SetHistoryLimit(const AHistoryLimit: Integer);
     procedure SetTickCallback(const ACallback: TTestTickCallback);
     // Internal Methods
+    procedure LogPerformanceData;
     procedure InvokeCallbackIfAssigned;
     procedure TransferExistingPerformanceData(const Item: TTestPerformanceData);
   protected
@@ -113,11 +114,29 @@ begin
     if Assigned(FTickCallback) then // We need to check that the Callback has been Assigned
       Synchronize(procedure // We Synchronize the Callback because our Demo consumes it on the UI Thread.
                   begin
-                    FTickCallback; // Invoke the Callback...
+                    FTickCallback(FPerformanceData); // Invoke the Callback...
                   end);
   finally
     FLock.ReleaseRead; // ...Now we can release the Lock as we're done with the Callback.
   end;
+end;
+
+procedure TTestThread.LogPerformanceData;
+var
+  LPerformanceData: TTestPerformanceData;
+begin
+  FLock.AcquireRead; // We acquire the Lock so that the Callback cannot be changed while we're using it...
+  try
+    LPerformanceData.DesiredTickRate := TickRateDesired;
+    LPerformanceData.ExtraTime := CalculateExtraTime;
+    LPerformanceData.TickRateLimit := TickRateLimit;
+    LPerformanceData.TickRate := TickRate;
+    LPerformanceData.TickRateAverage := TickRateAverage;
+    LPerformanceData.TickRateAverageOver := TickRateAverageOver;
+  finally
+    FLock.ReleaseRead; // ...Now we can release the Lock as we're done with the Callback.
+  end;
+  FPerformanceData.Add(LPerformanceData);
 end;
 
 procedure TTestThread.SetHistoryLimit(const AHistoryLimit: Integer);
@@ -147,6 +166,7 @@ end;
 procedure TTestThread.Tick(const ADelta, AStartTime: ADFloat);
 begin
   // Update Historical Performance Dataset
+  LogPerformanceData;
   // Notify the Callback to consume the updated Performance Dataset
   InvokeCallbackIfAssigned;
 end;

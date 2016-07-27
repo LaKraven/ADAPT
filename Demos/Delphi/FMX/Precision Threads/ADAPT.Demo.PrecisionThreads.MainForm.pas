@@ -11,11 +11,11 @@ uses
 type
   TDemoForm = class(TForm)
     Layout1: TLayout;
-    PerformanceChart: TImage;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     FThread: TTestThread;
+    procedure PerformanceCallback(const APerformanceLog: ITestPerformanceDataCircularList);
   public
     { Public declarations }
   end;
@@ -30,9 +30,15 @@ begin
   FThread.Free;
 end;
 
+procedure TDemoForm.PerformanceCallback(const APerformanceLog: ITestPerformanceDataCircularList);
+begin
+
+end;
+
 procedure TDemoForm.FormCreate(Sender: TObject);
 begin
   FThread := TTestThread.Create;
+  FThread.TickCallback := PerformanceCallback;
 end;
 
 {$R *.fmx}

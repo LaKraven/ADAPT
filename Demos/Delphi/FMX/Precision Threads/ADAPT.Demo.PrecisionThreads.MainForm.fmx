@@ -17,13 +17,4 @@ object DemoForm: TDemoForm
     Size.PlatformDefault = False
     TabOrder = 0
   end
-  object PerformanceChart: TImage
-    MultiResBitmap = <
-      item
-      end>
-    Align = Client
-    Size.Width = 640.000000000000000000
-    Size.Height = 367.000000000000000000
-    Size.PlatformDefault = False
-  end
 end

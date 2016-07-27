@@ -81,6 +81,10 @@ type
     function GetCapacity: Integer;
     function GetCount: Integer;
     function GetItem(const AIndex: Integer): T;
+    function GetNewest: T;
+    function GetNewestIndex: Integer;
+    function GetOldest: T;
+    function GetOldestIndex: Integer;
     // Setters
     procedure SetItem(const AIndex: Integer; const AItem: T);
     // Management Methods
@@ -103,6 +107,10 @@ type
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;
     property Items[const AIndex: Integer]:  T read GetItem write SetItem;
+    property Newest: T read GetNewest;
+    property NewestIndex: Integer read GetNewestIndex;
+    property Oldest: T read GetOldest;
+    property OldestIndex: Integer read GetOldestIndex;
   end;
 
 implementation

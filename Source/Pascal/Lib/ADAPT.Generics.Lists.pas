@@ -145,6 +145,10 @@ type
     // Getters
     function GetCount: Integer; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
+    function GetNewest: T; virtual;
+    function GetNewestIndex: Integer; virtual;
+    function GetOldest: T; virtual;
+    function GetOldestIndex: Integer; virtual;
     // Setters
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
     // Management Methods
@@ -173,6 +177,10 @@ type
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;
     property Items[const AIndex: Integer]:  T read GetItem write SetItem;
+    property Newest: T read GetNewest;
+    property NewestIndex: Integer read GetNewestIndex;
+    property Oldest: T read GetOldest;
+    property OldestIndex: Integer read GetOldestIndex;
   end;
 
   ///  <summary><c>A Generic Fixed-Capacity Revolving Object List</c></summary>
@@ -549,6 +557,46 @@ end;
 function TADCircularList<T>.GetItem(const AIndex: Integer): T;
 begin
   Result := FItems[AIndex]; // Index Validation is now performed by TADArray<T>.GetItem
+end;
+
+function TADCircularList<T>.GetNewest: T;
+var
+  LIndex: Integer;
+begin
+  LIndex := GetNewestIndex;
+  if LIndex > -1 then
+    Result := FItems[LIndex];
+end;
+
+function TADCircularList<T>.GetNewestIndex: Integer;
+begin
+  if FCount > 0 then
+  begin
+    Result := FIndex - 1;
+    if Result = -1 then
+      Result := FItems.Capacity - 1;
+  end else
+    Result := -1;
+end;
+
+function TADCircularList<T>.GetOldest: T;
+var
+  LIndex: Integer;
+begin
+  LIndex := GetOldestIndex;
+  if LIndex > -1 then
+    Result := FItems[LIndex];
+end;
+
+function TADCircularList<T>.GetOldestIndex: Integer;
+begin
+  if FCount > 0 then
+  begin
+    Result := FIndex;
+    if Result > FCount - 1 then
+      Result := 0;
+  end else
+    Result := -1;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
