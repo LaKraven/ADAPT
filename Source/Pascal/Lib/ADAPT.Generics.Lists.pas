@@ -42,16 +42,22 @@ type
     FArray: IADArray<T>;
     FCount: Integer;
     // Getters
-    function GetCapacity: Integer; virtual;
+    { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
-    function GetCount: Integer; virtual;
+    { IADExpandable }
     function GetExpander: IADCollectionExpander; virtual;
+    { IADList<T> }
+    function GetCapacity: Integer; virtual;
+    function GetCount: Integer; virtual;
     function GetInitialCapacity: Integer; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
     // Setters
-    procedure SetCapacity(const ACapacity: Integer); virtual;
+    { IADCompactable }
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
+    { IADExpandable }
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    { IADList<T> }
+    procedure SetCapacity(const ACapacity: Integer); virtual;
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
     // Management Methods
     ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
@@ -83,6 +89,11 @@ type
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual;
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
+    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
@@ -93,10 +104,13 @@ type
     procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
     procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
     // Properties
-    property Capacity: Integer read GetCapacity write SetCapacity;
+    { IADCompactable }
     property Compactor: IADCollectionCompactor read GetCompactor;
-    property Count: Integer read GetCount;
+    { IADExpandable }
     property Expander: IADCollectionExpander read GetExpander;
+    { IADList<T> }
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Count: Integer read GetCount;
     property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
@@ -378,6 +392,38 @@ var
 begin
   for I := FCount - 1 downto 0 do
     ACallback(FArray[I]);
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADList<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
+  begin
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADList<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
+begin
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
+end;
+
+procedure TADList<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
+begin
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);

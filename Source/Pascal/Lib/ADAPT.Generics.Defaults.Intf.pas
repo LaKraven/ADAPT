@@ -22,10 +22,22 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  // Enums
+  TADIterateDirection = (idLeft, idRight);
+
   // Exceptions
   EADGenericsException = class(EADException);
+    EADGenericsIterateException = class(EADGenericsException);
+      EADGenericsIterateDirectionUnknownException = class(EADGenericsIterateException);
     EADGenericsRangeException = class(EADGenericsException);
     EADGenericsParameterInvalidException = class(EADGenericsException);
+
+  // Callbacks
+  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+    TADListItemCallbackAnon<T> = reference to procedure(const Item: T);
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+  TADListItemCallbackOfObject<T> = procedure(const Item: T) of object;
+  TADListItemCallbackUnbound<T> = procedure(const Item: T);
 
   ///  <summary><c>A Collection that can Own Objects.</c></summary>
   IADObjectOwner = interface(IADInterface)

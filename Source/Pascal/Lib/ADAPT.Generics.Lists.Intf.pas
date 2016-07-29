@@ -18,24 +18,17 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
+  ADAPT.Generics.Defaults.Intf,
   ADAPT.Generics.Allocators.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    TADListItemCallbackAnon<T> = reference to procedure(const Item: T);
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-  TADListItemCallbackOfObject<T> = procedure(const Item: T) of object;
-  TADListItemCallbackUnbound<T> = procedure(const Item: T);
-
   ///  <summary><c>Generic List Type</c></summary>
-  IADList<T> = interface
+  IADList<T> = interface(IADInterface)
     // Getters
     function GetCapacity: Integer;
-    function GetCompactor: IADCollectionCompactor;
     function GetCount: Integer;
-    function GetExpander: IADCollectionExpander;
     function GetInitialCapacity: Integer;
     function GetItem(const AIndex: Integer): T;
     // Setters
@@ -54,6 +47,11 @@ type
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload;
+    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
@@ -65,9 +63,7 @@ type
     procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
-    property Compactor: IADCollectionCompactor read GetCompactor;
     property Count: Integer read GetCount;
-    property Expander: IADCollectionExpander read GetExpander;
     property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
