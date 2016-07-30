@@ -22,6 +22,7 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  ///  <summary><c>Used to Compare two Generic Values.</c></summary>
   IADComparer<T> = interface(IADInterface)
     function AEqualToB(const A, B: T): Boolean;
     function AGreaterThanB(const A, B: T): Boolean;
@@ -30,6 +31,7 @@ type
     function ALessThanOrEqualToB(const A, B: T): Boolean;
   end;
 
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Comparer Type.</c></summary>
   IADComparable<T> = interface(IADInterface)
   ['{88444CD4-80FD-495C-A3D7-121CA14F7AC7}'] // If we don't provide a GUID here, we cannot cast-reference Collections as "Comparables".
     // Getters

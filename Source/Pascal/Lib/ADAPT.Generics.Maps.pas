@@ -73,6 +73,7 @@ type
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
     procedure DeleteSelection(const AIndexes: Array of Integer); virtual;
+    function EqualItems(const AList: IADLookupList<T>): Boolean; virtual;
     function IndexOf(const AItem: T): Integer; virtual;
     procedure Remove(const AItem: T); virtual;
     procedure RemoveItems(const AItems: Array of T); virtual;
@@ -181,6 +182,11 @@ begin
 end;
 
 procedure TADLookupList<T>.DeleteSelection(const AIndexes: array of Integer);
+begin
+
+end;
+
+function TADLookupList<T>.EqualItems(const AList: IADLookupList<T>): Boolean;
 begin
 
 end;

@@ -73,6 +73,15 @@ type
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
     ///  <summary><c>Deletes the Items at each given Index.</c></summary>
     procedure DeleteSelection(const AIndexes: Array of Integer);
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADLookupList<T>): Boolean;
     ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
     ///  <returns>
     ///    <para>-1<c> if the given Item is not in the List.</c></para>
