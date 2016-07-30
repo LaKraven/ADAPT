@@ -18,7 +18,7 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -45,22 +45,6 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer);
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
-    // Iterators
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload;
-    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount;
@@ -88,17 +72,6 @@ type
     procedure AddItems(const AItems: Array of T);
     procedure Clear;
     procedure Delete(const AIndex: Integer);
-    // Iterators
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload;
     // Properties
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;

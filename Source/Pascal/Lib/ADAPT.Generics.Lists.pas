@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists.Intf;
@@ -26,14 +26,11 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  // Exception Types
-  EADGenericsCapacityLessThanCount = class(EADGenericsParameterInvalidException);
-
   ///  <summary><c>Generic List Type</c></summary>
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADObject, IADList<T>, IADExpandable, IADCompactable)
+  TADList<T> = class(TADObject, IADList<T>, IADIterable<T>, IADExpandable, IADCompactable)
   private
     FCompactor: IADCollectionCompactor;
     FExpander: IADCollectionExpander;
@@ -62,7 +59,7 @@ type
     // Management Methods
     ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
     procedure AddActual(const AItem: T);
-    ///  <summary><c>Override to constructor an alternative Array type</c></summary>
+    ///  <summary><c>Override to construct an alternative Array type</c></summary>
     procedure CreateArray(const AInitialCapacity: Integer = 0); virtual;
     ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
     procedure CheckCompact(const AAmount: Integer); virtual;
@@ -88,6 +85,7 @@ type
     procedure Insert(const AItem: T; const AIndex: Integer); virtual;
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual;
     // Iterators
+    { IADIterable<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
@@ -148,7 +146,7 @@ type
   ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and items are subsequently Replaced by new ones.</c></para>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADCircularList<T> = class(TADObject, IADCircularList<T>)
+  TADCircularList<T> = class(TADObject, IADCircularList<T>, IADIterable<T>)
   private
     FCount: Integer;
     FIndex: Integer;
@@ -177,16 +175,22 @@ type
     procedure Clear; virtual;
     procedure Delete(const AIndex: Integer); virtual;
     // Iterators
+    { IADIterable<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
+    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
     // Properties
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;
@@ -221,6 +225,7 @@ type
 implementation
 
 uses
+  ADAPT.Generics.Common,
   ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays;
 
@@ -377,24 +382,6 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
-  var
-    I: Integer;
-  begin
-    for I := FCount - 1 downto 0 do
-      ACallback(FArray[I]);
-  end;
-{$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
-procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
-var
-  I: Integer;
-begin
-  for I := FCount - 1 downto 0 do
-    ACallback(FArray[I]);
-end;
-
-{$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADList<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
   begin
     case ADirection of
@@ -424,6 +411,24 @@ begin
     else
       raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
   end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    I: Integer;
+  begin
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I]);
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  I: Integer;
+begin
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I]);
 end;
 
 procedure TADList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
@@ -646,7 +651,39 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularList<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
+  begin
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADCircularList<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
+begin
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
+end;
+
+procedure TADCircularList<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
+begin
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADCircularList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
   var
     I: Integer;
   begin
@@ -659,7 +696,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
 var
   I: Integer;
 begin
@@ -671,7 +708,7 @@ begin
       ACallback(FItems[I]);
 end;
 
-procedure TADCircularList<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin
@@ -684,7 +721,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularList<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
   var
     I: Integer;
   begin
@@ -702,7 +739,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularList<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
 var
   I: Integer;
 begin
@@ -719,7 +756,7 @@ begin
   end;
 end;
 
-procedure TADCircularList<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularList<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin

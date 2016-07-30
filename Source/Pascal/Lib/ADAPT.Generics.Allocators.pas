@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -77,10 +77,6 @@ type
   public
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
   end;
-
-  // Exception Types
-  EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
-  EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
 
 implementation
 

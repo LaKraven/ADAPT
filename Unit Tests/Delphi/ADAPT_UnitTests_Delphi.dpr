@@ -47,7 +47,9 @@ uses
   ADAPT.UnitTests.Generics.Maps in 'ADAPT.UnitTests.Generics.Maps.pas',
   ADAPT.Generics.Comparers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas',
   ADAPT.Generics.Comparers in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas',
-  ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas';
+  ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas',
+  ADAPT.Generics.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas',
+  ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas';
 
 var
   runner : ITestRunner;

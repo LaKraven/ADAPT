@@ -30,6 +30,16 @@ type
     function ALessThanOrEqualToB(const A, B: T): Boolean;
   end;
 
+  IADComparable<T> = interface(IADInterface)
+  ['{88444CD4-80FD-495C-A3D7-121CA14F7AC7}'] // If we don't provide a GUID here, we cannot cast-reference Collections as "Comparables".
+    // Getters
+    function GetComparer: IADComparer<T>;
+    // Setters
+    procedure SetComparer(const AComparer: IADComparer<T>);
+    // Properties
+    property Comparer: IADComparer<T> read GetComparer write SetComparer;
+  end;
+
 implementation
 
 end.

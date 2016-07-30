@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf, ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf;
@@ -168,15 +168,15 @@ type
 
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -213,15 +213,15 @@ type
 
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
-    procedure IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>); overload; override;
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
-    procedure IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; override;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -914,7 +914,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularListTS<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
   begin
     FLock.AcquireRead;
     try
@@ -925,7 +925,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularListTS<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
 begin
   FLock.AcquireRead;
   try
@@ -935,7 +935,7 @@ begin
   end;
 end;
 
-procedure TADCircularListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularListTS<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
 begin
   FLock.AcquireRead;
   try
@@ -946,7 +946,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularListTS<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
   begin
     FLock.AcquireRead;
     try
@@ -957,7 +957,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularListTS<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
 begin
   FLock.AcquireRead;
   try
@@ -967,7 +967,7 @@ begin
   end;
 end;
 
-procedure TADCircularListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularListTS<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 begin
   FLock.AcquireRead;
   try
@@ -1107,7 +1107,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularObjectListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
   begin
     FLock.AcquireRead;
     try
@@ -1118,7 +1118,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularObjectListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
 begin
   FLock.AcquireRead;
   try
@@ -1128,7 +1128,7 @@ begin
   end;
 end;
 
-procedure TADCircularObjectListTS<T>.IterateNewestToOldest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularObjectListTS<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
 begin
   FLock.AcquireRead;
   try
@@ -1139,7 +1139,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADCircularObjectListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADCircularObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
   begin
     FLock.AcquireRead;
     try
@@ -1150,7 +1150,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADCircularObjectListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADCircularObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
 begin
   FLock.AcquireRead;
   try
@@ -1160,7 +1160,7 @@ begin
   end;
 end;
 
-procedure TADCircularObjectListTS<T>.IterateOldestToNewest(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADCircularObjectListTS<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 begin
   FLock.AcquireRead;
   try

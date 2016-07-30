@@ -18,7 +18,7 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -85,23 +85,6 @@ type
     ///  <summary><c>Deletes the given Items from the List.</c></summary>
     ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
     procedure RemoveItems(const AItems: Array of T);
-
-    // Iterators
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload;
-    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
 
     // Properties
     ///  <returns><c>The nunmber of Items in the List.</c></returns>

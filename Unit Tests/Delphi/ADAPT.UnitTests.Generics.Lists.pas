@@ -75,7 +75,7 @@ implementation
 
 uses
   ADAPT.Common,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common, ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf,
   ADAPT.UnitTests.Generics.Common;
 
@@ -86,6 +86,7 @@ type
   TDummyList = class(TADObjectList<TDummyObject>);
   ICircularStringList = IADCircularList<String>;
   TCircularStringList = TADCircularList<String>;
+  IStringIterable = IADIterable<String>;
 
 { TAdaptUnitTestGenericsList }
 
@@ -130,7 +131,7 @@ begin
 
   I := High(BASIC_ITEMS);
 
-  LList.IterateBackward(procedure(const AItem: String)
+  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
                         begin
                           Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                           Dec(I);
@@ -149,7 +150,7 @@ begin
 
   I := 0;
 
-  LList.IterateForward(procedure(const AItem: String)
+  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
                        begin
                          Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                          Inc(I);
@@ -214,7 +215,7 @@ begin
 
   I := High(BASIC_ITEMS);
 
-  LList.IterateNewestToOldest(procedure(const AItem: String)
+  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
                               begin
                                 Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                                 Dec(I);
@@ -233,7 +234,7 @@ begin
 
   I := 0;
 
-  LList.IterateOldestToNewest(procedure(const AItem: String)
+  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
                               begin
                                 Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                                 Inc(I);
@@ -287,7 +288,7 @@ begin
 
   I := MAX_CAPACITY;
 
-  LList.IterateNewestToOldest(procedure(const AItem: String)
+  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
                               begin
                                 Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY - 1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY - 1], AItem]));
                                 Dec(I);
@@ -308,7 +309,7 @@ begin
 
   I := 0;
 
-  LList.IterateOldestToNewest(procedure(const AItem: String)
+  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
                               begin
                                 Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], AItem]));
                                 Inc(I);

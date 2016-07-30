@@ -4,7 +4,7 @@
         <ProjectVersion>18.1</ProjectVersion>
         <MainSource>ADAPT_UnitTests_Delphi.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">TestInsight - Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Console</AppType>
@@ -202,6 +202,8 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

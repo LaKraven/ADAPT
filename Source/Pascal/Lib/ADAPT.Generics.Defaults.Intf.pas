@@ -17,38 +17,10 @@ uses
   {$ELSE}
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf;
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Common.Intf;
 
   {$I ADAPT_RTTI.inc}
-
-type
-  // Enums
-  TADIterateDirection = (idLeft, idRight);
-
-  // Exceptions
-  EADGenericsException = class(EADException);
-    EADGenericsIterateException = class(EADGenericsException);
-      EADGenericsIterateDirectionUnknownException = class(EADGenericsIterateException);
-    EADGenericsRangeException = class(EADGenericsException);
-    EADGenericsParameterInvalidException = class(EADGenericsException);
-
-  // Callbacks
-  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    TADListItemCallbackAnon<T> = reference to procedure(const Item: T);
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-  TADListItemCallbackOfObject<T> = procedure(const Item: T) of object;
-  TADListItemCallbackUnbound<T> = procedure(const Item: T);
-
-  ///  <summary><c>A Collection that can Own Objects.</c></summary>
-  IADObjectOwner = interface(IADInterface)
-  ['{5756A232-26B6-4395-9F1D-CCCC071E5701}']
-  // Getters
-  function GetOwnership: TADOwnership;
-  // Setters
-  procedure SetOwnership(const AOwnership: TADOwnership);
-  // Properties
-  property Ownership: TADOwnership read GetOwnership write SetOwnership;
-  end;
 
 implementation
 

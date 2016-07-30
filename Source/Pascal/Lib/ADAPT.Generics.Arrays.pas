@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Arrays.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -87,6 +87,9 @@ type
   end;
 
 implementation
+
+uses
+  ADAPT.Generics.Common;
 
 { TADArray<T> }
 
