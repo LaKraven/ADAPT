@@ -50,10 +50,15 @@ type
     ///  </returns>
     function Add(const AItem: T): Integer;
     ///  <summary><c>Adds multiple Items into the List.</c></summary>
-    procedure AddItems(const AItems: Array of T);
+    procedure AddItems(const AItems: Array of T); overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
+    procedure AddItems(const AList: IADLookupList<T>); overload;
     ///  <summary><c>Removes all Items from the List.</c></summary>
     procedure Clear;
-    ///  <summary><c>Compacts the size of the underlying Array to the minimum required capacity.</c></summary>
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
     procedure Compact;
     ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
     ///  <returns>
@@ -67,6 +72,17 @@ type
     ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
     ///  </returns>
     function ContainsAll(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AItems: Array of T): Boolean;
     ///  <summary><c>Deletes the Item at the given Index.</c></summary>
     procedure Delete(const AIndex: Integer); overload;
     ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
@@ -104,7 +120,7 @@ type
     ///  </returns>
     property IsEmpty: Boolean read GetIsEmpty;
     ///  <returns><c>The Item at the given Index.</c></returns>
-    property Item[const AIndex: Integer]: T read GetItem;
+    property Item[const AIndex: Integer]: T read GetItem; default;
   end;
 
 implementation
