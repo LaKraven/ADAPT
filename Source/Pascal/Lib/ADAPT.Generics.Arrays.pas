@@ -132,7 +132,7 @@ end;
 
 procedure TADArray<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
-  Move(AIndex, AIndex + 1, Capacity - AIndex);
+  Move(AIndex, AIndex + 1, (Capacity - AIndex) - 1);
   Finalize(AIndex, 1);
   FArray[AIndex] := AItem;
 end;

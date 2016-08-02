@@ -51,11 +51,10 @@ type
     constructor Create(const ACapacity: Integer = 0); override;
     destructor Destroy; override;
     // Management Methods
-    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; override;
-    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
+    procedure Delete(const AIndex: Integer); override;
     procedure Finalize(const AIndex, ACount: Integer); override;
-    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
+    procedure Insert(const AItem: T; const AIndex: Integer); override;
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); override;
     // Properties
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
@@ -84,11 +83,10 @@ type
     constructor Create(const AOwnership: TADOwnership = oOwnsObjects; const ACapacity: Integer = 0); reintroduce; virtual;
     destructor Destroy; override;
     // Management Methods
-    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; override;
-    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
+    procedure Delete(const AIndex: Integer); override;
     procedure Finalize(const AIndex, ACount: Integer); override;
-    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
+    procedure Insert(const AItem: T; const AIndex: Integer); override;
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); override;
     // Properties
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
@@ -112,6 +110,16 @@ constructor TADArrayTS<T>.Create(const ACapacity: Integer);
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
+end;
+
+procedure TADArrayTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 destructor TADArrayTS<T>.Destroy;
@@ -153,6 +161,16 @@ end;
 function TADArrayTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+procedure TADArrayTS<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 procedure TADArrayTS<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
@@ -205,6 +223,16 @@ begin
   inherited;
 end;
 
+procedure TADObjectArrayTS<T>.Delete(const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
 destructor TADObjectArrayTS<T>.Destroy;
 begin
   inherited;
@@ -244,6 +272,16 @@ end;
 function TADObjectArrayTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+procedure TADObjectArrayTS<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 procedure TADObjectArrayTS<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
