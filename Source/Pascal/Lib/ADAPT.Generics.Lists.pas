@@ -233,17 +233,17 @@ uses
 
 constructor TADList<T>.Create(const AInitialCapacity: Integer = 0);
 begin
-  Create(TADCollectionExpanderDefault.Create, TADCollectionCompactorDefault.Create, AInitialCapacity);
+  Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AInitialCapacity);
 end;
 
 constructor TADList<T>.Create(const AExpander: IADCollectionExpander; const AInitialCapacity: Integer = 0);
 begin
-  Create(AExpander, TADCollectionCompactorDefault.Create, AInitialCapacity);
+  Create(AExpander, ADCollectionCompactorDefault, AInitialCapacity);
 end;
 
 constructor TADList<T>.Create(const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0);
 begin
-  Create(TADCollectionExpanderDefault.Create, ACompactor, AInitialCapacity);
+  Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
 end;
 
 procedure TADList<T>.Add(const AItem: T);
@@ -498,17 +498,17 @@ end;
 
 constructor TADObjectList<T>.Create(const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-  Create(TADCollectionExpanderDefault.Create, TADCollectionCompactorDefault.Create, AInitialCapacity, AOwnership);
+  Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-  Create(TADCollectionExpanderDefault.Create, ACompactor, AInitialCapacity, AOwnership);
+  Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const AExpander: IADCollectionExpander; const AInitialCapacity: Integer; const AOwnership: TADOwnership);
 begin
-  Create(AExpander, TADCollectionCompactorDefault.Create, AInitialCapacity, AOwnership);
+  Create(AExpander, ADCollectionCompactorDefault, AInitialCapacity, AOwnership);
 end;
 
 constructor TADObjectList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer; const AOwnership: TADOwnership);

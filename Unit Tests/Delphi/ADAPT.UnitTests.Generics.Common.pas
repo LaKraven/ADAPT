@@ -35,6 +35,8 @@ const
                                          'Ninette'
                                        );
 
+  NAMES_IN_ORDER: Array[0..9] of String = ('Andy', 'Bob', 'Ellen', 'Hugh', 'Jack', 'Marie', 'Ninette', 'Rick', 'Sarah', 'Terry');
+
   LETTERS: Array[0..9] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
 
   ALPHABET: Array[0..25] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');

@@ -120,14 +120,22 @@ end;
 
 function TADArray<T>.GetItem(const AIndex: Integer): T;
 begin
-    if (AIndex < Low(FArray)) or (AIndex > High(FArray)) then
-      raise EADGenericsRangeException.CreateFmt('Index [%d] Out Of Range', [AIndex]);
-    Result := FArray[AIndex];
+  if (AIndex < Low(FArray)) or (AIndex > High(FArray)) then
+    raise EADGenericsRangeException.CreateFmt('Index [%d] Out Of Range', [AIndex]);
+  Result := FArray[AIndex];
 end;
 
 procedure TADArray<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
+var
+  LItem: T;
+  I: Integer;
 begin
-  System.Move(FArray[AFromIndex], FArray[AToIndex], ACount * SizeOf(T));
+  if AFromIndex < AToIndex then
+  begin
+    for I := AFromIndex + ACount downto AFromIndex + 1 do
+      FArray[I] := FArray[I - (AToIndex - AFromIndex)];
+  end else
+    System.Move(FArray[AFromIndex], FArray[AToIndex], ACount * SizeOf(T));
 end;
 
 procedure TADArray<T>.SetCapacity(const ACapacity: Integer);

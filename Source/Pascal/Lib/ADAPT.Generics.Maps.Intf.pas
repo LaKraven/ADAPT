@@ -33,6 +33,12 @@ type
     // Getters
     ///  <returns><c>The nunmber of Items in the List.</c></returns>
     function GetCount: Integer;
+    ///  <summary><c>Determines whether or not the List is Compact.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the List is Compact.</c></para>
+    ///    <para>False<c> if the List is NOT Compact.</c></para>
+    ///  </returns>
+    function GetIsCompact: Boolean;
     ///  <returns>
     ///    <para>True<c> if there are NO Items in the List.</c></para>
     ///    <para>False<c> if there are Items in the List.</c></para>
@@ -114,6 +120,11 @@ type
     // Properties
     ///  <returns><c>The nunmber of Items in the List.</c></returns>
     property Count: Integer read GetCount;
+    ///  <returns>
+    ///    <para>True<c> if the List is Compact.</c></para>
+    ///    <para>False<c> if the List is NOT Compact.</c></para>
+    ///  </returns>
+    property IsCompact: Boolean read GetIsCompact;
     ///  <returns>
     ///    <para>True<c> if there are NO Items in the List.</c></para>
     ///    <para>False<c> if there are Items in the List.</c></para>

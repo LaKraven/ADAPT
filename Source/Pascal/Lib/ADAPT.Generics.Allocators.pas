@@ -33,13 +33,6 @@ type
     function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; virtual; abstract;
   end;
 
-  ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>By default, the Array will grow by 1 each time it becomes full</c></remarks>
-  TADCollectionExpanderDefault = class(TADCollectionExpander)
-  public
-    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
-  end;
-
   ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
   ///  <remarks>
   ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
@@ -71,6 +64,19 @@ type
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; virtual; abstract;
   end;
 
+function ADCollectionExpanderDefault: IADCollectionExpander;
+function ADCollectionCompactorDefault: IADCollectionCompactor;
+
+implementation
+
+type
+  ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>By default, the Array will grow by 1 each time it becomes full</c></remarks>
+  TADCollectionExpanderDefault = class(TADCollectionExpander)
+  public
+    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
+  end;
+
   ///  <summary><c>The Default Deallocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>By default, the Array will shrink by 1 each time an Item is removed.</c></remarks>
   TADCollectionCompactorDefault = class(TADCollectionCompactor)
@@ -78,16 +84,18 @@ type
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
   end;
 
-implementation
+var
+  GCollectionExpanderDefault: IADCollectionExpander;
+  GCollectionCompactorDefault: IADCollectionCompactor;
 
-{ TADCollectionExpanderDefault }
-
-function TADCollectionExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+function ADCollectionExpanderDefault: IADCollectionExpander;
 begin
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
-    Result := 0;
+  Result := GCollectionExpanderDefault;
+end;
+
+function ADCollectionCompactorDefault: IADCollectionCompactor;
+begin
+  Result := GCollectionCompactorDefault;
 end;
 
 { TADCollectionExpanderGeometric }
@@ -121,11 +129,25 @@ begin
   FThreshold := AThreshold;
 end;
 
+{ TADCollectionExpanderDefault }
+
+function TADCollectionExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
 { TADCollectionCompactorDefault }
 
 function TADCollectionCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
 begin
   Result := AVacating;
 end;
+
+initialization
+  GCollectionExpanderDefault := TADCollectionExpanderDefault.Create;
+  GCollectionCompactorDefault := TADCollectionCompactorDefault.Create;
 
 end.

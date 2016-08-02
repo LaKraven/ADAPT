@@ -49,6 +49,7 @@ type
     function GetExpander: IADCollectionExpander; virtual;
     { IADLookupList<T> }
     function GetCount: Integer; virtual;
+    function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
     // Setters
@@ -77,6 +78,15 @@ type
     ///  </remarks>
     function GetSortedPosition(const AItem: T): Integer; virtual;
   public
+    ///  <summary><c>Creates an instance of your Lookup List using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Lookup List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Lookup List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Lookup List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    destructor Destroy; override;
     // Management Methods
     { IADLookupList<T> }
     function Add(const AItem: T): Integer; virtual;
@@ -123,6 +133,7 @@ type
     property Expander: IADCollectionExpander read GetExpander write SetExpander;
     { IADLookupList<T> }
     property Count: Integer read GetCount;
+    property IsCompact: Boolean read GetIsCompact;
     property IsEmpty: Boolean read GetIsEmpty;
     property Item[const AIndex: Integer]: T read GetItem;
   end;
@@ -150,6 +161,7 @@ implementation
 
 uses
   ADAPT.Generics.Common,
+  ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays;
 
 { TADLookupList<T> }
@@ -213,7 +225,8 @@ end;
 
 procedure TADLookupList<T>.Clear;
 begin
-  FArray.Finalize(0, FCount);
+//  FArray.Finalize(0, FCount);
+  FArray.Clear;
   FCount := 0;
   FArray.Capacity := FInitialCapacity;
 end;
@@ -262,6 +275,32 @@ begin
   Result := (not ContainsAny(AItems));
 end;
 
+constructor TADLookupList<T>.Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+begin
+  Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
+end;
+
+constructor TADLookupList<T>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+begin
+  Create(AExpander, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
+end;
+
+constructor TADLookupList<T>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+begin
+  Create(ADCollectionExpanderDefault, ACompactor, AComparer, AInitialCapacity);
+end;
+
+constructor TADLookupList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+begin
+  inherited Create;
+  FCount := 0;
+  FExpander := AExpander;
+  FCompactor := ACompactor;
+  FComparer := AComparer;
+  FInitialCapacity := AInitialCapacity;
+  CreateArray(AInitialCapacity);
+end;
+
 procedure TADLookupList<T>.CreateArray(const AInitialCapacity: Integer);
 begin
   FArray := TADArray<T>.Create(AInitialCapacity);
@@ -269,7 +308,12 @@ end;
 
 procedure TADLookupList<T>.Delete(const AIndex: Integer);
 begin
+  if AIndex < FCount - 1 then
+    FArray.Move(AIndex + 1, AIndex, (FCount - 1) - AIndex);
 
+  FArray.Finalize(FCount, 1);
+
+  Dec(FCount);
 end;
 
 procedure TADLookupList<T>.DeleteRange(const AFromIndex, ACount: Integer);
@@ -282,6 +326,12 @@ begin
 
 end;
 
+destructor TADLookupList<T>.Destroy;
+begin
+
+  inherited;
+end;
+
 function TADLookupList<T>.EqualItems(const AList: IADLookupList<T>): Boolean;
 begin
 
@@ -289,22 +339,27 @@ end;
 
 function TADLookupList<T>.GetCompactor: IADCollectionCompactor;
 begin
-
+  Result := FCompactor;
 end;
 
 function TADLookupList<T>.GetComparer: IADComparer<T>;
 begin
-
+  Result := FComparer;
 end;
 
 function TADLookupList<T>.GetCount: Integer;
 begin
-
+  Result := FCount;
 end;
 
 function TADLookupList<T>.GetExpander: IADCollectionExpander;
 begin
+  Result := FExpander;
+end;
 
+function TADLookupList<T>.GetIsCompact: Boolean;
+begin
+  Result := FArray.Capacity = FCount;
 end;
 
 function TADLookupList<T>.GetIsEmpty: Boolean;
@@ -314,7 +369,7 @@ end;
 
 function TADLookupList<T>.GetItem(const AIndex: Integer): T;
 begin
-
+  Result := FArray[AIndex];
 end;
 
 function TADLookupList<T>.GetSortedPosition(const AItem: T): Integer;
@@ -324,7 +379,7 @@ begin
   Result := 0;
   LLow := 0;
   LHigh := FCount - 1;
-  if LHigh = - 1 then
+  if LHigh = -1 then
     Exit;
   if LLow < LHigh then
   begin
@@ -343,12 +398,27 @@ begin
     Result := LLow + 1
   else
     Result := LLow;
-
 end;
 
 function TADLookupList<T>.IndexOf(const AItem: T): Integer;
+var
+  LLow, LHigh, LMid: Integer;
 begin
   Result := -1; // Pessimistic
+  LLow := 0;
+  LHigh := FCount - 1;
+  repeat
+    LMid := (LLow + LHigh) div 2;
+    if FComparer.AEqualToB(FArray[LMid], AItem) then
+    begin
+      Result := LMid;
+      Break;
+    end
+    else if FComparer.ALessThanB(AItem, FArray[LMid]) then
+      LHigh := LMid - 1
+    else
+      LLow := LMid + 1;
+  until LHigh < LLow;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
