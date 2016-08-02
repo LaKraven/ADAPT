@@ -41,6 +41,21 @@ const
 
   ALPHABET: Array[0..25] of String = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
+  BASIC_INTEGER_ITEMS: Array[0..9] of Integer = (
+                                                  1337,
+                                                  9001,
+                                                  10,
+                                                  1,
+                                                  20,
+                                                  2,
+                                                  21,
+                                                  30,
+                                                  55,
+                                                  666
+                                                );
+
+  NUMBERS_IN_ORDER: Array[0..9] of Integer = (1, 2, 10, 20, 21, 30, 55, 666, 1337, 9001);
+
 implementation
 
 { TDummyObject }

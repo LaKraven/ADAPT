@@ -77,6 +77,8 @@ type
     ///    <para><c>This is basically a Binary Sort implementation.<c></para>
     ///  </remarks>
     function GetSortedPosition(const AItem: T): Integer; virtual;
+    ///  <summary>Resorts the entire List.</c></summary>
+    procedure QuickSort(ALow, AHigh: Integer); virtual;
   public
     ///  <summary><c>Creates an instance of your Lookup List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
@@ -100,7 +102,6 @@ type
     function ContainsNone(const AItems: Array of T): Boolean; virtual;
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
-    procedure DeleteSelection(const AIndexes: Array of Integer); virtual;
     function EqualItems(const AList: IADLookupList<T>): Boolean; virtual;
     function IndexOf(const AItem: T): Integer; virtual;
     procedure Remove(const AItem: T); virtual;
@@ -188,10 +189,7 @@ begin
   if Result = FCount then
     FArray[FCount] := AItem
   else
-  begin
-    FArray.Move(Result, Result + 1, FCount - Result);
-    FArray[Result] := AItem;
-  end;
+    FArray.Insert(AItem, Result);
 
   Inc(FCount);
 end;
@@ -308,22 +306,16 @@ end;
 
 procedure TADLookupList<T>.Delete(const AIndex: Integer);
 begin
-  if AIndex < FCount - 1 then
-    FArray.Move(AIndex + 1, AIndex, (FCount - 1) - AIndex);
-
-  FArray.Finalize(FCount, 1);
-
+  FArray.Delete(AIndex);
   Dec(FCount);
 end;
 
 procedure TADLookupList<T>.DeleteRange(const AFromIndex, ACount: Integer);
+var
+  I: Integer;
 begin
-
-end;
-
-procedure TADLookupList<T>.DeleteSelection(const AIndexes: array of Integer);
-begin
-
+  for I := AFromIndex + ACount - 1 downto AFromIndex do
+    Delete(I);
 end;
 
 destructor TADLookupList<T>.Destroy;
@@ -333,8 +325,17 @@ begin
 end;
 
 function TADLookupList<T>.EqualItems(const AList: IADLookupList<T>): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := AList.Count = FCount;
+  if Result then
+    for I := 0 to AList.Count - 1 do
+      if (not FComparer.AEqualToB(AList[I], FArray[I])) then
+      begin
+        Result := False;
+        Break;
+      end;
 end;
 
 function TADLookupList<T>.GetCompactor: IADCollectionCompactor;
@@ -364,7 +365,7 @@ end;
 
 function TADLookupList<T>.GetIsEmpty: Boolean;
 begin
-
+  Result := (FCount = 0);
 end;
 
 function TADLookupList<T>.GetItem(const AIndex: Integer): T;
@@ -505,29 +506,75 @@ begin
     ACallback(FArray[I]);
 end;
 
-procedure TADLookupList<T>.Remove(const AItem: T);
+procedure TADLookupList<T>.QuickSort(ALow, AHigh: Integer);
+var
+  I, J: Integer;
+  LPivot, LTemp: T;
 begin
+  if FCount = 0 then
+    Exit;
 
+  repeat
+    I := ALow;
+    J := AHigh;
+    LPivot := FArray[ALow + (AHigh - ALow) shr 1];
+    repeat
+
+      while FComparer.ALessThanB(FArray[I], LPivot) do
+        Inc(I);
+      while FComparer.AGreaterThanB(FArray[J], LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := FArray[I];
+          FArray[I] := FArray[J];
+          FArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if ALow < J then
+      QuickSort(ALow, J);
+    ALow := I;
+until I >= AHigh;
+end;
+
+procedure TADLookupList<T>.Remove(const AItem: T);
+var
+  LIndex: Integer;
+begin
+  LIndex := IndexOf(AItem);
+  if LIndex > -1 then
+    Delete(LIndex);
 end;
 
 procedure TADLookupList<T>.RemoveItems(const AItems: array of T);
+var
+  I: Integer;
 begin
-
+  for I := Low(AItems) to High(AItems) do
+    Remove(AItems[I]);
 end;
 
 procedure TADLookupList<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
 begin
-
+  FCompactor := ACompactor;
+  //TODO -oDaniel -cTADLookupList<T>: Perform a "Smart Compact" here
 end;
 
 procedure TADLookupList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
-
+  FComparer := AComparer;
+  QuickSort(0, FCount - 1)
 end;
 
 procedure TADLookupList<T>.SetExpander(const AExpander: IADCollectionExpander);
 begin
-
+  FExpander := AExpander;
 end;
 
 { TADObjectLookupList<T> }

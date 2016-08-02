@@ -18,6 +18,7 @@
         <Filename Value="adapt.unittests.generics.collections.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ADAPT.UnitTests.Generics.Collections"/>
+        <IsVisibleTab Value="True"/>
         <CursorPos X="71" Y="10"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -68,15 +69,6 @@
         <UsageCount Value="20"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="376"/>
-        <CursorPos X="32" Y="384"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit7>
-      <Unit8>
         <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
@@ -84,6 +76,14 @@
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="375"/>
+        <CursorPos X="42" Y="386"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit8>
     </Units>
     <JumpHistory Count="5" HistoryIndex="4">

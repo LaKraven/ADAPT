@@ -93,8 +93,6 @@ type
     procedure Delete(const AIndex: Integer); overload;
     ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
-    ///  <summary><c>Deletes the Items at each given Index.</c></summary>
-    procedure DeleteSelection(const AIndexes: Array of Integer);
     ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
     ///  <returns>
     ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>

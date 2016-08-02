@@ -51,12 +51,10 @@ type
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
   public
     constructor Create(const ACapacity: Integer = 0); reintroduce; virtual;
-    // Management Methods
-    ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear; virtual;
-    ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
+    procedure Delete(const AIndex: Integer); virtual;
     procedure Finalize(const AIndex, ACount: Integer); virtual;
-    ///  <summary><c>Shifts the Items between </c>AFromIndex<c> and </c>AFromIndex + ACount<c> to the range </c>AToIndex<c> and </c>AToIndex + ACount<c> in a single (efficient) operation.</c></summary>
+    procedure Insert(const AItem: T; const AIndex: Integer); virtual;
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); virtual;
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
@@ -107,6 +105,13 @@ begin
   SetLength(FArray, ACapacity);
 end;
 
+procedure TADArray<T>.Delete(const AIndex: Integer);
+begin
+  Finalize(AIndex, 1);
+  if AIndex < Length(FArray) - 1 then
+    Move(AIndex + 1, AIndex, (Length(FArray) - 1) - AIndex);
+end;
+
 procedure TADArray<T>.Finalize(const AIndex, ACount: Integer);
 begin
   System.Finalize(FArray[AIndex], ACount);
@@ -123,6 +128,13 @@ begin
   if (AIndex < Low(FArray)) or (AIndex > High(FArray)) then
     raise EADGenericsRangeException.CreateFmt('Index [%d] Out Of Range', [AIndex]);
   Result := FArray[AIndex];
+end;
+
+procedure TADArray<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  Move(AIndex, AIndex + 1, Capacity - AIndex);
+  Finalize(AIndex, 1);
+  FArray[AIndex] := AItem;
 end;
 
 procedure TADArray<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
