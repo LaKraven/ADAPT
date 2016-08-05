@@ -33,6 +33,39 @@ type
       EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
       EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
 
+  TADKeyValuePair<TKey, TValue> = class(TADObject, IADKeyValuePair<TKey, TValue>)
+  protected
+    FKey: TKey;
+    FValue: TValue;
+    // Getters
+    function GetKey: TKey;
+    function GetValue: TValue;
+  public
+    constructor Create(const AKey: TKey; const AValue: TValue); reintroduce;
+    // Properties
+    property Key: TKey read GetKey;
+    property Value: TValue read GetValue;
+  end;
+
 implementation
+
+{ TADKeyValuePair<TKey, TValue> }
+
+constructor TADKeyValuePair<TKey, TValue>.Create(const AKey: TKey; const AValue: TValue);
+begin
+  inherited Create;
+  FKey := AKey;
+  FValue := AValue;
+end;
+
+function TADKeyValuePair<TKey, TValue>.GetKey: TKey;
+begin
+  Result := FKey;
+end;
+
+function TADKeyValuePair<TKey, TValue>.GetValue: TValue;
+begin
+  Result := FValue;
+end;
 
 end.

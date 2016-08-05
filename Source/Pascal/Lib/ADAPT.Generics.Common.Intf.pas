@@ -43,6 +43,7 @@ type
   property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
+  ///  <summary><c>Common Interface for any Iterable Collection.</c></summary>
   IADIterable<T> = interface(IADInterface)
   ['{910A3785-06C0-4512-A823-3AA4D77BDB18}'] // If we don't provide a GUID here, we cannot cast-reference Collections as "Iterables".
     // Iterators
@@ -61,6 +62,15 @@ type
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
     procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
+  end;
+
+  IADKeyValuePair<TKey, TValue> = interface(IADInterface)
+    // Getters
+    function GetKey: TKey;
+    function GetValue: TValue;
+    // Properties
+    property Key: TKey read GetKey;
+    property Value: TValue read GetValue;
   end;
 
 implementation

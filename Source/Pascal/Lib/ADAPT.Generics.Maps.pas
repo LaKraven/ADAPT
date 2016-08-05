@@ -31,7 +31,7 @@ type
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADLookupList<T> = class(TADObject, IADLookupList<T>, IADComparable<T>, IADCompactable, IADExpandable)
+  TADLookupList<T> = class(TADObject, IADLookupList<T>, IADComparable<T>, IADIterable<T>, IADCompactable, IADExpandable)
   private
     FCompactor: IADCollectionCompactor;
     FComparer: IADComparer<T>;
