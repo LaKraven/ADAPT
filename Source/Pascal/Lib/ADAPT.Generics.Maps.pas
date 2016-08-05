@@ -27,11 +27,11 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  ///  <summary><c>Generic Lookup List Type</c></summary>
+  ///  <summary><c>Generic Sorted List Type</c></summary>
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADLookupList<T> = class(TADObject, IADLookupList<T>, IADComparable<T>, IADIterable<T>, IADCompactable, IADExpandable)
+  TADSortedList<T> = class(TADObject, IADSortedList<T>, IADComparable<T>, IADIterable<T>, IADCompactable, IADExpandable)
   private
     FCompactor: IADCollectionCompactor;
     FComparer: IADComparer<T>;
@@ -47,7 +47,7 @@ type
     function GetComparer: IADComparer<T>; virtual;
     { IADExpandable }
     function GetExpander: IADCollectionExpander; virtual;
-    { IADLookupList<T> }
+    { IADSortedList<T> }
     function GetCount: Integer; virtual;
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
@@ -80,20 +80,20 @@ type
     ///  <summary>Resorts the entire List.</c></summary>
     procedure QuickSort(ALow, AHigh: Integer); virtual;
   public
-    ///  <summary><c>Creates an instance of your Lookup List using the Default Expander and Compactor Types.</c></summary>
+    ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Lookup List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Lookup List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    ///  <summary><c>Creates an instance of your Sorted List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
     constructor Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Lookup List using a Custom Expander and Compactor Instance.</c></summary>
+    ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
     // Management Methods
-    { IADLookupList<T> }
+    { IADSortedList<T> }
     function Add(const AItem: T): Integer; virtual;
     procedure AddItems(const AItems: Array of T); overload; virtual;
-    procedure AddItems(const AList: IADLookupList<T>); overload; virtual;
+    procedure AddItems(const AList: IADSortedList<T>); overload; virtual;
     procedure Clear; virtual;
     procedure Compact; virtual;
     function Contains(const AItem: T): Boolean; virtual;
@@ -102,7 +102,7 @@ type
     function ContainsNone(const AItems: Array of T): Boolean; virtual;
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
-    function EqualItems(const AList: IADLookupList<T>): Boolean; virtual;
+    function EqualItems(const AList: IADSortedList<T>): Boolean; virtual;
     function IndexOf(const AItem: T): Integer; virtual;
     procedure Remove(const AItem: T); virtual;
     procedure RemoveItems(const AItems: Array of T); virtual;
@@ -132,19 +132,19 @@ type
     property Comparer: IADComparer<T> read GetComparer write SetComparer;
     { IADExpandable }
     property Expander: IADCollectionExpander read GetExpander write SetExpander;
-    { IADLookupList<T> }
+    { IADSortedList<T> }
     property Count: Integer read GetCount;
     property IsCompact: Boolean read GetIsCompact;
     property IsEmpty: Boolean read GetIsEmpty;
     property Item[const AIndex: Integer]: T read GetItem;
   end;
 
-  ///  <summary><c>Generic Object Lookup List Type</c></summary>
+  ///  <summary><c>Generic Object Sorted List Type</c></summary>
   ///  <remarks>
   ///    <para><c>Can take Ownership of its Items.</c></para>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADObjectLookupList<T: class> = class(TADLookupList<T>, IADObjectOwner)
+  TADObjectSortedList<T: class> = class(TADSortedList<T>, IADObjectOwner)
   protected
     // Getters
     function GetOwnership: TADOwnership; virtual;
@@ -165,15 +165,15 @@ uses
   ADAPT.Generics.Allocators,
   ADAPT.Generics.Arrays;
 
-{ TADLookupList<T> }
+{ TADSortedList<T> }
 
-function TADLookupList<T>.Add(const AItem: T): Integer;
+function TADSortedList<T>.Add(const AItem: T): Integer;
 begin
   CheckExpand(1);
   Result := AddActual(AItem);
 end;
 
-procedure TADLookupList<T>.AddItems(const AItems: array of T);
+procedure TADSortedList<T>.AddItems(const AItems: array of T);
 var
   I: Integer;
 begin
@@ -182,9 +182,9 @@ begin
     AddActual(AItems[I]);
 end;
 
-function TADLookupList<T>.AddActual(const AItem: T): Integer;
+function TADSortedList<T>.AddActual(const AItem: T): Integer;
 begin
-  // TODO -oDaniel -cTADLookupList<T>: Need to add check to ensure Item not already in List. This MIGHT need to be optional!
+  // TODO -oDaniel -cTADSortedList<T>: Need to add check to ensure Item not already in List. This MIGHT need to be optional!
   Result := GetSortedPosition(AItem);
   if Result = FCount then
     FArray[FCount] := AItem
@@ -194,7 +194,7 @@ begin
   Inc(FCount);
 end;
 
-procedure TADLookupList<T>.AddItems(const AList: IADLookupList<T>);
+procedure TADSortedList<T>.AddItems(const AList: IADSortedList<T>);
 var
   I: Integer;
 begin
@@ -203,7 +203,7 @@ begin
     AddActual(AList[I]);
 end;
 
-procedure TADLookupList<T>.CheckCompact(const AAmount: Integer);
+procedure TADSortedList<T>.CheckCompact(const AAmount: Integer);
 var
   LShrinkBy: Integer;
 begin
@@ -212,7 +212,7 @@ begin
     FArray.Capacity := FArray.Capacity - LShrinkBy;
 end;
 
-procedure TADLookupList<T>.CheckExpand(const AAmount: Integer);
+procedure TADSortedList<T>.CheckExpand(const AAmount: Integer);
 var
   LNewCapacity: Integer;
 begin
@@ -221,7 +221,7 @@ begin
     FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
-procedure TADLookupList<T>.Clear;
+procedure TADSortedList<T>.Clear;
 begin
 //  FArray.Finalize(0, FCount);
   FArray.Clear;
@@ -229,12 +229,12 @@ begin
   FArray.Capacity := FInitialCapacity;
 end;
 
-procedure TADLookupList<T>.Compact;
+procedure TADSortedList<T>.Compact;
 begin
   FArray.Capacity := FCount;
 end;
 
-function TADLookupList<T>.Contains(const AItem: T): Boolean;
+function TADSortedList<T>.Contains(const AItem: T): Boolean;
 var
   LIndex: Integer;
 begin
@@ -242,7 +242,7 @@ begin
   Result := (LIndex > -1);
 end;
 
-function TADLookupList<T>.ContainsAll(const AItems: array of T): Boolean;
+function TADSortedList<T>.ContainsAll(const AItems: array of T): Boolean;
 var
   I: Integer;
 begin
@@ -255,7 +255,7 @@ begin
     end;
 end;
 
-function TADLookupList<T>.ContainsAny(const AItems: array of T): Boolean;
+function TADSortedList<T>.ContainsAny(const AItems: array of T): Boolean;
 var
   I: Integer;
 begin
@@ -268,27 +268,27 @@ begin
     end;
 end;
 
-function TADLookupList<T>.ContainsNone(const AItems: array of T): Boolean;
+function TADSortedList<T>.ContainsNone(const AItems: array of T): Boolean;
 begin
   Result := (not ContainsAny(AItems));
 end;
 
-constructor TADLookupList<T>.Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
-constructor TADLookupList<T>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+constructor TADSortedList<T>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
 begin
   Create(AExpander, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
-constructor TADLookupList<T>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+constructor TADSortedList<T>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AComparer, AInitialCapacity);
 end;
 
-constructor TADLookupList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+constructor TADSortedList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
 begin
   inherited Create;
   FCount := 0;
@@ -299,18 +299,18 @@ begin
   CreateArray(AInitialCapacity);
 end;
 
-procedure TADLookupList<T>.CreateArray(const AInitialCapacity: Integer);
+procedure TADSortedList<T>.CreateArray(const AInitialCapacity: Integer);
 begin
   FArray := TADArray<T>.Create(AInitialCapacity);
 end;
 
-procedure TADLookupList<T>.Delete(const AIndex: Integer);
+procedure TADSortedList<T>.Delete(const AIndex: Integer);
 begin
   FArray.Delete(AIndex);
   Dec(FCount);
 end;
 
-procedure TADLookupList<T>.DeleteRange(const AFromIndex, ACount: Integer);
+procedure TADSortedList<T>.DeleteRange(const AFromIndex, ACount: Integer);
 var
   I: Integer;
 begin
@@ -318,13 +318,13 @@ begin
     Delete(I);
 end;
 
-destructor TADLookupList<T>.Destroy;
+destructor TADSortedList<T>.Destroy;
 begin
 
   inherited;
 end;
 
-function TADLookupList<T>.EqualItems(const AList: IADLookupList<T>): Boolean;
+function TADSortedList<T>.EqualItems(const AList: IADSortedList<T>): Boolean;
 var
   I: Integer;
 begin
@@ -338,42 +338,42 @@ begin
       end;
 end;
 
-function TADLookupList<T>.GetCompactor: IADCollectionCompactor;
+function TADSortedList<T>.GetCompactor: IADCollectionCompactor;
 begin
   Result := FCompactor;
 end;
 
-function TADLookupList<T>.GetComparer: IADComparer<T>;
+function TADSortedList<T>.GetComparer: IADComparer<T>;
 begin
   Result := FComparer;
 end;
 
-function TADLookupList<T>.GetCount: Integer;
+function TADSortedList<T>.GetCount: Integer;
 begin
   Result := FCount;
 end;
 
-function TADLookupList<T>.GetExpander: IADCollectionExpander;
+function TADSortedList<T>.GetExpander: IADCollectionExpander;
 begin
   Result := FExpander;
 end;
 
-function TADLookupList<T>.GetIsCompact: Boolean;
+function TADSortedList<T>.GetIsCompact: Boolean;
 begin
   Result := FArray.Capacity = FCount;
 end;
 
-function TADLookupList<T>.GetIsEmpty: Boolean;
+function TADSortedList<T>.GetIsEmpty: Boolean;
 begin
   Result := (FCount = 0);
 end;
 
-function TADLookupList<T>.GetItem(const AIndex: Integer): T;
+function TADSortedList<T>.GetItem(const AIndex: Integer): T;
 begin
   Result := FArray[AIndex];
 end;
 
-function TADLookupList<T>.GetSortedPosition(const AItem: T): Integer;
+function TADSortedList<T>.GetSortedPosition(const AItem: T): Integer;
 var
   LIndex, LLow, LHigh: Integer;
 begin
@@ -401,7 +401,7 @@ begin
     Result := LLow;
 end;
 
-function TADLookupList<T>.IndexOf(const AItem: T): Integer;
+function TADSortedList<T>.IndexOf(const AItem: T): Integer;
 var
   LLow, LHigh, LMid: Integer;
 begin
@@ -423,7 +423,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADLookupList<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
+  procedure TADSortedList<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
   begin
     case ADirection of
       idLeft: IterateBackward(ACallback);
@@ -434,7 +434,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADLookupList<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
+procedure TADSortedList<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
 begin
   case ADirection of
     idLeft: IterateBackward(ACallback);
@@ -444,7 +444,7 @@ begin
   end;
 end;
 
-procedure TADLookupList<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
+procedure TADSortedList<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
 begin
   case ADirection of
     idLeft: IterateBackward(ACallback);
@@ -455,7 +455,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADLookupList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADSortedList<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
   var
     I: Integer;
   begin
@@ -464,7 +464,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADLookupList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADSortedList<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
 var
   I: Integer;
 begin
@@ -472,7 +472,7 @@ begin
     ACallback(FArray[I]);
 end;
 
-procedure TADLookupList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADSortedList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin
@@ -481,7 +481,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADLookupList<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  procedure TADSortedList<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
   var
     I: Integer;
   begin
@@ -490,7 +490,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADLookupList<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+procedure TADSortedList<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
 var
   I: Integer;
 begin
@@ -498,7 +498,7 @@ begin
     ACallback(FArray[I]);
 end;
 
-procedure TADLookupList<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
+procedure TADSortedList<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin
@@ -506,7 +506,7 @@ begin
     ACallback(FArray[I]);
 end;
 
-procedure TADLookupList<T>.QuickSort(ALow, AHigh: Integer);
+procedure TADSortedList<T>.QuickSort(ALow, AHigh: Integer);
 var
   I, J: Integer;
   LPivot, LTemp: T;
@@ -543,7 +543,7 @@ begin
 until I >= AHigh;
 end;
 
-procedure TADLookupList<T>.Remove(const AItem: T);
+procedure TADSortedList<T>.Remove(const AItem: T);
 var
   LIndex: Integer;
 begin
@@ -552,7 +552,7 @@ begin
     Delete(LIndex);
 end;
 
-procedure TADLookupList<T>.RemoveItems(const AItems: array of T);
+procedure TADSortedList<T>.RemoveItems(const AItems: array of T);
 var
   I: Integer;
 begin
@@ -560,36 +560,36 @@ begin
     Remove(AItems[I]);
 end;
 
-procedure TADLookupList<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
+procedure TADSortedList<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
 begin
   FCompactor := ACompactor;
-  //TODO -oDaniel -cTADLookupList<T>: Perform a "Smart Compact" here
+  //TODO -oDaniel -cTADSortedList<T>: Perform a "Smart Compact" here
 end;
 
-procedure TADLookupList<T>.SetComparer(const AComparer: IADComparer<T>);
+procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
   FComparer := AComparer;
   QuickSort(0, FCount - 1)
 end;
 
-procedure TADLookupList<T>.SetExpander(const AExpander: IADCollectionExpander);
+procedure TADSortedList<T>.SetExpander(const AExpander: IADCollectionExpander);
 begin
   FExpander := AExpander;
 end;
 
-{ TADObjectLookupList<T> }
+{ TADObjectSortedList<T> }
 
-procedure TADObjectLookupList<T>.CreateArray(const AInitialCapacity: Integer);
+procedure TADObjectSortedList<T>.CreateArray(const AInitialCapacity: Integer);
 begin
   FArray := TADObjectArray<T>.Create(oOwnsObjects, AInitialCapacity);
 end;
 
-function TADObjectLookupList<T>.GetOwnership: TADOwnership;
+function TADObjectSortedList<T>.GetOwnership: TADOwnership;
 begin
   Result := TADObjectArray<T>(FArray).Ownership;
 end;
 
-procedure TADObjectLookupList<T>.SetOwnership(const AOwnership: TADOwnership);
+procedure TADObjectSortedList<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
   TADObjectArray<T>(FArray).Ownership := AOwnership;
 end;

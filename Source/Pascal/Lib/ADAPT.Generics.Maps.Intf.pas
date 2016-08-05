@@ -24,12 +24,12 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  ///  <summary><c>A Generic Lookup List.</c></summary>
+  ///  <summary><c>A Generic Sorted List.</c></summary>
   ///  <remarks>
-  ///    <para><c>Lookup Lists utilize Sorted Insertion to ensure that all Lookups can be performed efficiently.</c></para>
-  ///    <para><c>Lookup Lists are NOT a "Hashmap" or "Dictionary".</c></para>
+  ///    <para><c>Sorted Lists utilize Sorted Insertion to ensure that all Lookups can be performed efficiently.</c></para>
+  ///    <para><c>Sorted Lists are NOT a "Hashmap" or "Dictionary".</c></para>
   ///  </remarks>
-  IADLookupList<T> = interface(IADInterface)
+  IADSortedList<T> = interface(IADInterface)
     // Getters
     ///  <returns><c>The nunmber of Items in the List.</c></returns>
     function GetCount: Integer;
@@ -58,7 +58,7 @@ type
     ///  <summary><c>Adds multiple Items into the List.</c></summary>
     procedure AddItems(const AItems: Array of T); overload;
     ///  <summary><c>Adds Items from the given List into this List.</c></summary>
-    procedure AddItems(const AList: IADLookupList<T>); overload;
+    procedure AddItems(const AList: IADSortedList<T>); overload;
     ///  <summary><c>Removes all Items from the List.</c></summary>
     procedure Clear;
     ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
@@ -101,7 +101,7 @@ type
     ///  <remarks>
     ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
     ///  </remarks>
-    function EqualItems(const AList: IADLookupList<T>): Boolean;
+    function EqualItems(const AList: IADSortedList<T>): Boolean;
     ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
     ///  <returns>
     ///    <para>-1<c> if the given Item is not in the List.</c></para>
