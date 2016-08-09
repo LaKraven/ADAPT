@@ -27,7 +27,7 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  ///  <summary><c>Generic Sorted List Type</c></summary>
+  ///  <summary><c>Generic Sorted List Type.</c></summary>
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
@@ -40,6 +40,7 @@ type
   protected
     FArray: IADArray<T>;
     FCount: Integer;
+
     // Getters
     { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
@@ -52,6 +53,7 @@ type
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
+
     // Setters
     { IADCompactable }
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
@@ -59,6 +61,7 @@ type
     procedure SetComparer(const AComparer: IADComparer<T>); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+
     // Management Methods
     ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
     ///  <returns>
@@ -89,6 +92,7 @@ type
     ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
+
     // Management Methods
     { IADSortedList<T> }
     function Add(const AItem: T): Integer; virtual;
@@ -115,15 +119,15 @@ type
     procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
     procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload; inline;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
-    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
     procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
 
     // Properties
     { IADCompactable }
@@ -156,6 +160,154 @@ type
   public
     // Properties
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
+  end;
+
+  ///  <summary><c>Generic Lookup List Type.</c></summary>
+  ///  <remarks>
+  ///    <para><c></c></para>
+  ///  </remarks>
+  TADLookupList<TKey, TValue> = class(TADObject, IADLookupList<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADCompactable, IADExpandable)
+  private
+    FCompactor: IADCollectionCompactor;
+    FComparer: IADComparer<TKey>;
+    FExpander: IADCollectionExpander;
+    FInitialCapacity: Integer;
+  protected
+    FArray: IADArray<IADKeyValuePair<TKey, TValue>>;
+    // Getters
+    { IADCompactable }
+    function GetCompactor: IADCollectionCompactor; virtual;
+    { IADComparable<T> }
+    function GetComparer: IADComparer<TKey>; virtual;
+    { IADExpandable }
+    function GetExpander: IADCollectionExpander; virtual;
+    { IADLookupList<TKey, TValue> }
+    function GetCount: Integer; virtual;
+    function GetIsCompact: Boolean; virtual;
+    function GetIsEmpty: Boolean; virtual;
+    function GetItem(const AKey: TKey): TValue; virtual;
+    function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>; virtual;
+
+    // Setters
+    { IADCompactable }
+    procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
+    { IADComparable<T> }
+    procedure SetComparer(const AComparer: IADComparer<TKey>); virtual;
+    { IADExpandable }
+    procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    { IADLookupList<TKey, TValue> }
+  public
+    ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Sorted List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    destructor Destroy; override;
+
+    // Management Methods
+    ///  <summary><c>Adds the given Key-Value Pair into the List.</c></summary>
+    ///  <returns>
+    ///    <para><c>The Index of the Item in the List.</c></para>
+    ///  </returns>
+    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload;
+    ///  <summary><c>Adds the given Key-Value Pair into the List.</c></summary>
+    ///  <returns>
+    ///    <para><c>The Index of the Item in the List.</c></para>
+    ///  </returns>
+    function Add(const AKey: TKey; const AValue: TValue): Integer; overload;
+    ///  <summary><c>Adds multiple Items into the List.</c></summary>
+    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
+    procedure AddItems(const AList: IADLookupList<TKey, TValue>); overload;
+    ///  <summary><c>Removes all Items from the List.</c></summary>
+    procedure Clear;
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
+    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Item is in the List.</c></para>
+    ///    <para>False<c> if the Item is NOT in the List.</c></para>
+    ///  </returns>
+    function Contains(const AKey: TKey): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ALL Items are in the List.</c></para>
+    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAll(const AKeys: Array of TKey): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AKeys: Array of TKey): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AKeys: Array of TKey): Boolean;
+    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
+    procedure Delete(const AIndex: Integer); overload;
+    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
+    procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
+    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the given Item is not in the List.</c></para>
+    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
+    ///  </returns>
+    function IndexOf(const AKey: TKey): Integer;
+    ///  <summary><c>Deletes the given Item from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
+    procedure Remove(const AKey: TKey);
+    ///  <summary><c>Deletes the given Items from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
+    procedure RemoveItems(const AKeys: Array of TKey);
+
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+    procedure Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload; virtual;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload; virtual;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload; virtual;
+
+    // Properties
+    { IADCompactable }
+    property Compactor: IADCollectionCompactor read GetCompactor write SetCompactor;
+    { IADComparable<T> }
+    property Comparer: IADComparer<TKey> read GetComparer write SetComparer;
+    { IADExpandable }
+    property Expander: IADCollectionExpander read GetExpander write SetExpander;
+    { IADLookupList<TKey, TValue> }
+    property Count: Integer read GetCount;
+    property IsCompact: Boolean read GetIsCompact;
+    property IsEmpty: Boolean read GetIsEmpty;
+    property Item[const AKey: TKey]: TValue read GetItem; default;
+    property Pair[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;
 
 implementation
@@ -592,6 +744,220 @@ end;
 procedure TADObjectSortedList<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
   TADObjectArray<T>(FArray).Ownership := AOwnership;
+end;
+
+{ TADLookupList<TKey, TValue> }
+
+function TADLookupList<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.AddItems(const AList: IADLookupList<TKey, TValue>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.Clear;
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.Compact;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.Contains(const AKey: TKey): Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.ContainsAll(const AKeys: array of TKey): Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.ContainsAny(const AKeys: array of TKey): Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.ContainsNone(const AKeys: array of TKey): Boolean;
+begin
+
+end;
+
+constructor TADLookupList<TKey, TValue>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+begin
+
+end;
+
+constructor TADLookupList<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+begin
+
+end;
+
+constructor TADLookupList<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+begin
+
+end;
+
+constructor TADLookupList<TKey, TValue>.Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.Delete(const AIndex: Integer);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.DeleteRange(const AFromIndex, ACount: Integer);
+begin
+
+end;
+
+destructor TADLookupList<TKey, TValue>.Destroy;
+begin
+
+  inherited;
+end;
+
+function TADLookupList<TKey, TValue>.EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetCompactor: IADCollectionCompactor;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetComparer: IADComparer<TKey>;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetCount: Integer;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetExpander: IADCollectionExpander;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetIsCompact: Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetIsEmpty: Boolean;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetItem(const AKey: TKey): TValue;
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
+begin
+
+end;
+
+function TADLookupList<TKey, TValue>.IndexOf(const AKey: TKey): Integer;
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.Remove(const AKey: TKey);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.RemoveItems(const AKeys: array of TKey);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.SetCompactor(const ACompactor: IADCollectionCompactor);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.SetComparer(const AComparer: IADComparer<TKey>);
+begin
+
+end;
+
+procedure TADLookupList<TKey, TValue>.SetExpander(const AExpander: IADCollectionExpander);
+begin
+
 end;
 
 end.

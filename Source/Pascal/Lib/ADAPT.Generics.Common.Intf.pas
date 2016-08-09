@@ -27,10 +27,15 @@ type
 
   // Callbacks
   {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    TADListItemCallbackAnon<T> = reference to procedure(const Item: T);
+    TADListItemCallbackAnon<T> = reference to procedure(const AItem: T);
   {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-  TADListItemCallbackOfObject<T> = procedure(const Item: T) of object;
-  TADListItemCallbackUnbound<T> = procedure(const Item: T);
+  TADListItemCallbackOfObject<T> = procedure(const AItem: T) of object;
+  TADListItemCallbackUnbound<T> = procedure(const AItem: T);
+  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+    TADListPairCallbackAnon<TKey, TValue> = reference to procedure(const AKey: TKey; const AValue: TValue);
+  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+  TADListPairCallbackOfObject<TKey, TValue> = procedure(const AKey: TKey; const AValue: TValue) of object;
+  TADListPairCallbackUnbound<TKey, TValue> = procedure(const AKey: TKey; const AValue: TValue);
 
   ///  <summary><c>A Collection that can Own Objects.</c></summary>
   IADObjectOwner = interface(IADInterface)
@@ -53,15 +58,36 @@ type
     procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload;
     procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
-    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
-    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
-    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
     procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
+  end;
+
+  ///  <summary><c>Common Interface for any Iterable Pair Collection.</c></summary>
+  IADIterablePair<TKey, TValue> = interface(IADInterface)
+  ['{372E785D-D37D-4B12-88C7-195073061FA4}']
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload;
+    procedure Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload;
+    procedure IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload;
+    procedure IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload;
   end;
 
   IADKeyValuePair<TKey, TValue> = interface(IADInterface)
