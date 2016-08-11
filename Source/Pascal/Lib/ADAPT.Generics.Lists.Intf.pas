@@ -19,7 +19,8 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
   ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Allocators.Intf;
+  ADAPT.Generics.Allocators.Intf,
+  ADAPT.Generics.Comparers.Intf;
 
   {$I ADAPT_RTTI.inc}
 
@@ -45,6 +46,7 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer);
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+    procedure Sort(const AComparer: IADComparer<T>);
     // Properties
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount;

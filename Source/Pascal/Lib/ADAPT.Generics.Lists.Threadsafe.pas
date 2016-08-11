@@ -19,7 +19,9 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Allocators.Intf, ADAPT.Generics.Allocators,
+  ADAPT.Generics.Allocators.Intf,
+  ADAPT.Generics.Sorters.Intf,
+  ADAPT.Generics.Comparers.Intf,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf;
 
@@ -42,11 +44,14 @@ type
     function GetExpander: IADCollectionExpander; override;
     function GetInitialCapacity: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
+    function GetSorter: IADListSorter<T>; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); override;
     procedure SetExpander(const AExpander: IADCollectionExpander); override;
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
+    procedure SetSorter(const ASorter: IADListSorter<T>); override;
+
     // Management Methods
     ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
     procedure CheckCompact(const AAmount: Integer); override;
@@ -66,6 +71,7 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer); override;
     procedure Insert(const AItem: T; const AIndex: Integer); override;
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer); override;
+    procedure Sort(const AComparer: IADComparer<T>); override;
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload; override;
@@ -387,6 +393,16 @@ begin
   Result := FLock;
 end;
 
+function TADListTS<T>.GetSorter: IADListSorter<T>;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 procedure TADListTS<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
   FLock.AcquireWrite;
@@ -492,6 +508,26 @@ begin
 end;
 
 procedure TADListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.SetSorter(const ASorter: IADListSorter<T>);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.Sort(const AComparer: IADComparer<T>);
 begin
   FLock.AcquireWrite;
   try

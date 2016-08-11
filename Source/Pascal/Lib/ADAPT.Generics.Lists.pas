@@ -20,6 +20,8 @@ uses
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf,
+  ADAPT.Generics.Comparers.Intf,
+  ADAPT.Generics.Sorters.Intf,
   ADAPT.Generics.Arrays.Intf,
   ADAPT.Generics.Lists.Intf;
 
@@ -30,32 +32,40 @@ type
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADObject, IADList<T>, IADIterable<T>, IADExpandable, IADCompactable)
+  TADList<T> = class(TADObject, IADList<T>, IADIterable<T>, IADListSortable<T>, IADExpandable, IADCompactable)
   private
     FCompactor: IADCollectionCompactor;
     FExpander: IADCollectionExpander;
     FInitialCapacity: Integer;
+    FSorter: IADListSorter<T>;
   protected
     FArray: IADArray<T>;
     FCount: Integer;
+
     // Getters
     { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
     { IADExpandable }
     function GetExpander: IADCollectionExpander; virtual;
+    { IADListSortable<T> }
+    function GetSorter: IADListSorter<T>; virtual;
     { IADList<T> }
     function GetCapacity: Integer; virtual;
     function GetCount: Integer; virtual;
     function GetInitialCapacity: Integer; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
+
     // Setters
     { IADCompactable }
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    { IADListSortable<T> }
+    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
     { IADList<T> }
     procedure SetCapacity(const ACapacity: Integer); virtual;
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
+
     // Management Methods
     ///  <summary><c>Adds the Item to the first available Index of the Array WITHOUT checking capacity.</c></summary>
     procedure AddActual(const AItem: T);
@@ -84,6 +94,7 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer); virtual;
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual;
+    procedure Sort(const AComparer: IADComparer<T>); virtual;
     // Iterators
     { IADIterable<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -227,6 +238,7 @@ implementation
 uses
   ADAPT.Generics.Common,
   ADAPT.Generics.Allocators,
+  ADAPT.Generics.Sorters,
   ADAPT.Generics.Arrays;
 
 { TADList<T> }
@@ -244,6 +256,24 @@ end;
 constructor TADList<T>.Create(const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0);
+begin
+  inherited Create;
+  FCount := 0;
+  FCompactor := ACompactor;
+  FExpander := AExpander;
+  FInitialCapacity := AInitialCapacity;
+  CreateArray(AInitialCapacity);
+  FSorter := TADListSorterQuick<T>.Create;
+end;
+
+destructor TADList<T>.Destroy;
+begin
+  FExpander := nil;
+  FCompactor := nil;
+  inherited;
 end;
 
 procedure TADList<T>.Add(const AItem: T);
@@ -301,16 +331,6 @@ begin
   FArray.Capacity := FInitialCapacity;
 end;
 
-constructor TADList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0);
-begin
-  inherited Create;
-  FCount := 0;
-  FCompactor := ACompactor;
-  FExpander := AExpander;
-  FInitialCapacity := AInitialCapacity;
-  CreateArray(AInitialCapacity);
-end;
-
 procedure TADList<T>.CreateArray(const AInitialCapacity: Integer = 0);
 begin
   FArray := TADArray<T>.Create(AInitialCapacity);
@@ -332,13 +352,6 @@ begin
     FArray.Move(AFirst + FCount + 1, AFirst, ACount); // Shift all subsequent items left
   Dec(FCount, ACount);
   CheckCompact(ACount);
-end;
-
-destructor TADList<T>.Destroy;
-begin
-  FExpander := nil;
-  FCompactor := nil;
-  inherited;
 end;
 
 function TADList<T>.GetCapacity: Integer;
@@ -369,6 +382,11 @@ end;
 function TADList<T>.GetItem(const AIndex: Integer): T;
 begin
   Result := FArray[AIndex];
+end;
+
+function TADList<T>.GetSorter: IADListSorter<T>;
+begin
+  Result := FSorter;
 end;
 
 procedure TADList<T>.Insert(const AItem: T; const AIndex: Integer);
@@ -491,7 +509,17 @@ end;
 
 procedure TADList<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
+  FArray[AIndex] := AItem;
+end;
 
+procedure TADList<T>.SetSorter(const ASorter: IADListSorter<T>);
+begin
+  FSorter := ASorter;
+end;
+
+procedure TADList<T>.Sort(const AComparer: IADComparer<T>);
+begin
+  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
 end;
 
 { TADObjectList<T> }
