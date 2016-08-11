@@ -208,6 +208,25 @@ type
     { IADMapSortable<TKey, TValue> }
     procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADLookupList<TKey, TValue> }
+
+    // Management Methods
+    ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the Item CANNOT be added.</c></para>
+    ///    <para>0 OR GREATER<c> if the Item has be added, where the Value represents the Index of the Item.</c></para>
+    ///  </returns>
+    function AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); virtual;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); virtual;
+    ///  <summary><c>Override to construct an alternative Array type</c></summary>
+    procedure CreateArray(const AInitialCapacity: Integer = 0); virtual;
+    ///  <summary><c>Determines the Index at which an Item would need to be Inserted for the List to remain in-order.</c></summary>
+    ///  <remarks>
+    ///    <para><c>This is basically a Binary Sort implementation.<c></para>
+    ///  </remarks>
+    function GetSortedPosition(const AKey: TKey): Integer; virtual;
   public
     ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
@@ -220,75 +239,22 @@ type
     destructor Destroy; override;
 
     // Management Methods
-    ///  <summary><c>Adds the given Key-Value Pair into the List.</c></summary>
-    ///  <returns>
-    ///    <para><c>The Index of the Item in the List.</c></para>
-    ///  </returns>
-    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload;
-    ///  <summary><c>Adds the given Key-Value Pair into the List.</c></summary>
-    ///  <returns>
-    ///    <para><c>The Index of the Item in the List.</c></para>
-    ///  </returns>
-    function Add(const AKey: TKey; const AValue: TValue): Integer; overload;
-    ///  <summary><c>Adds multiple Items into the List.</c></summary>
-    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload;
-    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
-    procedure AddItems(const AList: IADLookupList<TKey, TValue>); overload;
-    ///  <summary><c>Removes all Items from the List.</c></summary>
-    procedure Clear;
-    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
-    ///  <remarks>
-    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
-    ///  </remarks>
-    procedure Compact;
-    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if the Item is in the List.</c></para>
-    ///    <para>False<c> if the Item is NOT in the List.</c></para>
-    ///  </returns>
-    function Contains(const AKey: TKey): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ALL Items are in the List.</c></para>
-    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAll(const AKeys: Array of TKey): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
-    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAny(const AKeys: Array of TKey): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
-    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
-    function ContainsNone(const AKeys: Array of TKey): Boolean;
-    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
-    procedure Delete(const AIndex: Integer); overload;
-    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
-    procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
-    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
-    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
-    ///  </returns>
-    ///  <remarks>
-    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
-    ///  </remarks>
-    function EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
-    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
-    ///  <returns>
-    ///    <para>-1<c> if the given Item is not in the List.</c></para>
-    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
-    ///  </returns>
-    function IndexOf(const AKey: TKey): Integer;
-    ///  <summary><c>Deletes the given Item from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
-    procedure Remove(const AKey: TKey);
-    ///  <summary><c>Deletes the given Items from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
-    procedure RemoveItems(const AKeys: Array of TKey);
+    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; virtual;
+    function Add(const AKey: TKey; const AValue: TValue): Integer; overload; virtual;
+    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; virtual;
+    procedure AddItems(const AList: IADLookupList<TKey, TValue>); overload; virtual;
+    procedure Clear; virtual;
+    procedure Compact; virtual;
+    function Contains(const AKey: TKey): Boolean; virtual;
+    function ContainsAll(const AKeys: Array of TKey): Boolean; virtual;
+    function ContainsAny(const AKeys: Array of TKey): Boolean; virtual;
+    function ContainsNone(const AKeys: Array of TKey): Boolean; virtual;
+    procedure Delete(const AIndex: Integer); overload; virtual;
+    procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
+    function EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean; virtual;
+    function IndexOf(const AKey: TKey): Integer; virtual;
+    procedure Remove(const AKey: TKey); virtual;
+    procedure RemoveItems(const AKeys: Array of TKey); virtual;
 
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -735,49 +701,113 @@ end;
 
 { TADLookupList<TKey, TValue> }
 
-function TADLookupList<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
-begin
-
-end;
-
 function TADLookupList<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
 begin
-
+  CheckExpand(1);
+  Result := AddActual(AItem);
 end;
 
-procedure TADLookupList<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
+function TADLookupList<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
+var
+  LPair: IADKeyValuePair<TKey, TValue>;
 begin
+  LPair := TADKeyValuePair<TKey, TValue>.Create(AKey, AValue);
+  Result := Add(LPair);
+end;
 
+function TADLookupList<TKey, TValue>.AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+begin
+  // TODO -oDaniel -cTADLookupList<TKey, TValue>: Need to add check to ensure Item not already in List. This MIGHT need to be optional!
+  Result := GetSortedPosition(AItem.Key);
+  if Result = FCount then
+    FArray[FCount] := AItem
+  else
+    FArray.Insert(AItem, Result);
+
+  Inc(FCount);
+end;
+
+procedure TADLookupList<TKey, TValue>.AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>);
+var
+  I: Integer;
+begin
+  CheckExpand(Length(AItems));
+  for I := Low(AItems) to High(AItems) do
+    AddActual(AItems[I]);
 end;
 
 procedure TADLookupList<TKey, TValue>.AddItems(const AList: IADLookupList<TKey, TValue>);
+var
+  I: Integer;
 begin
+  CheckExpand(AList.Count);
+  for I := 0 to AList.Count - 1 do
+    AddActual(AList.Pair[I]);
+end;
 
+procedure TADLookupList<TKey, TValue>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := FCompactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADLookupList<TKey, TValue>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := FExpander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
 procedure TADLookupList<TKey, TValue>.Clear;
 begin
-
+//  FArray.Finalize(0, FCount);
+  FArray.Clear;
+  FCount := 0;
+  FArray.Capacity := FInitialCapacity;
 end;
 
 procedure TADLookupList<TKey, TValue>.Compact;
 begin
-
+  FArray.Capacity := FCount;
 end;
 
 function TADLookupList<TKey, TValue>.Contains(const AKey: TKey): Boolean;
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  Result := (LIndex > -1);
 end;
 
 function TADLookupList<TKey, TValue>.ContainsAll(const AKeys: array of TKey): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := True; // Optimistic
+  for I := Low(AKeys) to High(AKeys) do
+    if (not Contains(AKeys[I])) then
+    begin
+      Result := False;
+      Break;
+    end;
 end;
 
 function TADLookupList<TKey, TValue>.ContainsAny(const AKeys: array of TKey): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := False; // Pessimistic
+  for I := Low(AKeys) to High(AKeys) do
+    if Contains(AKeys[I]) then
+    begin
+      Result := True;
+      Break;
+    end;
 end;
 
 function TADLookupList<TKey, TValue>.ContainsNone(const AKeys: array of TKey): Boolean;
@@ -785,40 +815,56 @@ begin
   Result := (not ContainsAny(AKeys));
 end;
 
-constructor TADLookupList<TKey, TValue>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+constructor TADLookupList<TKey, TValue>.Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
-
-end;
-
-constructor TADLookupList<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
-begin
-
+  Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
 constructor TADLookupList<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
-
+  Create(AExpander, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
-constructor TADLookupList<TKey, TValue>.Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+constructor TADLookupList<TKey, TValue>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
-
+  Create(ADCollectionExpanderDefault, ACompactor, AComparer, AInitialCapacity);
 end;
 
-procedure TADLookupList<TKey, TValue>.Delete(const AIndex: Integer);
+constructor TADLookupList<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
-
-end;
-
-procedure TADLookupList<TKey, TValue>.DeleteRange(const AFromIndex, ACount: Integer);
-begin
-
+  inherited Create;
+  FCount := 0;
+  FExpander := AExpander;
+  FCompactor := ACompactor;
+  FComparer := AComparer;
+  FSorter := TADMapSorterQuick<TKey, TValue>.Create;
+  FInitialCapacity := AInitialCapacity;
+  CreateArray(AInitialCapacity);
 end;
 
 destructor TADLookupList<TKey, TValue>.Destroy;
 begin
 
   inherited;
+end;
+
+procedure TADLookupList<TKey, TValue>.CreateArray(const AInitialCapacity: Integer);
+begin
+  FArray := TADArray<IADKeyValuePair<TKey, TValue>>.Create(AInitialCapacity);
+end;
+
+procedure TADLookupList<TKey, TValue>.Delete(const AIndex: Integer);
+begin
+  FArray.Delete(AIndex);
+  Dec(FCount);
+end;
+
+procedure TADLookupList<TKey, TValue>.DeleteRange(const AFromIndex, ACount: Integer);
+var
+  I: Integer;
+begin
+  for I := AFromIndex + ACount - 1 downto AFromIndex do
+    Delete(I);
 end;
 
 function TADLookupList<TKey, TValue>.EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
@@ -837,42 +883,74 @@ end;
 
 function TADLookupList<TKey, TValue>.GetCompactor: IADCollectionCompactor;
 begin
-
+  Result := FCompactor;
 end;
 
 function TADLookupList<TKey, TValue>.GetComparer: IADComparer<TKey>;
 begin
-
+  Result := FComparer;
 end;
 
 function TADLookupList<TKey, TValue>.GetCount: Integer;
 begin
-
+  Result := FCount;
 end;
 
 function TADLookupList<TKey, TValue>.GetExpander: IADCollectionExpander;
 begin
-
+  Result := FExpander;
 end;
 
 function TADLookupList<TKey, TValue>.GetIsCompact: Boolean;
 begin
-
+  Result := FArray.Capacity = FCount;
 end;
 
 function TADLookupList<TKey, TValue>.GetIsEmpty: Boolean;
 begin
-
+  Result := (FCount = 0);
 end;
 
 function TADLookupList<TKey, TValue>.GetItem(const AKey: TKey): TValue;
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    Result := FArray[LIndex].Value;
 end;
 
 function TADLookupList<TKey, TValue>.GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
 begin
   Result := FArray[AIndex];
+end;
+
+function TADLookupList<TKey, TValue>.GetSortedPosition(const AKey: TKey): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+begin
+  Result := 0;
+  LLow := 0;
+  LHigh := FCount - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if FComparer.ALessThanOrEqualToB(AKey, FArray[LIndex].Key) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if FComparer.ALessThanB(FArray[LHigh].Key, AKey) then
+    Result := LHigh + 1
+  else if FComparer.ALessThanB(FArray[LLow].Key, AKey) then
+    Result := LLow + 1
+  else
+    Result := LLow;
 end;
 
 function TADLookupList<TKey, TValue>.GetSorter: IADMapSorter<TKey, TValue>;
@@ -881,8 +959,24 @@ begin
 end;
 
 function TADLookupList<TKey, TValue>.IndexOf(const AKey: TKey): Integer;
+var
+  LLow, LHigh, LMid: Integer;
 begin
-
+  Result := -1; // Pessimistic
+  LLow := 0;
+  LHigh := FCount - 1;
+  repeat
+    LMid := (LLow + LHigh) div 2;
+    if FComparer.AEqualToB(FArray[LMid].Key, AKey) then
+    begin
+      Result := LMid;
+      Break;
+    end
+    else if FComparer.ALessThanB(AKey, FArray[LMid].Key) then
+      LHigh := LMid - 1
+    else
+      LLow := LMid + 1;
+  until LHigh < LLow;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -970,13 +1064,20 @@ begin
 end;
 
 procedure TADLookupList<TKey, TValue>.Remove(const AKey: TKey);
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    Delete(LIndex);
 end;
 
-procedure TADLookupList<TKey, TValue>.RemoveItems(const AKeys: array of TKey);
+procedure TADLookupList<TKey, TValue>.RemoveItems(const AKeys: Array of TKey);
+var
+  I: Integer;
 begin
-
+  for I := Low(AKeys) to High(AKeys) do
+    Remove(AKeys[I]);
 end;
 
 procedure TADLookupList<TKey, TValue>.SetCompactor(const ACompactor: IADCollectionCompactor);
