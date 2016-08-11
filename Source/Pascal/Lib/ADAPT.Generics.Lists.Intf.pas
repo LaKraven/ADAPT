@@ -30,17 +30,33 @@ type
     // Getters
     ///  <returns><c>The Item at the given Index.</c></returns>
     function GetItem(const AIndex: Integer): T;
+
     // Setters
     procedure SetItem(const AIndex: Integer; const AItem: T);
+
     // Management Methods
+    ///  <summary><c>Adds the given Item into the List.</c></summary>
     procedure Add(const AItem: T); overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
     procedure Add(const AList: IADList<T>); overload;
+    ///  <summary><c>Adds multiple Items into the List.</c></summary>
     procedure AddItems(const AItems: Array of T);
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
+    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
     procedure Delete(const AIndex: Integer);
+    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
     procedure DeleteRange(const AFirst, ACount: Integer);
+    ///  <summary><c>Insert the given Item at the specified Index.</c></summary>
     procedure Insert(const AItem: T; const AIndex: Integer);
+    ///  <summary><c>Insert the given Items starting at the specified Index.</c></summary>
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+    ///  <summary><c>Sort the List.</c></summary>
     procedure Sort(const AComparer: IADComparer<T>);
+
     // Properties
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;

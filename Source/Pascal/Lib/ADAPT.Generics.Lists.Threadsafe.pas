@@ -68,6 +68,7 @@ type
     procedure Add(const AList: IADList<T>); overload; override;
     procedure AddItems(const AItems: Array of T); override;
     procedure Clear; override;
+    procedure Compact; override;
     procedure Delete(const AIndex: Integer); override;
     procedure DeleteRange(const AFirst, ACount: Integer); override;
     procedure Insert(const AItem: T; const AIndex: Integer); override;
@@ -124,6 +125,7 @@ type
     procedure Add(const AList: IADList<T>); overload; override;
     procedure AddItems(const AItems: Array of T); override;
     procedure Clear; override;
+    procedure Compact; override;
     procedure Delete(const AIndex: Integer); override;
     procedure DeleteRange(const AFirst, ACount: Integer); override;
     procedure Insert(const AItem: T; const AIndex: Integer); override;
@@ -287,6 +289,16 @@ begin
 end;
 
 procedure TADListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADListTS<T>.Compact;
 begin
   FLock.AcquireWrite;
   try
@@ -610,6 +622,16 @@ begin
 end;
 
 procedure TADObjectListTS<T>.Clear;
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+procedure TADObjectListTS<T>.Compact;
 begin
   FLock.AcquireWrite;
   try

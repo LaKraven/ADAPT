@@ -94,6 +94,7 @@ type
     procedure Add(const AList: IADList<T>); overload; virtual;
     procedure AddItems(const AItems: Array of T); virtual;
     procedure Clear; virtual;
+    procedure Compact; virtual;
     procedure Delete(const AIndex: Integer); virtual;
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer); virtual;
@@ -336,6 +337,11 @@ begin
   FArray.Finalize(0, FCount);
   FCount := 0;
   FArray.Capacity := FInitialCapacity;
+end;
+
+procedure TADList<T>.Compact;
+begin
+  FArray.Capacity := FCount;
 end;
 
 procedure TADList<T>.CreateArray(const AInitialCapacity: Integer = 0);
