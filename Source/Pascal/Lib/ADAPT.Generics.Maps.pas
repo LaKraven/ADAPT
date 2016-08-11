@@ -172,7 +172,7 @@ type
   ///  <remarks>
   ///    <para><c></c></para>
   ///  </remarks>
-  TADLookupList<TKey, TValue> = class(TADObject, IADLookupList<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADMapSortable<TKey, TValue>, IADCompactable, IADExpandable)
+  TADLookupList<TKey, TValue> = class(TADObject, IADMap<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADMapSortable<TKey, TValue>, IADCompactable, IADExpandable)
   private
     FCompactor: IADCollectionCompactor;
     FComparer: IADComparer<TKey>;
@@ -242,7 +242,7 @@ type
     function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; virtual;
     function Add(const AKey: TKey; const AValue: TValue): Integer; overload; virtual;
     procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; virtual;
-    procedure AddItems(const AList: IADLookupList<TKey, TValue>); overload; virtual;
+    procedure AddItems(const AList: IADMap<TKey, TValue>); overload; virtual;
     procedure Clear; virtual;
     procedure Compact; virtual;
     function Contains(const AKey: TKey): Boolean; virtual;
@@ -251,7 +251,7 @@ type
     function ContainsNone(const AKeys: Array of TKey): Boolean; virtual;
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
-    function EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean; virtual;
+    function EqualItems(const AList: IADMap<TKey, TValue>): Boolean; virtual;
     function IndexOf(const AKey: TKey): Integer; virtual;
     procedure Remove(const AKey: TKey); virtual;
     procedure RemoveItems(const AKeys: Array of TKey); virtual;
@@ -736,7 +736,7 @@ begin
     AddActual(AItems[I]);
 end;
 
-procedure TADLookupList<TKey, TValue>.AddItems(const AList: IADLookupList<TKey, TValue>);
+procedure TADLookupList<TKey, TValue>.AddItems(const AList: IADMap<TKey, TValue>);
 var
   I: Integer;
 begin
@@ -867,7 +867,7 @@ begin
     Delete(I);
 end;
 
-function TADLookupList<TKey, TValue>.EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
+function TADLookupList<TKey, TValue>.EqualItems(const AList: IADMap<TKey, TValue>): Boolean;
 var
   I: Integer;
 begin
