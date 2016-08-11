@@ -18,7 +18,8 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
-  ADAPT.Generics.Common.Intf;
+  ADAPT.Generics.Common.Intf,
+  ADAPT.Generics.Lists.Intf;
 
   {$I ADAPT_RTTI.inc}
 
@@ -28,21 +29,8 @@ type
   ///    <para><c>Sorted Lists utilize Sorted Insertion to ensure that all Lookups can be performed efficiently.</c></para>
   ///    <para><c>Sorted Lists are NOT a "Hashmap" or "Dictionary".</c></para>
   ///  </remarks>
-  IADSortedList<T> = interface(IADInterface)
+  IADSortedList<T> = interface(IADCollection)
     // Getters
-    ///  <returns><c>The nunmber of Items in the List.</c></returns>
-    function GetCount: Integer;
-    ///  <summary><c>Determines whether or not the List is Compact.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if the List is Compact.</c></para>
-    ///    <para>False<c> if the List is NOT Compact.</c></para>
-    ///  </returns>
-    function GetIsCompact: Boolean;
-    ///  <returns>
-    ///    <para>True<c> if there are NO Items in the List.</c></para>
-    ///    <para>False<c> if there are Items in the List.</c></para>
-    ///  </returns>
-    function GetIsEmpty: Boolean;
     ///  <returns><c>The Item at the given Index.</c></returns>
     function GetItem(const AIndex: Integer): T;
 
@@ -58,8 +46,6 @@ type
     procedure AddItems(const AItems: Array of T); overload;
     ///  <summary><c>Adds Items from the given List into this List.</c></summary>
     procedure AddItems(const AList: IADSortedList<T>); overload;
-    ///  <summary><c>Removes all Items from the List.</c></summary>
-    procedure Clear;
     ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
     ///  <remarks>
     ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
@@ -115,18 +101,6 @@ type
     procedure RemoveItems(const AItems: Array of T);
 
     // Properties
-    ///  <returns><c>The nunmber of Items in the List.</c></returns>
-    property Count: Integer read GetCount;
-    ///  <returns>
-    ///    <para>True<c> if the List is Compact.</c></para>
-    ///    <para>False<c> if the List is NOT Compact.</c></para>
-    ///  </returns>
-    property IsCompact: Boolean read GetIsCompact;
-    ///  <returns>
-    ///    <para>True<c> if there are NO Items in the List.</c></para>
-    ///    <para>False<c> if there are Items in the List.</c></para>
-    ///  </returns>
-    property IsEmpty: Boolean read GetIsEmpty;
     ///  <returns><c>The Item at the given Index.</c></returns>
     property Item[const AIndex: Integer]: T read GetItem; default;
   end;
@@ -135,21 +109,8 @@ type
   ///  <remarks>
   ///    <para><c>Maps utilize organized Keys to ensure that all Lookups can be performed efficiently.</c></para>
   ///  </remarks>
-  IADMap<TKey, TValue> = interface(IADInterface)
+  IADMap<TKey, TValue> = interface(IADCollection)
     // Getters
-    ///  <returns><c>The nunmber of Items in the Map.</c></returns>
-    function GetCount: Integer;
-    ///  <summary><c>Determines whether or not the Map is Compact.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if the List is Compact.</c></para>
-    ///    <para>False<c> if the List is NOT Compact.</c></para>
-    ///  </returns>
-    function GetIsCompact: Boolean;
-    ///  <returns>
-    ///    <para>True<c> if there are NO Items in the Map.</c></para>
-    ///    <para>False<c> if there are Items in the Map.</c></para>
-    ///  </returns>
-    function GetIsEmpty: Boolean;
     ///  <returns><c>The Item corresponding to the given Key.</c></returns>
     function GetItem(const AKey: TKey): TValue;
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
@@ -172,8 +133,6 @@ type
     procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload;
     ///  <summary><c>Adds Items from the given List into this Map.</c></summary>
     procedure AddItems(const AList: IADMap<TKey, TValue>); overload;
-    ///  <summary><c>Removes all Items from the Map.</c></summary>
-    procedure Clear;
     ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
     ///  <remarks>
     ///    <para><c>Note that any subsequent addition to the Map will need to expand the Capacity and could lead to reallocation.</c></para>
@@ -229,18 +188,6 @@ type
     procedure RemoveItems(const AKeys: Array of TKey);
 
     // Properties
-    ///  <returns><c>The nunmber of Items in the Map.</c></returns>
-    property Count: Integer read GetCount;
-    ///  <returns>
-    ///    <para>True<c> if the Map is Compact.</c></para>
-    ///    <para>False<c> if the Map is NOT Compact.</c></para>
-    ///  </returns>
-    property IsCompact: Boolean read GetIsCompact;
-    ///  <returns>
-    ///    <para>True<c> if there are NO Items in the Map.</c></para>
-    ///    <para>False<c> if there are Items in the Map.</c></para>
-    ///  </returns>
-    property IsEmpty: Boolean read GetIsEmpty;
     ///  <returns><c>The Item corresponding to the given Key.</c></returns>
     property Item[const AKey: TKey]: TValue read GetItem; default;
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>

@@ -43,6 +43,12 @@ type
     FCount: Integer;
 
     // Getters
+    { IADCollection }
+    function GetCapacity: Integer; virtual;
+    function GetCount: Integer; virtual;
+    function GetInitialCapacity: Integer;
+    function GetIsCompact: Boolean; virtual;
+    function GetIsEmpty: Boolean; virtual;
     { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
     { IADExpandable }
@@ -50,12 +56,11 @@ type
     { IADListSortable<T> }
     function GetSorter: IADListSorter<T>; virtual;
     { IADList<T> }
-    function GetCapacity: Integer; virtual;
-    function GetCount: Integer; virtual;
-    function GetInitialCapacity: Integer; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
 
     // Setters
+    { IADCollection }
+    procedure SetCapacity(const ACapacity: Integer); virtual;
     { IADCompactable }
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
     { IADExpandable }
@@ -63,7 +68,6 @@ type
     { IADListSortable<T> }
     procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
     { IADList<T> }
-    procedure SetCapacity(const ACapacity: Integer); virtual;
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
 
     // Management Methods
@@ -113,14 +117,17 @@ type
     procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload; virtual;
     procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload; virtual;
     // Properties
+    { IADCollection }
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Count: Integer read GetCount;
+    property InitialCapacity: Integer read GetInitialCapacity;
+    property IsCompact: Boolean read GetIsCompact;
+    property IsEmpty: Boolean read GetIsEmpty;
     { IADCompactable }
     property Compactor: IADCollectionCompactor read GetCompactor;
     { IADExpandable }
     property Expander: IADCollectionExpander read GetExpander;
     { IADList<T> }
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Count: Integer read GetCount;
-    property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 
@@ -379,6 +386,16 @@ begin
   Result := FInitialCapacity;
 end;
 
+function TADList<T>.GetIsCompact: Boolean;
+begin
+  Result := FArray.Capacity = FCount;
+end;
+
+function TADList<T>.GetIsEmpty: Boolean;
+begin
+  Result := (FCount = 0);
+end;
+
 function TADList<T>.GetItem(const AIndex: Integer): T;
 begin
   Result := FArray[AIndex];
@@ -497,6 +514,8 @@ begin
     raise EADGenericsCompactorNilException.Create('Cannot assign a Nil Compactor.')
   else
     FCompactor := ACompactor;
+
+  CheckCompact(0);
 end;
 
 procedure TADList<T>.SetExpander(const AExpander: IADCollectionExpander);

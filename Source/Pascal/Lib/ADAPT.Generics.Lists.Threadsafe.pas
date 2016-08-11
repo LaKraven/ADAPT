@@ -42,7 +42,8 @@ type
     function GetCompactor: IADCollectionCompactor; override;
     function GetCount: Integer; override;
     function GetExpander: IADCollectionExpander; override;
-    function GetInitialCapacity: Integer; override;
+    function GetIsCompact: Boolean; override;
+    function GetIsEmpty: Boolean; override;
     function GetItem(const AIndex: Integer): T; override;
     function GetSorter: IADListSorter<T>; override;
     // Setters
@@ -102,7 +103,6 @@ type
     function GetCompactor: IADCollectionCompactor; override;
     function GetCount: Integer; override;
     function GetExpander: IADCollectionExpander; override;
-    function GetInitialCapacity: Integer; override;
     function GetItem(const AIndex: Integer): T; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
@@ -368,7 +368,17 @@ begin
   end;
 end;
 
-function TADListTS<T>.GetInitialCapacity: Integer;
+function TADListTS<T>.GetIsCompact: Boolean;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADListTS<T>.GetIsEmpty: Boolean;
 begin
   FLock.AcquireRead;
   try
@@ -672,16 +682,6 @@ begin
 end;
 
 function TADObjectListTS<T>.GetExpander: IADCollectionExpander;
-begin
-  FLock.AcquireRead;
-  try
-    Result := inherited;
-  finally
-    FLock.ReleaseRead;
-  end;
-end;
-
-function TADObjectListTS<T>.GetInitialCapacity: Integer;
 begin
   FLock.AcquireRead;
   try

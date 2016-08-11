@@ -22,7 +22,8 @@ uses
     {$IFDEF POSIX}Posix,{$ENDIF POSIX}
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Comparers.Intf,
+  ADAPT.Generics.Maps.Intf,
   ADAPT.Streams.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -42,7 +43,8 @@ type
   TADStreamCaretClass = class of TADStreamCaret;
 
   { Collection Types }
-  IADStreamCaretList = IADList<IADStreamCaret>; //TODO -oDaniel -cStreams, Optimization: Replace IADList with IADLookupList for better performance!
+  IADStreamCaretList = IADSortedList<IADStreamCaret>;
+  IADStreamCaretComparer = IADComparer<IADStreamCaret>;
 
   ///  <summary><c>Abstract Base Class for all Stream Caret Types.</c></summary>
   ///  <remarks>
@@ -283,15 +285,27 @@ type
     procedure SaveToStream(const AStream: TStream); overload; override;
   end;
 
+function ADStreamCaretComparer: IADStreamCaretComparer;
+
 implementation
 
 uses
-  ADAPT.Generics.Lists;
+  ADAPT.Generics.Comparers,
+  ADAPT.Generics.Maps;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  TADStreamCaretList = class(TADList<IADStreamCaret>);
+  TADStreamCaretList = class(TADSortedList<IADStreamCaret>);
+  TADStreamCaretComparer = class(TADInterfaceComparer<IADStreamCaret>);
+
+var
+  GStreamCaretComparer: IADStreamCaretComparer;
+
+function ADStreamCaretComparer: IADStreamCaretComparer;
+begin
+  Result := GStreamCaretComparer;
+end;
 
 { TADStreamCaret }
 
@@ -389,7 +403,7 @@ end;
 constructor TADStream.Create;
 begin
   inherited;
-  FCaretList := TADStreamCaretList.Create;
+  FCaretList := TADStreamCaretList.Create(ADStreamCaretComparer);
 end;
 
 destructor TADStream.Destroy;
@@ -457,8 +471,7 @@ procedure TADStream.UnregisterCaret(const ACaret: IADStreamCaret);
 var
   LIndex: Integer;
 begin
-  //TODO -oDaniel -cStreams: Can't implement this until "Lookup Lists" are available! BUGGER!
-//  LIndex := FCaretList.IndexOf(ACaret);
+  LIndex := FCaretList.IndexOf(ACaret);
   if LIndex > -1 then
     FCaretList.Delete(LIndex);
 end;
@@ -987,5 +1000,8 @@ begin
   if ASize < LOldSize then
     InvalidateCarets(LOldSize, ASize - LOldSize);
 end;
+
+initialization
+  GStreamCaretComparer := TADStreamCaretComparer.Create;
 
 end.

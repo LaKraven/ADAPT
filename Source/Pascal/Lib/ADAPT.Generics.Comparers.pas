@@ -13,9 +13,9 @@ interface
 
 uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-    System.Classes,
+    System.Classes, System.SysUtils,
   {$ELSE}
-    Classes,
+    Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf, ADAPT.Common,
   ADAPT.Generics.Comparers.Intf;
@@ -27,6 +27,8 @@ type
   IADIntegerComparer = IADComparer<Integer>;
   IADFloatComparer = IADComparer<ADFloat>;
   IADStringComparer = IADComparer<String>;
+  IADObjectComparer = IADComparer<TADObject>;
+  IADInterfaceComparer = IADComparer<IADInterface>;
 
   ///  <summary><c>Abstract Base Class for Generic Comparers.</c></summary>
   TADComparer<T> = class abstract(TADObject, IADComparer<T>)
@@ -38,10 +40,25 @@ type
     function ALessThanOrEqualToB(const A, B: T): Boolean; virtual; abstract;
   end;
 
+  ///  <summary><c>Generic Comparer for any Class implementing the IADInterface Type.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Uses the InstanceGUID for comparison.</c></para>
+  ///  </remarks>
+  TADInterfaceComparer<T: IADInterface> = class(TADComparer<T>)
+  public
+    function AEqualToB(const A, B: T): Boolean; override;
+    function AGreaterThanB(const A, B: T): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: T): Boolean; override;
+    function ALessThanB(const A, B: T): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: T): Boolean; override;
+  end;
+
 function ADCardinalComparer: IADCardinalComparer;
 function ADIntegerComparer: IADIntegerComparer;
 function ADFloatComparer: IADFloatComparer;
 function ADStringComparer: IADStringComparer;
+function ADObjectComparer: IADObjectComparer;
+function ADInterfaceComparer: IADInterfaceComparer;
 
 implementation
 
@@ -50,6 +67,8 @@ var
   GIntegerComparer: IADIntegerComparer;
   GFloatComparer: IADFloatComparer;
   GStringComparer: IADStringComparer;
+  GObjectComparer: IADObjectComparer;
+  GADInterfaceComparer: IADInterfaceComparer;
 
 type
   ///  <summary><c>Specialized Comparer for Cardinal values.</c></summary>
@@ -92,6 +111,24 @@ type
     function ALessThanOrEqualToB(const A, B: String): Boolean; override;
   end;
 
+  TADObjectComparer = class(TADComparer<TADObject>)
+  public
+    function AEqualToB(const A, B: TADObject): Boolean; override;
+    function AGreaterThanB(const A, B: TADObject): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: TADObject): Boolean; override;
+    function ALessThanB(const A, B: TADObject): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: TADObject): Boolean; override;
+  end;
+
+  TADInterfaceComparer = class(TADComparer<IADInterface>)
+  public
+    function AEqualToB(const A, B: IADInterface): Boolean; override;
+    function AGreaterThanB(const A, B: IADInterface): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: IADInterface): Boolean; override;
+    function ALessThanB(const A, B: IADInterface): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: IADInterface): Boolean; override;
+  end;
+
 { Singleton Getters }
 
 function ADCardinalComparer: IADCardinalComparer;
@@ -112,6 +149,16 @@ end;
 function ADStringComparer: IADStringComparer;
 begin
   Result := GStringComparer;
+end;
+
+function ADObjectComparer: IADObjectComparer;
+begin
+  Result := GObjectComparer;
+end;
+
+function ADInterfaceComparer: IADInterfaceComparer;
+begin
+  Result := GADInterfaceComparer;
 end;
 
 { TADCardinalComparer }
@@ -222,10 +269,140 @@ begin
   Result := (A <= B);
 end;
 
+{ TADObjectComparer }
+
+function TADObjectComparer.AEqualToB(const A, B: TADObject): Boolean;
+begin
+  Result := (A.InstanceGUID = B.InstanceGUID);
+end;
+
+function TADObjectComparer.AGreaterThanB(const A, B: TADObject): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID > B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) > GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADObjectComparer.AGreaterThanOrEqualToB(const A, B: TADObject): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID >= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) >= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADObjectComparer.ALessThanB(const A, B: TADObject): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID < B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) < GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADObjectComparer.ALessThanOrEqualToB(const A, B: TADObject): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID <= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) <= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+{ TADInterfaceComparer }
+
+function TADInterfaceComparer.AEqualToB(const A, B: IADInterface): Boolean;
+begin
+  Result := (A.InstanceGUID = B.InstanceGUID);
+end;
+
+function TADInterfaceComparer.AGreaterThanB(const A, B: IADInterface): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID > B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) > GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer.AGreaterThanOrEqualToB(const A, B: IADInterface): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID >= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) >= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer.ALessThanB(const A, B: IADInterface): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID < B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) < GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer.ALessThanOrEqualToB(const A, B: IADInterface): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID <= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) <= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+{ TADInterfaceComparer<T> }
+
+function TADInterfaceComparer<T>.AEqualToB(const A, B: T): Boolean;
+begin
+  Result := (A.InstanceGUID = B.InstanceGUID);
+end;
+
+function TADInterfaceComparer<T>.AGreaterThanB(const A, B: T): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID > B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) > GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer<T>.AGreaterThanOrEqualToB(const A, B: T): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID >= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) >= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer<T>.ALessThanB(const A, B: T): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID < B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) < GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
+function TADInterfaceComparer<T>.ALessThanOrEqualToB(const A, B: T): Boolean;
+begin
+  {$IFDEF FPC}
+    Result := (A.InstanceGUID <= B.InstanceGUID);
+  {$ELSE}
+    Result := GUIDToString(A.InstanceGUID) <= GUIDToString(B.InstanceGUID);
+  {$ENDIF FPC}
+end;
+
 initialization
   GCardinalComparer := TADCardinalComparer.Create;
   GIntegerComparer := TADIntegerComparer.Create;
   GFloatComparer := TADFloatComparer.Create;
   GStringComparer := TADStringComparer.Create;
-
+  GObjectComparer := TADObjectComparer.Create;
+  GADInterfaceComparer := TADInterfaceComparer.Create;
 end.

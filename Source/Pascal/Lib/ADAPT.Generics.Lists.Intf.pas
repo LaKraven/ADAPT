@@ -26,31 +26,22 @@ uses
 
 type
   ///  <summary><c>Generic List Type</c></summary>
-  IADList<T> = interface(IADInterface)
+  IADList<T> = interface(IADCollection)
     // Getters
-    function GetCapacity: Integer;
-    function GetCount: Integer;
-    function GetInitialCapacity: Integer;
+    ///  <returns><c>The Item at the given Index.</c></returns>
     function GetItem(const AIndex: Integer): T;
     // Setters
-    procedure SetCapacity(const ACapacity: Integer);
-    procedure SetCompactor(const ACompactor: IADCollectionCompactor);
-    procedure SetExpander(const AExpander: IADCollectionExpander);
     procedure SetItem(const AIndex: Integer; const AItem: T);
     // Management Methods
     procedure Add(const AItem: T); overload;
     procedure Add(const AList: IADList<T>); overload;
     procedure AddItems(const AItems: Array of T);
-    procedure Clear;
     procedure Delete(const AIndex: Integer);
     procedure DeleteRange(const AFirst, ACount: Integer);
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     procedure Sort(const AComparer: IADComparer<T>);
     // Properties
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Count: Integer read GetCount;
-    property InitialCapacity: Integer read GetInitialCapacity;
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
   end;
 

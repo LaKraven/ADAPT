@@ -53,7 +53,9 @@ type
     { IADListSortable<T> }
     function GetSorter: IADListSorter<T>; virtual;
     { IADSortedList<T> }
+    function GetCapacity: Integer; virtual;
     function GetCount: Integer; virtual;
+    function GetInitialCapacity: Integer;
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
@@ -67,6 +69,8 @@ type
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
     { IADListSortable<T> }
     procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
+    { IADSortedList<T> }
+    procedure SetCapacity(const ACapacity: Integer); virtual;
 
     // Management Methods
     ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
@@ -192,7 +196,9 @@ type
     { IADMapSortable<TKey, TValue> }
     function GetSorter: IADMapSorter<TKey, TValue>; virtual;
     { IADLookupList<TKey, TValue> }
+    function GetCapacity: Integer; virtual;
     function GetCount: Integer; virtual;
+    function GetInitialCapacity: Integer;
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AKey: TKey): TValue; virtual;
@@ -208,6 +214,7 @@ type
     { IADMapSortable<TKey, TValue> }
     procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADLookupList<TKey, TValue> }
+    procedure SetCapacity(const ACapacity: Integer); virtual;
 
     // Management Methods
     ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
@@ -470,6 +477,11 @@ begin
       end;
 end;
 
+function TADSortedList<T>.GetCapacity: Integer;
+begin
+  Result := FArray.Capacity;
+end;
+
 function TADSortedList<T>.GetCompactor: IADCollectionCompactor;
 begin
   Result := FCompactor;
@@ -488,6 +500,11 @@ end;
 function TADSortedList<T>.GetExpander: IADCollectionExpander;
 begin
   Result := FExpander;
+end;
+
+function TADSortedList<T>.GetInitialCapacity: Integer;
+begin
+  Result := FInitialCapacity;
 end;
 
 function TADSortedList<T>.GetIsCompact: Boolean;
@@ -660,10 +677,18 @@ begin
     Remove(AItems[I]);
 end;
 
+procedure TADSortedList<T>.SetCapacity(const ACapacity: Integer);
+begin
+  if ACapacity < FCount then
+    raise EADGenericsCapacityLessThanCount.CreateFmt('Given Capacity of %d insufficient for a List containing %d Items.', [ACapacity, FCount])
+  else
+    FArray.Capacity := ACapacity;
+end;
+
 procedure TADSortedList<T>.SetCompactor(const ACompactor: IADCollectionCompactor);
 begin
   FCompactor := ACompactor;
-  //TODO -oDaniel -cTADSortedList<T>: Perform a "Smart Compact" here
+  CheckCompact(0);
 end;
 
 procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
@@ -881,6 +906,11 @@ begin
       end;
 end;
 
+function TADLookupList<TKey, TValue>.GetCapacity: Integer;
+begin
+  Result := FArray.Capacity;
+end;
+
 function TADLookupList<TKey, TValue>.GetCompactor: IADCollectionCompactor;
 begin
   Result := FCompactor;
@@ -899,6 +929,11 @@ end;
 function TADLookupList<TKey, TValue>.GetExpander: IADCollectionExpander;
 begin
   Result := FExpander;
+end;
+
+function TADLookupList<TKey, TValue>.GetInitialCapacity: Integer;
+begin
+  Result := FInitialCapacity;
 end;
 
 function TADLookupList<TKey, TValue>.GetIsCompact: Boolean;
@@ -1080,10 +1115,18 @@ begin
     Remove(AKeys[I]);
 end;
 
+procedure TADLookupList<TKey, TValue>.SetCapacity(const ACapacity: Integer);
+begin
+  if ACapacity < FCount then
+    raise EADGenericsCapacityLessThanCount.CreateFmt('Given Capacity of %d insufficient for a List containing %d Items.', [ACapacity, FCount])
+  else
+    FArray.Capacity := ACapacity;
+end;
+
 procedure TADLookupList<TKey, TValue>.SetCompactor(const ACompactor: IADCollectionCompactor);
 begin
   FCompactor := ACompactor;
-  //TODO -oDaniel -TADLookupList<TKey, TValue>: Perform a "Smart Compact" here
+  CheckCompact(0);
 end;
 
 procedure TADLookupList<TKey, TValue>.SetComparer(const AComparer: IADComparer<TKey>);
