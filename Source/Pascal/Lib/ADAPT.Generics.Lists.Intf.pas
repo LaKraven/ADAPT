@@ -65,10 +65,8 @@ type
   ///  <remarks>
   ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and items are subsequently Replaced by new ones.</c></para>
   ///  </remarks>
-  IADCircularList<T> = interface(IADInterface)
+  IADCircularList<T> = interface(IADCollection)
     // Getters
-    function GetCapacity: Integer;
-    function GetCount: Integer;
     function GetItem(const AIndex: Integer): T;
     function GetNewest: T;
     function GetNewestIndex: Integer;
@@ -79,11 +77,8 @@ type
     // Management Methods
     function Add(const AItem: T): Integer;
     procedure AddItems(const AItems: Array of T);
-    procedure Clear;
     procedure Delete(const AIndex: Integer);
     // Properties
-    property Capacity: Integer read GetCapacity;
-    property Count: Integer read GetCount;
     property Items[const AIndex: Integer]:  T read GetItem write SetItem;
     property Newest: T read GetNewest;
     property NewestIndex: Integer read GetNewestIndex;

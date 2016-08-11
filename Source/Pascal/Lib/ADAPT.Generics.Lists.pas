@@ -169,20 +169,30 @@ type
   private
     FCount: Integer;
     FIndex: Integer;
+    FInitialCapacity: Integer;
     FItems: IADArray<T>;
-    // Getters
-    function GetCapacity: Integer;
   protected
     // Getters
+    { IADCollection }
+    function GetCapacity: Integer; virtual;
     function GetCount: Integer; virtual;
+    function GetInitialCapacity: Integer;
+    { IADCircularList<T> }
     function GetItem(const AIndex: Integer): T; virtual;
+    function GetIsCompact: Boolean; virtual;
+    function GetIsEmpty: Boolean; virtual;
     function GetNewest: T; virtual;
     function GetNewestIndex: Integer; virtual;
     function GetOldest: T; virtual;
     function GetOldestIndex: Integer; virtual;
+
     // Setters
+    { IADCircularList<T> }
+    procedure SetCapacity(const ACapacity: Integer); virtual;
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
+
     // Management Methods
+    { IADCircularList<T> }
     function AddActual(const AItem: T): Integer;
     procedure CreateItemArray(const ACapacity: Integer); virtual;
   public
@@ -623,6 +633,7 @@ end;
 constructor TADCircularList<T>.Create(const ACapacity: Integer);
 begin
   inherited Create;
+  FInitialCapacity := ACapacity;
   CreateItemArray(ACapacity);
   FCount := 0;
   FIndex := 0;
@@ -656,6 +667,21 @@ end;
 function TADCircularList<T>.GetCount: Integer;
 begin
   Result := FCount;
+end;
+
+function TADCircularList<T>.GetInitialCapacity: Integer;
+begin
+  Result := FInitialCapacity;
+end;
+
+function TADCircularList<T>.GetIsCompact: Boolean;
+begin
+  Result := FItems.Capacity = FCount;
+end;
+
+function TADCircularList<T>.GetIsEmpty: Boolean;
+begin
+  Result := (FCount = 0);
 end;
 
 function TADCircularList<T>.GetItem(const AIndex: Integer): T;
@@ -824,6 +850,11 @@ begin
     for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
       ACallback(FItems[I]);
   end;
+end;
+
+procedure TADCircularList<T>.SetCapacity(const ACapacity: Integer);
+begin
+  //TODO -cTADCircularList<T> -oDaniel: Expand Array and repopulate with existing Items in order!
 end;
 
 procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);

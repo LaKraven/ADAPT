@@ -156,13 +156,17 @@ type
     function GetLock: IADReadWriteLock;
   protected
     // Getters
+    function GetCapacity: Integer; override;
     function GetCount: Integer; override;
+    function GetIsCompact: Boolean; override;
+    function GetIsEmpty: Boolean; override;
     function GetItem(const AIndex: Integer): T; override;
     function GetNewest: T; override;
     function GetNewestIndex: Integer; override;
     function GetOldest: T; override;
     function GetOldestIndex: Integer; override;
     // Setters
+    procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
     constructor Create(const ACapacity: Integer); override;
@@ -201,13 +205,17 @@ type
     function GetLock: IADReadWriteLock;
   protected
     // Getters
+    function GetCapacity: Integer; override;
     function GetCount: Integer; override;
+    function GetIsCompact: Boolean; override;
+    function GetIsEmpty: Boolean; override;
     function GetItem(const AIndex: Integer): T; override;
     function GetNewest: T; override;
     function GetNewestIndex: Integer; override;
     function GetOldest: T; override;
     function GetOldestIndex: Integer; override;
     // Setters
+    procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
     constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); override;
@@ -906,7 +914,37 @@ begin
   inherited;
 end;
 
+function TADCircularListTS<T>.GetCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADCircularListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetIsCompact: Boolean;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularListTS<T>.GetIsEmpty: Boolean;
 begin
   FLock.AcquireRead;
   try
@@ -1035,6 +1073,16 @@ begin
   end;
 end;
 
+procedure TADCircularListTS<T>.SetCapacity(const ACapacity: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
 procedure TADCircularListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
   FLock.AcquireWrite;
@@ -1099,7 +1147,37 @@ begin
   inherited;
 end;
 
+function TADCircularObjectListTS<T>.GetCapacity: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 function TADCircularObjectListTS<T>.GetCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetIsCompact: Boolean;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetIsEmpty: Boolean;
 begin
   FLock.AcquireRead;
   try
@@ -1225,6 +1303,16 @@ begin
     inherited;
   finally
     FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADCircularObjectListTS<T>.SetCapacity(const ACapacity: Integer);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
   end;
 end;
 
