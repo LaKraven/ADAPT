@@ -49,7 +49,9 @@ uses
   ADAPT.Generics.Comparers in '..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas',
   ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas',
   ADAPT.Generics.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas',
-  ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas';
+  ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas',
+  ADAPT.Generics.Sorters.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas',
+  ADAPT.Generics.Sorters in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas';
 
 var
   runner : ITestRunner;

@@ -22,6 +22,7 @@ uses
   ADAPT.Generics.Allocators.Intf,
   ADAPT.Generics.Comparers.Intf,
   ADAPT.Generics.Arrays.Intf,
+  ADAPT.Generics.Sorters.Intf,
   ADAPT.Generics.Maps.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -31,12 +32,13 @@ type
   ///  <remarks>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADSortedList<T> = class(TADObject, IADSortedList<T>, IADComparable<T>, IADIterable<T>, IADCompactable, IADExpandable)
+  TADSortedList<T> = class(TADObject, IADSortedList<T>, IADComparable<T>, IADIterable<T>, IADListSortable<T>, IADCompactable, IADExpandable)
   private
     FCompactor: IADCollectionCompactor;
     FComparer: IADComparer<T>;
     FExpander: IADCollectionExpander;
     FInitialCapacity: Integer;
+    FSorter: IADListSorter<T>;
   protected
     FArray: IADArray<T>;
     FCount: Integer;
@@ -48,6 +50,8 @@ type
     function GetComparer: IADComparer<T>; virtual;
     { IADExpandable }
     function GetExpander: IADCollectionExpander; virtual;
+    { IADListSortable<T> }
+    function GetSorter: IADListSorter<T>; virtual;
     { IADSortedList<T> }
     function GetCount: Integer; virtual;
     function GetIsCompact: Boolean; virtual;
@@ -61,6 +65,8 @@ type
     procedure SetComparer(const AComparer: IADComparer<T>); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    { IADListSortable<T> }
+    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
 
     // Management Methods
     ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
@@ -80,8 +86,6 @@ type
     ///    <para><c>This is basically a Binary Sort implementation.<c></para>
     ///  </remarks>
     function GetSortedPosition(const AItem: T): Integer; virtual;
-    ///  <summary>Resorts the entire List.</c></summary>
-    procedure QuickSort(ALow, AHigh: Integer); virtual;
   public
     ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
@@ -136,6 +140,8 @@ type
     property Comparer: IADComparer<T> read GetComparer write SetComparer;
     { IADExpandable }
     property Expander: IADCollectionExpander read GetExpander write SetExpander;
+    { IADListSortable<T> }
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
     { IADSortedList<T> }
     property Count: Integer read GetCount;
     property IsCompact: Boolean read GetIsCompact;
@@ -166,14 +172,16 @@ type
   ///  <remarks>
   ///    <para><c></c></para>
   ///  </remarks>
-  TADLookupList<TKey, TValue> = class(TADObject, IADLookupList<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADCompactable, IADExpandable)
+  TADLookupList<TKey, TValue> = class(TADObject, IADLookupList<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADMapSortable<TKey, TValue>, IADCompactable, IADExpandable)
   private
     FCompactor: IADCollectionCompactor;
     FComparer: IADComparer<TKey>;
     FExpander: IADCollectionExpander;
     FInitialCapacity: Integer;
+    FSorter: IADMapSorter<TKey, TValue>;
   protected
     FArray: IADArray<IADKeyValuePair<TKey, TValue>>;
+    FCount: Integer;
     // Getters
     { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
@@ -181,6 +189,8 @@ type
     function GetComparer: IADComparer<TKey>; virtual;
     { IADExpandable }
     function GetExpander: IADCollectionExpander; virtual;
+    { IADMapSortable<TKey, TValue> }
+    function GetSorter: IADMapSorter<TKey, TValue>; virtual;
     { IADLookupList<TKey, TValue> }
     function GetCount: Integer; virtual;
     function GetIsCompact: Boolean; virtual;
@@ -195,6 +205,8 @@ type
     procedure SetComparer(const AComparer: IADComparer<TKey>); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
+    { IADMapSortable<TKey, TValue> }
+    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADLookupList<TKey, TValue> }
   public
     ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
@@ -315,7 +327,8 @@ implementation
 uses
   ADAPT.Generics.Common,
   ADAPT.Generics.Allocators,
-  ADAPT.Generics.Arrays;
+  ADAPT.Generics.Arrays,
+  ADAPT.Generics.Sorters;
 
 { TADSortedList<T> }
 
@@ -447,6 +460,7 @@ begin
   FExpander := AExpander;
   FCompactor := ACompactor;
   FComparer := AComparer;
+  FSorter := TADListSorterQuick<T>.Create;
   FInitialCapacity := AInitialCapacity;
   CreateArray(AInitialCapacity);
 end;
@@ -551,6 +565,11 @@ begin
     Result := LLow + 1
   else
     Result := LLow;
+end;
+
+function TADSortedList<T>.GetSorter: IADListSorter<T>;
+begin
+  Result := FSorter;
 end;
 
 function TADSortedList<T>.IndexOf(const AItem: T): Integer;
@@ -658,43 +677,6 @@ begin
     ACallback(FArray[I]);
 end;
 
-procedure TADSortedList<T>.QuickSort(ALow, AHigh: Integer);
-var
-  I, J: Integer;
-  LPivot, LTemp: T;
-begin
-  if FCount = 0 then
-    Exit;
-
-  repeat
-    I := ALow;
-    J := AHigh;
-    LPivot := FArray[ALow + (AHigh - ALow) shr 1];
-    repeat
-
-      while FComparer.ALessThanB(FArray[I], LPivot) do
-        Inc(I);
-      while FComparer.AGreaterThanB(FArray[J], LPivot) do
-        Dec(J);
-
-      if I <= J then
-      begin
-        if I <> J then
-        begin
-          LTemp := FArray[I];
-          FArray[I] := FArray[J];
-          FArray[J] := LTemp;
-        end;
-        Inc(I);
-        Dec(J);
-      end;
-    until I > J;
-    if ALow < J then
-      QuickSort(ALow, J);
-    ALow := I;
-until I >= AHigh;
-end;
-
 procedure TADSortedList<T>.Remove(const AItem: T);
 var
   LIndex: Integer;
@@ -721,12 +703,17 @@ end;
 procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
   FComparer := AComparer;
-  QuickSort(0, FCount - 1)
+  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
 end;
 
 procedure TADSortedList<T>.SetExpander(const AExpander: IADCollectionExpander);
 begin
   FExpander := AExpander;
+end;
+
+procedure TADSortedList<T>.SetSorter(const ASorter: IADListSorter<T>);
+begin
+  FSorter := ASorter;
 end;
 
 { TADObjectSortedList<T> }
@@ -795,7 +782,7 @@ end;
 
 function TADLookupList<TKey, TValue>.ContainsNone(const AKeys: array of TKey): Boolean;
 begin
-
+  Result := (not ContainsAny(AKeys));
 end;
 
 constructor TADLookupList<TKey, TValue>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
@@ -835,8 +822,17 @@ begin
 end;
 
 function TADLookupList<TKey, TValue>.EqualItems(const AList: IADLookupList<TKey, TValue>): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := AList.Count = FCount;
+  if Result then
+    for I := 0 to AList.Count - 1 do
+      if (not FComparer.AEqualToB(AList.Pair[I].Key, FArray[I].Key)) then
+      begin
+        Result := False;
+        Break;
+      end;
 end;
 
 function TADLookupList<TKey, TValue>.GetCompactor: IADCollectionCompactor;
@@ -876,19 +872,12 @@ end;
 
 function TADLookupList<TKey, TValue>.GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
 begin
-
+  Result := FArray[AIndex];
 end;
 
-{$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
-  begin
-
-  end;
-{$ENDIF SUPPORTS_REFERENCETOMETHOD}
-
-procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
+function TADLookupList<TKey, TValue>.GetSorter: IADMapSorter<TKey, TValue>;
 begin
-
+  Result := FSorter;
 end;
 
 function TADLookupList<TKey, TValue>.IndexOf(const AKey: TKey): Integer;
@@ -896,43 +885,88 @@ begin
 
 end;
 
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
+  begin
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
+begin
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
+end;
+
 procedure TADLookupList<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection);
 begin
-
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  var
+    I: Integer;
   begin
-
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I].Key, FArray[I].Value);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADLookupList<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  var
+    I: Integer;
   begin
-
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I].Key, FArray[I].Value);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADLookupList<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADLookupList<TKey, TValue>.Remove(const AKey: TKey);
@@ -947,17 +981,24 @@ end;
 
 procedure TADLookupList<TKey, TValue>.SetCompactor(const ACompactor: IADCollectionCompactor);
 begin
-
+  FCompactor := ACompactor;
+  //TODO -oDaniel -TADLookupList<TKey, TValue>: Perform a "Smart Compact" here
 end;
 
 procedure TADLookupList<TKey, TValue>.SetComparer(const AComparer: IADComparer<TKey>);
 begin
-
+  FComparer := AComparer;
+  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
 end;
 
 procedure TADLookupList<TKey, TValue>.SetExpander(const AExpander: IADCollectionExpander);
 begin
+  FExpander := AExpander;
+end;
 
+procedure TADLookupList<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
+begin
+  FSorter := ASorter;
 end;
 
 end.

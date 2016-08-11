@@ -4,7 +4,7 @@
         <ProjectVersion>18.1</ProjectVersion>
         <MainSource>ADAPT_UnitTests_Delphi.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">TestInsight - Debug</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Console</AppType>
@@ -204,6 +204,8 @@
         <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -272,7 +274,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -584,16 +595,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

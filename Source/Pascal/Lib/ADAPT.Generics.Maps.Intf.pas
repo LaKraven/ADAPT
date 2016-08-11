@@ -18,8 +18,7 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
-  ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Allocators.Intf;
+  ADAPT.Generics.Common.Intf;
 
   {$I ADAPT_RTTI.inc}
 
