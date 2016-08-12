@@ -50,8 +50,8 @@ type
     function Add(const AKey: TKey; const AValue: TValue): Integer; overload;
     ///  <summary><c>Adds multiple Items into the Map.</c></summary>
     procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload;
-    ///  <summary><c>Adds Items from the given List into this Map.</c></summary>
-    procedure AddItems(const AList: IADMap<TKey, TValue>); overload;
+    ///  <summary><c>Adds Items from the given Map into this Map.</c></summary>
+    procedure AddItems(const AMap: IADMap<TKey, TValue>); overload;
     ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
     ///  <remarks>
     ///    <para><c>Note that any subsequent addition to the Map will need to expand the Capacity and could lead to reallocation.</c></para>

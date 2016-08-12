@@ -105,7 +105,7 @@ type
     function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; virtual;
     function Add(const AKey: TKey; const AValue: TValue): Integer; overload; virtual;
     procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; virtual;
-    procedure AddItems(const AList: IADMap<TKey, TValue>); overload; virtual;
+    procedure AddItems(const AMap: IADMap<TKey, TValue>); overload; virtual;
     procedure Clear; virtual;
     procedure Compact; virtual;
     function Contains(const AKey: TKey): Boolean; virtual;
@@ -196,13 +196,13 @@ begin
     AddActual(AItems[I]);
 end;
 
-procedure TADMap<TKey, TValue>.AddItems(const AList: IADMap<TKey, TValue>);
+procedure TADMap<TKey, TValue>.AddItems(const AMap: IADMap<TKey, TValue>);
 var
   I: Integer;
 begin
-  CheckExpand(AList.Count);
-  for I := 0 to AList.Count - 1 do
-    AddActual(AList.Pair[I]);
+  CheckExpand(AMap.Count);
+  for I := 0 to AMap.Count - 1 do
+    AddActual(AMap.Pair[I]);
 end;
 
 procedure TADMap<TKey, TValue>.CheckCompact(const AAmount: Integer);
