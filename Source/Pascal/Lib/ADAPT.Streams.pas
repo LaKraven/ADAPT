@@ -23,7 +23,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Comparers.Intf,
-  ADAPT.Generics.Maps.Intf,
+  ADAPT.Generics.Lists.Intf,
   ADAPT.Streams.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -291,7 +291,7 @@ implementation
 
 uses
   ADAPT.Generics.Comparers,
-  ADAPT.Generics.Maps;
+  ADAPT.Generics.Lists;
 
   {$I ADAPT_RTTI.inc}
 

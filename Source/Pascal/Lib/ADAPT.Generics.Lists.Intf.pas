@@ -86,6 +86,87 @@ type
     property OldestIndex: Integer read GetOldestIndex;
   end;
 
+  ///  <summary><c>A Generic Sorted List.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Sorted Lists utilize Sorted Insertion to ensure that all Lookups can be performed efficiently.</c></para>
+  ///    <para><c>Sorted Lists are NOT a "Hashmap" or "Dictionary".</c></para>
+  ///  </remarks>
+  IADSortedList<T> = interface(IADCollection)
+    // Getters
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    function GetItem(const AIndex: Integer): T;
+
+    // Setters
+
+    // Management Methods
+    ///  <summary><c>Adds the given Item into the List.</c></summary>
+    ///  <returns>
+    ///    <para><c>The Index of the Item in the List.</c></para>
+    ///  </returns>
+    function Add(const AItem: T): Integer;
+    ///  <summary><c>Adds multiple Items into the List.</c></summary>
+    procedure AddItems(const AItems: Array of T); overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
+    procedure AddItems(const AList: IADSortedList<T>); overload;
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
+    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Item is in the List.</c></para>
+    ///    <para>False<c> if the Item is NOT in the List.</c></para>
+    ///  </returns>
+    function Contains(const AItem: T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ALL Items are in the List.</c></para>
+    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAll(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AItems: Array of T): Boolean;
+    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
+    procedure Delete(const AIndex: Integer); overload;
+    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
+    procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADSortedList<T>): Boolean;
+    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the given Item is not in the List.</c></para>
+    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
+    ///  </returns>
+    function IndexOf(const AItem: T): Integer;
+    ///  <summary><c>Deletes the given Item from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
+    procedure Remove(const AItem: T);
+    ///  <summary><c>Deletes the given Items from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
+    procedure RemoveItems(const AItems: Array of T);
+
+    // Properties
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    property Item[const AIndex: Integer]: T read GetItem; default;
+  end;
+
 implementation
 
 end.
