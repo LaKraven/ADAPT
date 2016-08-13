@@ -136,11 +136,6 @@ type
   ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
   IADEventListener = interface(IADInterface)
   ['{08B3A941-6D79-4165-80CE-1E45B5E35A9A}']
-
-  end;
-
-  ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
-  IADEventListener<T: IADEvent> = interface(IADEventListener)
     // Getters
     ///  <returns><c>A reference to the Event Thread owning this Listener.</c></returns>
     ///  <remarks>
@@ -184,6 +179,11 @@ type
     ///    <para>False<c> if this Listener doesn't care whether an Event is newer or older than the last Processed Event.</c></para>
     ///  </returns>
     property NewestOnly: Boolean read GetNewestOnly write SetNewestOnly;
+  end;
+
+  ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
+  IADEventListener<T: IADEvent> = interface(IADEventListener)
+
   end;
 
   ///  <summary><c>Any Type containing an Event Queue and Stack.</c></summary>

@@ -207,6 +207,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

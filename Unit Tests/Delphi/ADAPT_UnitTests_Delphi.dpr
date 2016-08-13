@@ -52,7 +52,8 @@ uses
   ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas',
   ADAPT.Generics.Sorters.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas',
   ADAPT.Generics.Sorters in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas',
-  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas';
+  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas',
+  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas';
 
 var
   runner : ITestRunner;
