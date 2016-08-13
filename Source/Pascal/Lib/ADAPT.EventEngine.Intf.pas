@@ -27,6 +27,8 @@ uses
 
 type
   { Forward Declarations }
+  IADEvent = interface;
+  IADEventListener = interface;
   IADEventThread = interface;
 
   { Enums }
@@ -37,6 +39,10 @@ type
 
   { Sets }
   TADEventDispatchTargets = set of TADEventDispatchTarget;
+
+  { Generic Collections }
+  IADEventList = IADList<IADEvent>;
+  IADEventListenerList = IADList<IADEventListener>;
 
   ///  <summary><c>Fundamental Interface for all Event Types.</c></summary>
   ///  <remarks>
@@ -128,7 +134,12 @@ type
   end;
 
   ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
-  IADEventListener<T: IADEvent> = interface(IADInterface)
+  IADEventListener = interface(IADInterface)
+
+  end;
+
+  ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
+  IADEventListener<T: IADEvent> = interface(IADEventListener)
     // Getters
     ///  <returns><c>A reference to the Event Thread owning this Listener.</c></returns>
     ///  <remarks>
@@ -172,6 +183,41 @@ type
     ///    <para>False<c> if this Listener doesn't care whether an Event is newer or older than the last Processed Event.</c></para>
     ///  </returns>
     property NewestOnly: Boolean read GetNewestOnly write SetNewestOnly;
+  end;
+
+  ///  <summary><c>Any Type containing an Event Queue and Stack.</c></summary>
+  IADEventContainer = interface(IADInterface)
+  ['{6189CACA-B75D-4A5D-881A-61BE88C9ABC5}']
+    // Getters
+    ///  <returns><c>The combined number of Events currently contained within the Queue and Stack.</c></returns>
+    function GetEventCount: Integer;
+    ///  <returns><c>The number of Events currently contained within the Queue.</c></returns>
+    function GetEventQueueCount: Integer;
+    ///  <returns><c>The number of Events currently contained within the Stack.</c></returns>
+    function GetEventStackCount: Integer;
+    ///  <returns><c>The overall Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></returns>
+    function GetMaxEventCount: Cardinal;
+
+    // Setters
+    ///  <summary><c>Defines the Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></summary>
+    procedure SetMaxEventCount(const AMaxEventCount: Cardinal);
+
+    // Management Methods
+    ///  <summary><c>Places the given Event into this Container's Event Queue.</c></summary>
+    procedure QueueEvent(const AEvent: IADEvent);
+    ///  <summary><c>Places the given Event into this Container's Event Stack.</c></summary>
+    procedure StackEvent(const AEVent: IADEvent);
+
+    // Properties
+    ///  <returns><c>The combined number of Events currently contained within the Queue and Stack.</c></returns>
+    property EventCount: Integer read GetEventCount;
+    ///  <returns><c>The number of Events currently contained within the Queue.</c></returns>
+    property EventQueueCount: Integer read GetEventQueueCount;
+    ///  <returns><c>The number of Events currently contained within the Stack.</c></returns>
+    property EventStackCount: Integer read GetEventStackCount;
+    ///  <summary><c>Defines the Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></summary>
+    ///  <returns><c>The overall Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></returns>
+    property MaxEventCount: Cardinal read GetMaxEventCount write SetMaxEventCount;
   end;
 
   ///  <summary><c>Event Threads are specialized "Precision Threads" designed to process Asynchronous Events.</c></summary>
