@@ -250,6 +250,29 @@ type
     property PauseOnNoEvent: Boolean read GetPauseOnNoEvent write SetPauseOnNoEvent;
   end;
 
+  ///  <summary><c>Public Interface for the Event Engine.</c></summary>
+  IADEventEngine = interface(IADInterface)
+  ['{6E6D99BF-BAD7-4E43-8CA6-3CF25F262329}']
+    // Getters
+    ///  <returns><c>The Global Maximum number of Events the Engine can handle at any one time.</c></returns>
+    function GetGlobalMaxEvents: Cardinal;
+
+    // Setters
+    ///  <summary><c>Defines the Global Maximum number of Events the Engine can handle at any one time.</c></returns>
+    procedure SetGlobalMaxEvents(const AGlobalMaxEvents: Cardinal);
+
+    // Management Methods
+    ///  <summary><c>Dispatches the given Event across the entire Event Engine via the Queues.</c></summary>
+    procedure QueueEvent(const AEvent: IADEvent);
+    ///  <summary><c>Dispatches the given Event across the entire Event Engine via the Stacks.</c></summary>
+    procedure StackEvent(const AEvent: IADEvent);
+
+    // Properties
+    ///  <summary><c>Defines the Global Maximum number of Events the Engine can handle at any one time.</c></returns>
+    ///  <returns><c>The Global Maximum number of Events the Engine can handle at any one time.</c></returns>
+    property GlobalMaxEvents: Cardinal read GetGlobalMaxEvents write SetGlobalMaxEvents;
+  end;
+
 implementation
 
 end.
