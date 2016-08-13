@@ -135,6 +135,7 @@ type
 
   ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
   IADEventListener = interface(IADInterface)
+  ['{08B3A941-6D79-4165-80CE-1E45B5E35A9A}']
 
   end;
 
@@ -223,7 +224,30 @@ type
   ///  <summary><c>Event Threads are specialized "Precision Threads" designed to process Asynchronous Events.</c></summary>
   IADEventThread = interface(IADInterface)
   ['{0374AD53-2EB7-45BB-8402-1FD34D40512B}']
+    // Getters
+    ///  <returns>
+    ///    <para>True<c> if the Event Thread Pauses when there are no pending Events in the Queue or Stack</c></para>
+    ///    <para>False<c> if the Event Thread continues to Tick regardless of whether or not there are pending Events.</c></para>
+    ///  </returns>
+    function GetPauseOnNoEvent: Boolean;
 
+    // Setters
+    ///  <summary><c>Define whether or not the Event Thread Pauses when there are no pending Events in the Queue or Stack.</c></summary>
+    procedure SetPauseOnNoEvent(const APauseOnNoEvent: Boolean);
+
+    // Management Methods
+    ///  <summary><c>Registers an Event Listener with this Event Thread.</c></summary>
+    procedure RegisterEventListener(const AEventListener: IADEventListener);
+    ///  <summary><c>Unregisters and Event Listener from this Event Thread.</c></summary>
+    procedure UnregisterEventListener(const AEventListener: IADEventListener);
+
+    // Properties
+    ///  <summary><c>Define whether or not the Event Thread Pauses when there are no pending Events in the Queue or Stack.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Event Thread Pauses when there are no pending Events in the Queue or Stack</c></para>
+    ///    <para>False<c> if the Event Thread continues to Tick regardless of whether or not there are pending Events.</c></para>
+    ///  </returns>
+    property PauseOnNoEvent: Boolean read GetPauseOnNoEvent write SetPauseOnNoEvent;
   end;
 
 implementation
