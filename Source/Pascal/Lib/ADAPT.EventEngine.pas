@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Comparers.Intf,
   ADAPT.Generics.Sorters.Intf,
@@ -28,8 +28,19 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  TADEvent = class(TADObject, IADEvent)
+  TADEvent = class(TADObjectTS, IADEvent, IADReadWriteLock)
   private
+    FCreatedTime: ADFloat;
+    FDispatchAfter: ADFloat;
+    FDispatchAt: ADFloat;
+    FDispatchMethod: TADEventDispatchMethod;
+    FDispatchTargets: TADEventDispatchTargets;
+    FDispatchTime: ADFloat;
+    FExpiresAfter: ADFloat;
+    FLock: TADReadWriteLock;
+    FOrigin: TADEventOrigin;
+    FProcessedTime: ADFloat;
+    FState: TADEventState;
     // Getters
     { IADEvent }
     function GetCreatedTime: ADFloat;
@@ -46,7 +57,7 @@ type
 
     // Setters
   public
-
+    constructor Create; override;
     // Management Methods
     { IADEvent }
     procedure Queue;
@@ -69,8 +80,12 @@ type
     property State: TADEventState read GetState;
   end;
 
-  TADEventListener = class(TADObject, IADEventListener)
+  TADEventListener = class(TADObjectTS, IADEventListener)
   private
+    FEventThread: Pointer; // Weak Reference
+    FLastProcessed: ADFloat;
+    FMaxAge: ADFloat;
+    FNewestOnly: Boolean;
     // Getters
     { IADEventListener }
     function GetEventThread: IADEventThread;
@@ -138,9 +153,6 @@ function ADEventEngine: IADEventEngine;
 
 implementation
 
-uses
-  ADAPT.Common.Threadsafe;
-
 type
   TADEventEngine = class(TADObject, IADEventEngine, IADReadWriteLock)
   private
@@ -179,59 +191,117 @@ end;
 
 { TADEvent }
 
+constructor TADEvent.Create;
+begin
+  inherited;
+  FLock := TADReadWriteLock.Create(Self);
+  FCreatedTime := GetReferenceTime;
+  FState := esNotDispatched;
+end;
+
 function TADEvent.GetCreatedTime: ADFloat;
 begin
-
+  Result := FCreatedTime; // No locking required as this value is only ever set on Construction.
 end;
 
 function TADEvent.GetDelta: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := GetReferenceTime - FDispatchTime;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetDispatchAfter: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FDispatchAfter;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetDispatchAt: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FDispatchAt;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetDispatchMethod: TADEventDispatchMethod;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FDispatchMethod;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetDispatchTargets: TADEventDispatchTargets;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FDispatchTargets;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetDispatchTime: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FDispatchTime;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetEventOrigin: TADEventOrigin;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FOrigin;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetExpiresAfter: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FExpiresAfter;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetProcessedTime: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FProcessedTime;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEvent.GetState: TADEventState;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FState;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 procedure TADEvent.Queue;
@@ -258,22 +328,42 @@ end;
 
 function TADEventListener.GetEventThread: IADEventThread;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := IADEventThread(FEventThread^);
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEventListener.GetLastProcessed: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FLastProcessed;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEventListener.GetMaxAge: ADFloat;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FMaxAge;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADEventListener.GetNewestOnly: Boolean;
 begin
-
+  FLock.AcquireRead;
+  try
+    Result := FNewestOnly;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 procedure TADEventListener.Register;
@@ -283,12 +373,22 @@ end;
 
 procedure TADEventListener.SetMaxAge(const AMaxAge: ADFloat);
 begin
-
+  FLock.AcquireWrite;
+  try
+    FMaxAge := AMaxAge;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 procedure TADEventListener.SetNewestOnly(const ANewestOnly: Boolean);
 begin
-
+  FLock.AcquireWrite;
+  try
+    FNewestOnly := ANewestOnly;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 procedure TADEventListener.Unregister;
