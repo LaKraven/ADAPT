@@ -17,32 +17,39 @@ uses
   {$ELSE}
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Comparers.Intf,
   ADAPT.Generics.Sorters.Intf,
-  ADAPT.Generics.Lists.Intf;
+  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Maps.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
   { Forward Declarations }
   IADEvent = interface;
+  TADEventBase = class;
   IADEventListener = interface;
   IADEventThread = interface;
+
+  { Class References }
+  TADEventBaseClass = class of TADEventBase;
 
   { Enums }
   TADEventDispatchMethod = (dmQueue, dmStack);
   TADEventDispatchTarget = (dtThreads);
   TADEventOrigin = (eoInternal, eoReplay, eoRemote, eoUnknown);
   TADEventState = (esNotDispatched, esScheduled, esDispatched, esProcessing, esProcessed, esCancelled);
+  TADEventListenerRegistrationMode = (elrmAutomatic, elrmManual);
 
   { Sets }
   TADEventDispatchTargets = set of TADEventDispatchTarget;
 
   { Generic Collections }
-  IADEventList = IADList<IADEvent>;
-  IADEventListenerList = IADList<IADEventListener>;
+  IADEventHolder = IADObjectHolder<TADEventBase>;
+  IADEventList = IADList<IADEventHolder>;
+  IADEventListenerMap = IADMap<TADEventBaseClass, IADEventListener>;
 
   ///  <summary><c>Fundamental Interface for all Event Types.</c></summary>
   ///  <remarks>
@@ -80,6 +87,12 @@ type
     function GetExpiresAfter: ADFloat;
     ///  <returns><c>Where this Event came from.</c></returns>
     function GetEventOrigin: TADEventOrigin;
+    ///  <returns><c>The Interfaced Holder for this Event.</c></returns>
+    ///  <remarks>
+    ///    <para><c>Hold a Reference to this if you want to keep hold of the Event after it has been processed.</c></para>
+    ///    <para><c>If you don't hold a Reference to this, the Event will be destroyed immediately after it has been processed.</c></para>
+    ///  </remarks>
+    function GetHolder: IADEventHolder;
     ///  <returns><c>The Reference Time at which the Event was First Processed.</c></returns>
     function GetProcessedTime: ADFloat;
     ///  <returns><c>Current State of this Event.</c></returns>
@@ -89,11 +102,17 @@ type
 
     // Management Methods
     ///  <summary><c>Dispatches the Event through the Event Engine Queue.</c></summary>
-    procedure Queue;
+    procedure Queue; overload;
+    ///  <summary><c>Dispatches the Event through the Event Engine Queue.</c></summary>
+    ///  <remarks><c>Defines an instance-specific Expiry Time.</c></remarks>
+    procedure Queue(const AExpiresAfter: ADFloat); overload;
     ///  <summary><c>Schedules the Event for Dispatch through the Event Engine Queue.</c></summary>
     procedure QueueSchedule(const AScheduleFor: ADFloat);
     ///  <summary><c>Dispatches the Event through the Event Engine Stack.</c></summary>
-    procedure Stack;
+    procedure Stack; overload;
+    ///  <summary><c>Dispatches the Event through the Event Engine Stack.</c></summary>
+    ///  <remarks><c>Defines an instance-specific Expiry Time.</c></remarks>
+    procedure Stack(const AExpiresAfter: ADFloat); overload;
     ///  <summary><c>Schedules the Event for Dispatch through the Event Engine Stack.</c></summary>
     procedure StackSchedule(const AScheduleFor: ADFloat);
 
@@ -127,11 +146,64 @@ type
     property ExpiresAfter: ADFloat read GetExpiresAfter;
     ///  <returns><c>Where this Event came from.</c></returns>
     property EventOrigin: TADEventOrigin read GetEventOrigin;
+    ///  <returns><c>The Interfaced Holder for this Event.</c></returns>
+    ///  <remarks>
+    ///    <para><c>Hold a Reference to this if you want to keep hold of the Event after it has been processed.</c></para>
+    ///    <para><c>If you don't hold a Reference to this, the Event will be destroyed immediately after it has been processed.</c></para>
+    ///  </remarks>
+    property Holder: IADEventHolder read GetHolder;
     ///  <returns><c>The Reference Time at which the Event was First Processed.</c></returns>
     property ProcessedTime: ADFloat read GetProcessedTime;
     ///  <returns><c>Current State of this Event.</c></returns>
     property State: TADEventState read GetState;
   end;
+
+  ///  <summary><c>The Absolute Abstract Base Class for all Event Types.</c></summary>
+  ///  <remarks><c>Inherit from </c>TADEvent<c> instead of this class!!</c></remarks>
+  TADEventBase = class abstract(TADObjectTS, IADEvent)
+  protected
+    // Getters
+    { IADEvent }
+    function GetCreatedTime: ADFloat; virtual; abstract;
+    function GetDelta: ADFloat; virtual; abstract;
+    function GetDispatchAfter: ADFloat; virtual; abstract;
+    function GetDispatchAt: ADFloat; virtual; abstract;
+    function GetDispatchMethod: TADEventDispatchMethod; virtual; abstract;
+    function GetDispatchTargets: TADEventDispatchTargets; virtual; abstract;
+    function GetDispatchTime: ADFloat; virtual; abstract;
+    function GetExpiresAfter: ADFloat; virtual; abstract;
+    function GetEventOrigin: TADEventOrigin; virtual; abstract;
+    function GetHolder: IADEventHolder; virtual; abstract;
+    function GetProcessedTime: ADFloat; virtual; abstract;
+    function GetState: TADEventState; virtual; abstract;
+  public
+    // Management Methods
+    { IADEvent }
+    procedure Queue; overload; virtual; abstract;
+    procedure Queue(const AExpiresAfter: ADFloat); overload; virtual; abstract;
+    procedure QueueSchedule(const AScheduleFor: ADFloat); virtual; abstract;
+    procedure Stack; overload; virtual; abstract;
+    procedure Stack(const AExpiresAfter: ADFloat); overload; virtual; abstract;
+    procedure StackSchedule(const AScheduleFor: ADFloat); virtual; abstract;
+
+    // Properties
+    { IADEvent }
+    property CreatedTime: ADFloat read GetCreatedTime;
+    property Delta: ADFloat read GetDelta;
+    property DispatchAfter: ADFloat read GetDispatchAfter;
+    property DispatchAt: ADFloat read GetDispatchAt;
+    property DispatchMethod: TADEventDispatchMethod read GetDispatchMethod;
+    property DispatchTargets: TADEventDispatchTargets read GetDispatchTargets;
+    property DispatchTime: ADFloat read GetDispatchTime;
+    property ExpiresAfter: ADFloat read GetExpiresAfter;
+    property EventOrigin: TADEventOrigin read GetEventOrigin;
+    property Holder: IADEventHolder read GetHolder;
+    property ProcessedTime: ADFloat read GetProcessedTime;
+    property State: TADEventState read GetState;
+  end;
+
+  { Callbacks }
+  TADEventCallback<T: TADEventBase> = procedure(const AEvent: T) of object;
 
   ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
   IADEventListener = interface(IADInterface)
@@ -159,6 +231,8 @@ type
     procedure SetNewestOnly(const ANewestOnly: Boolean);
 
     // Management Methods
+    ///  <summary><c>Executes an Event<c></summary>
+    procedure ExecuteEvent(const AEvent: TADEventBase);
     ///  <summary><c>Registers the Event Listner so that it can begin processing Events.</c></summary>
     procedure Register;
     ///  <summary><c>Unregisters the Event Listener. It will no longer respond to Events.</c></summary>
@@ -182,8 +256,19 @@ type
   end;
 
   ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
-  IADEventListener<T: IADEvent> = interface(IADEventListener)
+  IADEventListener<T: TADEventBase> = interface(IADEventListener)
+    // Getters
+    ///  <returns><c>A reference to the Event to be invoked when the approrpriate Event Type is being processed through the Event Engine.</c></returns>
+    function GetOnEvent: TADEventCallback<T>;
 
+    // Setters
+    ///  <summary><c>Defines the Callback to be invoked when the appropriate Event Type is being processed through the Event Engine.</c><summary>
+    procedure SetOnEvent(const AOnEvent: TADEventCallback<T>);
+
+    // Properties
+    ///  <summary><c>Defines the Callback to be invoked when the appropriate Event Type is being processed through the Event Engine.</c><summary>
+    ///  <returns><c>A reference to the Event to be invoked when the approrpriate Event Type is being processed through the Event Engine.</c></returns>
+    property OnEvent: TADEventCallback<T> read GetOnEvent write SetOnEvent;
   end;
 
   ///  <summary><c>Any Type containing an Event Queue and Stack.</c></summary>
@@ -205,9 +290,9 @@ type
 
     // Management Methods
     ///  <summary><c>Places the given Event into this Container's Event Queue.</c></summary>
-    procedure QueueEvent(const AEvent: IADEvent);
+    procedure QueueEvent(const AEvent: TADEventBase);
     ///  <summary><c>Places the given Event into this Container's Event Stack.</c></summary>
-    procedure StackEvent(const AEVent: IADEvent);
+    procedure StackEvent(const AEVent: TADEventBase);
 
     // Properties
     ///  <returns><c>The combined number of Events currently contained within the Queue and Stack.</c></returns>

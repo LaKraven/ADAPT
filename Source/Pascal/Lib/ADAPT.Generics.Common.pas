@@ -33,6 +33,32 @@ type
       EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
       EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
 
+  TADObjectHolder<T: class> = class(TADObject, IADObjectHolder<T>)
+  private
+    FOwnership: TADOwnership;
+    FObject: T;
+  protected
+    // Getters
+    { IADObjectOwner }
+    function GetOwnership: TADOwnership; virtual;
+    { IADObjectHolder<T> }
+    function GetObject: T; virtual;
+
+    // Setters
+    { IADObjectOwner }
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
+    { IADObjectHolder<T> }
+    procedure SetObject(const AObject: T); virtual;
+  public
+    constructor Create(const AObject: T; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; virtual;
+    destructor Destroy; override;
+    // Properties
+    { IADObjectOwner }
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
+    { IADObjectHolder<T> }
+    property HeldObject: T read GetObject write SetObject;
+  end;
+
   TADKeyValuePair<TKey, TValue> = class(TADObject, IADKeyValuePair<TKey, TValue>)
   protected
     FKey: TKey;
@@ -48,6 +74,42 @@ type
   end;
 
 implementation
+
+{ TADObjectHolder<T> }
+
+constructor TADObjectHolder<T>.Create(const AObject: T; const AOwnership: TADOwnership);
+begin
+  inherited Create;
+  FObject := AObject;
+  FOwnership := AOwnership;
+end;
+
+destructor TADObjectHolder<T>.Destroy;
+begin
+  if FOwnership = oOwnsObjects then
+    FObject.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+function TADObjectHolder<T>.GetObject: T;
+begin
+  Result := FObject;
+end;
+
+function TADObjectHolder<T>.GetOwnership: TADOwnership;
+begin
+  Result := FOwnership;
+end;
+
+procedure TADObjectHolder<T>.SetObject(const AObject: T);
+begin
+  FObject := AObject;
+end;
+
+procedure TADObjectHolder<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+  FOwnership := AOwnership;
+end;
 
 { TADKeyValuePair<TKey, TValue> }
 

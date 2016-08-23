@@ -28,7 +28,7 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  TADEvent = class(TADObjectTS, IADEvent, IADReadWriteLock)
+  TADEvent = class abstract(TADEventBase)
   private
     FCreatedTime: ADFloat;
     FDispatchAfter: ADFloat;
@@ -41,46 +41,41 @@ type
     FOrigin: TADEventOrigin;
     FProcessedTime: ADFloat;
     FState: TADEventState;
+  protected
     // Getters
     { IADEvent }
-    function GetCreatedTime: ADFloat;
-    function GetDelta: ADFloat;
-    function GetDispatchAfter: ADFloat;
-    function GetDispatchAt: ADFloat;
-    function GetDispatchMethod: TADEventDispatchMethod;
-    function GetDispatchTargets: TADEventDispatchTargets;
-    function GetDispatchTime: ADFloat;
-    function GetExpiresAfter: ADFloat;
-    function GetEventOrigin: TADEventOrigin;
-    function GetProcessedTime: ADFloat;
-    function GetState: TADEventState;
-
-    // Setters
+    function GetCreatedTime: ADFloat; override; final;
+    function GetDelta: ADFloat; override; final;
+    function GetDispatchAfter: ADFloat; override; final;
+    function GetDispatchAt: ADFloat; override; final;
+    function GetDispatchMethod: TADEventDispatchMethod; override; final;
+    function GetDispatchTargets: TADEventDispatchTargets; override; final;
+    function GetDispatchTime: ADFloat; override; final;
+    function GetExpiresAfter: ADFloat; override; final;
+    function GetEventOrigin: TADEventOrigin; override; final;
+    function GetProcessedTime: ADFloat; override; final;
+    function GetState: TADEventState; override; final;
+    ///  <summary><c>Override if you want to define a default Dispatch Schedule for this Event Type.</c></summary>
+    ///  <returns><c>The Default Dispatch Schedule for this Event Type.</c></returns>
+    ///  <remarks><c>Default = </c>0.00<c> (instant dispatch)</c></remarks>
+    class function GetDefaultDispatchAfter: ADFloat; virtual;
+    ///  <summary><c>Override if you want to define a Default Expiry Time for this Event Type.</c></summary>
+    ///  <returns><c>The Default Expiry Time for this Event Type.</c></returns>
+    ///  <remarks><c>Default = </c>0.00<c> (never expires)</c></remarks>
+    class function GetDefaultExpiresAfter: ADFloat; virtual;
   public
     constructor Create; override;
     // Management Methods
     { IADEvent }
-    procedure Queue;
-    procedure QueueSchedule(const AScheduleFor: ADFloat);
-    procedure Stack;
-    procedure StackSchedule(const AScheduleFor: ADFloat);
-
-    // Properties
-    { IADEvent }
-    property CreatedTime: ADFloat read GetCreatedTime;
-    property Delta: ADFloat read GetDelta;
-    property DispatchAfter: ADFloat read GetDispatchAfter;
-    property DispatchAt: ADFloat read GetDispatchAt;
-    property DispatchMethod: TADEventDispatchMethod read GetDispatchMethod;
-    property DispatchTargets: TADEventDispatchTargets read GetDispatchTargets;
-    property DispatchTime: ADFloat read GetDispatchTime;
-    property ExpiresAfter: ADFloat read GetExpiresAfter;
-    property EventOrigin: TADEventOrigin read GetEventOrigin;
-    property ProcessedTime: ADFloat read GetProcessedTime;
-    property State: TADEventState read GetState;
+    procedure Queue; overload; override; final;
+    procedure Queue(const AExpiresAfter: ADFloat); overload; override; final;
+    procedure QueueSchedule(const AScheduleFor: ADFloat); override; final;
+    procedure Stack; overload; override; final;
+    procedure Stack(const AExpiresAfter: ADFloat); overload; override; final;
+    procedure StackSchedule(const AScheduleFor: ADFloat); override; final;
   end;
 
-  TADEventListener = class(TADObjectTS, IADEventListener)
+  TADEventListener = class abstract(TADObjectTS, IADEventListener)
   private
     FEventThread: Pointer; // Weak Reference
     FLastProcessed: ADFloat;
@@ -97,9 +92,23 @@ type
     { IADEventListener }
     procedure SetMaxAge(const AMaxAge: ADFloat);
     procedure SetNewestOnly(const ANewestOnly: Boolean);
+  protected
+    ///  <summary><c>Override if you want a custom Default Max Age time.</c></summary>
+    ///  <returns><c>The Default Maximum Age of an Event before the Listener will no longer process it.</c></returns>
+    ///  <remarks>0.00<c> No Max Age.</c></remarks>
+    class function GetDefaultMaxAge: ADFloat; virtual;
+    ///  <summary><c>Override if you want a custom Default Newest Only setting.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if you want this Listener to only process an Event if it is Newer than the last Event processed.</c></para>
+    ///    <para>False<c> if you want this Listener to process an EVent regardless of the order in which it was received.</c></para>
+    ///  </returns>
+    ///  <remarks><c>Default is </c>False</remarks>
+    class function GetDefaultNewestOnly: Boolean; virtual;
   public
+    constructor Create(const AEventThread: IADEventThread; const ARegistrationMode: TADEventListenerRegistrationMode = elrmAutomatic); reintroduce; virtual;
     // Management Methods
     { IADEventListener }
+    procedure ExecuteEvent(const AEvent: TADEventBase); virtual; abstract;
     procedure Register;
     procedure Unregister;
 
@@ -110,15 +119,34 @@ type
     property NewestOnly: Boolean read GetNewestOnly write SetNewestOnly;
   end;
 
-  TADEventListener<T: IADEvent> = class(TADEventListener, IADEventListener<T>)
+  TADEventListener<T: TADEventBase> = class(TADEventListener, IADEventListener<T>)
+  private
+    FOnEvent: TADEventCallback<T>;
+  protected
+    // Getters
+    { IADEventListener<T> }
+    function GetOnEvent: TADEventCallback<T>;
 
+    // Setters
+    { IADEventListener<T> }
+    procedure SetOnEvent(const AOnEvent: TADEventCallback<T>);
+  public
+    constructor Create(const AEventThread: IADEventThread; const AOnEvent: TADEventCallback<T>; const ARegistrationMode: TADEventListenerRegistrationMode = elrmAutomatic); reintroduce;
+    // Management Methods
+    { IADEventListener }
+    procedure ExecuteEvent(const AEvent: TADEventBase); override;
+
+    // Properties
+    { IADEventListener<T> }
+    property OnEvent: TADEventCallback<T> read GetOnEvent write SetOnEvent;
   end;
 
-  TADEventThread = class(TADPrecisionThread, IADEventThread, IADEventContainer)
+  TADEventContainer = class abstract(TADPrecisionThread, IADEventContainer)
   private
+    FEventQueue: IADEventList;
+    FEventStack: IADEventList;
+    FMaxEventCount: Cardinal;
     // Getters
-    { IADEventThread }
-    function GetPauseOnNoEvent: Boolean;
     { IADEventContainer }
     function GetEventCount: Integer;
     function GetEventQueueCount: Integer;
@@ -126,22 +154,16 @@ type
     function GetMaxEventCount: Cardinal;
 
     // Setters
-    { IADEventThread }
-    procedure SetPauseOnNoEvent(const APauseOnNoEvent: Boolean);
     { IADEventContainer }
     procedure SetMaxEventCount(const AMaxEventCount: Cardinal);
   public
+    constructor Create; override;
     // Management Methods
-    { IADEventThread }
-    procedure RegisterEventListener(const AEventListener: IADEventListener);
-    procedure UnregisterEventListener(const AEventListener: IADEventListener);
     { IADEventContainer }
-    procedure QueueEvent(const AEvent: IADEvent);
-    procedure StackEvent(const AEVent: IADEvent);
+    procedure QueueEvent(const AEvent: TADEventBase);
+    procedure StackEvent(const AEvent: TADEventBase);
 
     // Properties
-    { IADEventThread }
-    property PauseOnNoEvent: Boolean read GetPauseOnNoEvent write SetPauseOnNoEvent;
     { IADEventContainer }
     property EventCount: Integer read GetEventCount;
     property EventQueueCount: Integer read GetEventQueueCount;
@@ -149,17 +171,50 @@ type
     property MaxEventCount: Cardinal read GetMaxEventCount write SetMaxEventCount;
   end;
 
+  TADEventThread = class(TADEventContainer, IADEventThread)
+  private
+    FListeners: IADEventListenerMap;
+    FPauseOnNoEvent: Boolean;
+    // Getters
+    { IADEventThread }
+    function GetPauseOnNoEvent: Boolean;
+
+    // Setters
+    { IADEventThread }
+    procedure SetPauseOnNoEvent(const APauseOnNoEvent: Boolean);
+  public
+    constructor Create; override;
+    // Management Methods
+    { IADEventThread }
+    procedure RegisterEventListener(const AEventListener: IADEventListener);
+    procedure UnregisterEventListener(const AEventListener: IADEventListener);
+
+    // Properties
+    { IADEventThread }
+    property PauseOnNoEvent: Boolean read GetPauseOnNoEvent write SetPauseOnNoEvent;
+  end;
+
+  IADEventComparer = IADComparer<TADEventBaseClass>;
+
 function ADEventEngine: IADEventEngine;
+function ADEventComparer: IADEventComparer;
 
 implementation
 
+uses
+  ADAPT.Generics.Comparers,
+  ADAPT.Generics.Lists,
+  ADAPT.Generics.Maps;
+
 type
-  TADEventEngine = class(TADObject, IADEventEngine, IADReadWriteLock)
+  { Generic Collections }
+  TADEventList = class(TADList<IADEventHolder>);
+  TADEventListenerMap = class(TADMap<TADEventBaseClass, IADEventListener>);
+
+  TADEventEngine = class(TADObjectTS, IADEventEngine, IADReadWriteLock)
   private
     FGlobalMaxEvents: Cardinal;
-    FLock: TADReadWriteLock;
     // Getters
-    function GetLock: IADReadWriteLock;
     { IADEventEngine }
     function GetGlobalMaxEvents: Cardinal;
 
@@ -176,17 +231,31 @@ type
     procedure StackEvent(const AEvent: IADEvent);
 
     // Properties
-    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
     { IADEventEngine }
     property GlobalMaxEvents: Cardinal read GetGlobalMaxEvents write SetGlobalMaxEvents;
   end;
 
+  TADEventComparer = class(TADComparer<TADEventBaseClass>)
+  public
+    function AEqualToB(const A, B: TADEventBaseClass): Boolean; override;
+    function AGreaterThanB(const A, B: TADEventBaseClass): Boolean; override;
+    function AGreaterThanOrEqualToB(const A, B: TADEventBaseClass): Boolean; override;
+    function ALessThanB(const A, B: TADEventBaseClass): Boolean; override;
+    function ALessThanOrEqualToB(const A, B: TADEventBaseClass): Boolean; override;
+  end;
+
 var
   GEventEngine: IADEventEngine;
+  GEventComparer: IADEventComparer;
 
 function ADEventEngine: IADEventEngine;
 begin
   Result := GEventEngine;
+end;
+
+function ADEventComparer: IADEventComparer;
+begin
+  Result := GEventComparer;
 end;
 
 { TADEvent }
@@ -197,11 +266,23 @@ begin
   FLock := TADReadWriteLock.Create(Self);
   FCreatedTime := GetReferenceTime;
   FState := esNotDispatched;
+  FDispatchAfter := GetDefaultDispatchAfter;
+  FExpiresAfter := GetDefaultExpiresAfter;
 end;
 
 function TADEvent.GetCreatedTime: ADFloat;
 begin
   Result := FCreatedTime; // No locking required as this value is only ever set on Construction.
+end;
+
+class function TADEvent.GetDefaultDispatchAfter: ADFloat;
+begin
+  Result := ADFLOAT_ZERO;
+end;
+
+class function TADEvent.GetDefaultExpiresAfter: ADFloat;
+begin
+  Result := ADFLOAT_ZERO;
 end;
 
 function TADEvent.GetDelta: ADFloat;
@@ -309,6 +390,12 @@ begin
 
 end;
 
+procedure TADEvent.Queue(const AExpiresAfter: ADFloat);
+begin
+  FExpiresAfter := AExpiresAfter;
+  Queue;
+end;
+
 procedure TADEvent.QueueSchedule(const AScheduleFor: ADFloat);
 begin
 
@@ -319,12 +406,36 @@ begin
 
 end;
 
+procedure TADEvent.Stack(const AExpiresAfter: ADFloat);
+begin
+  FExpiresAfter := AExpiresAfter;
+  Stack;
+end;
+
 procedure TADEvent.StackSchedule(const AScheduleFor: ADFloat);
 begin
 
 end;
 
 { TADEventListener }
+
+constructor TADEventListener.Create(const AEventThread: IADEventThread; const ARegistrationMode: TADEventListenerRegistrationMode);
+begin
+  inherited Create;
+  FEventThread := @AEventThread;
+  if ARegistrationMode = elrmAutomatic then
+    Register;
+end;
+
+class function TADEventListener.GetDefaultMaxAge: ADFloat;
+begin
+  Result := ADFLOAT_ZERO;
+end;
+
+class function TADEventListener.GetDefaultNewestOnly: Boolean;
+begin
+  Result := False;
+end;
 
 function TADEventListener.GetEventThread: IADEventThread;
 begin
@@ -396,36 +507,130 @@ begin
 
 end;
 
+{ TADEventListener<T> }
+
+constructor TADEventListener<T>.Create(const AEventThread: IADEventThread; const AOnEvent: TADEventCallback<T>; const ARegistrationMode: TADEventListenerRegistrationMode = elrmAutomatic);
+begin
+  FOnEvent := AOnEvent;
+  inherited Create(AEventThread);
+end;
+
+procedure TADEventListener<T>.ExecuteEvent(const AEvent: TADEventBase);
+begin
+  FLock.AcquireRead;
+  try
+    if Assigned(FOnEvent) then
+      FOnEvent(AEvent);
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADEventListener<T>.GetOnEvent: TADEventCallback<T>;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FOnEvent;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADEventListener<T>.SetOnEvent(const AOnEvent: TADEventCallback<T>);
+begin
+  FLock.AcquireWrite;
+  try
+    FOnEvent := AOnEvent;
+  finally
+    FLock.ReleaseWrite;
+  end;
+end;
+
+{ TADEventContainer }
+
+constructor TADEventContainer.Create;
+begin
+  inherited;
+  FEventQueue := TADEventList.Create;
+  FEventStack := TADEventList.Create;
+end;
+
+function TADEventContainer.GetEventCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FEventQueue.Count + FEventStack.Count;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADEventContainer.GetEventQueueCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FEventQueue.Count;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADEventContainer.GetEventStackCount: Integer;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FEventStack.Count;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADEventContainer.GetMaxEventCount: Cardinal;
+begin
+  FLock.AcquireRead;
+  try
+    Result := FMaxEventCount;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADEventContainer.QueueEvent(const AEvent: TADEventBase);
+begin
+  FEventQueue.Add(AEvent.Holder);
+end;
+
+procedure TADEventContainer.SetMaxEventCount(const AMaxEventCount: Cardinal);
+begin
+  FLock.AcquireRead;
+  try
+    FMaxEventCount := AMaxEventCount;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADEventContainer.StackEvent(const AEvent: TADEventBase);
+begin
+  FEventStack.Add(AEvent.Holder);
+end;
+
 { TADEventThread }
 
-function TADEventThread.GetEventCount: Integer;
+constructor TADEventThread.Create;
 begin
-
-end;
-
-function TADEventThread.GetEventQueueCount: Integer;
-begin
-
-end;
-
-function TADEventThread.GetEventStackCount: Integer;
-begin
-
-end;
-
-function TADEventThread.GetMaxEventCount: Cardinal;
-begin
-
+  inherited;
+  FListeners := TADEventListenerMap.Create(ADEventComparer);
 end;
 
 function TADEventThread.GetPauseOnNoEvent: Boolean;
 begin
-
-end;
-
-procedure TADEventThread.QueueEvent(const AEvent: IADEvent);
-begin
-
+  FLock.AcquireRead;
+  try
+    Result := FPauseOnNoEvent;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 procedure TADEventThread.RegisterEventListener(const AEventListener: IADEventListener);
@@ -433,19 +638,14 @@ begin
 
 end;
 
-procedure TADEventThread.SetMaxEventCount(const AMaxEventCount: Cardinal);
-begin
-
-end;
-
 procedure TADEventThread.SetPauseOnNoEvent(const APauseOnNoEvent: Boolean);
 begin
-
-end;
-
-procedure TADEventThread.StackEvent(const AEVent: IADEvent);
-begin
-
+  FLock.AcquireRead;
+  try
+    FPauseOnNoEvent := APauseOnNoEvent;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 procedure TADEventThread.UnregisterEventListener(const AEventListener: IADEventListener);
@@ -459,12 +659,11 @@ constructor TADEventEngine.Create;
 begin
   inherited;
   FGlobalMaxEvents := 0;
-  FLock := TADReadWriteLock.Create(Self);
 end;
 
 destructor TADEventEngine.Destroy;
 begin
-  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+
   inherited;
 end;
 
@@ -476,11 +675,6 @@ begin
   finally
     FLock.ReleaseRead;
   end;
-end;
-
-function TADEventEngine.GetLock: IADReadWriteLock;
-begin
-  Result := FLock;
 end;
 
 procedure TADEventEngine.QueueEvent(const AEvent: IADEvent);
@@ -503,7 +697,35 @@ begin
 
 end;
 
+{ TADEventComparer }
+
+function TADEventComparer.AEqualToB(const A, B: TADEventBaseClass): Boolean;
+begin
+  Result := (A = B);
+end;
+
+function TADEventComparer.AGreaterThanB(const A, B: TADEventBaseClass): Boolean;
+begin
+  Result := (Cardinal(A.ClassInfo) > Cardinal(B.ClassInfo));
+end;
+
+function TADEventComparer.AGreaterThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
+begin
+  Result := (Cardinal(A.ClassInfo) >= Cardinal(B.ClassInfo));
+end;
+
+function TADEventComparer.ALessThanB(const A, B: TADEventBaseClass): Boolean;
+begin
+  Result := (Cardinal(A.ClassInfo) < Cardinal(B.ClassInfo));
+end;
+
+function TADEventComparer.ALessThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
+begin
+  Result := (Cardinal(A.ClassInfo) <= Cardinal(B.ClassInfo));
+end;
+
 initialization
+  GEventComparer := TADEventComparer.Create;
   GEventEngine := TADEventEngine.Create;
 
 end.

@@ -48,6 +48,16 @@ type
   property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
+  ///  <summary><c>A Generic Object Holder that can Own the Object it Holds.</c></summary>
+  IADObjectHolder<T: class> = interface(IADObjectOwner)
+  // Getters
+  function GetObject: T;
+  // Setters
+  procedure SetObject(const AObject: T);
+  // Properties
+  property HeldObject: T read GetObject write SetObject;
+  end;
+
   ///  <summary><c>Common Interface for any Iterable Collection.</c></summary>
   IADIterable<T> = interface(IADInterface)
   ['{910A3785-06C0-4512-A823-3AA4D77BDB18}'] // If we don't provide a GUID here, we cannot cast-reference Collections as "Iterables".

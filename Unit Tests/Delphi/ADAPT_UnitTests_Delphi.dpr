@@ -53,7 +53,8 @@ uses
   ADAPT.Generics.Sorters.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas',
   ADAPT.Generics.Sorters in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas',
   ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas',
-  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas';
+  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
+  ADAPT.Generics.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas';
 
 var
   runner : ITestRunner;

@@ -114,6 +114,20 @@ type
     property InstanceGUID: TGUID read GetInstanceGUID;
   end;
 
+const
+  {$IFDEF ADAPT_FLOAT_SINGLE}
+    ///  <summary><c>Zero value for ADFloat values.</c></summary>
+    ADFLOAT_ZERO = 0.00;
+  {$ELSE}
+    {$IFDEF ADAPT_FLOAT_EXTENDED}
+      ///  <summary><c>Zero value for ADFloat values.</c></summary>
+      ADFLOAT_ZERO = 0.00;
+    {$ELSE}
+      ///  <summary><c>Zero value for ADFloat values.</c></summary>
+      ADFLOAT_ZERO = 0.00;
+    {$ENDIF ADAPT_FLOAT_DOUBLE}
+  {$ENDIF ADAPT_FLOAT_SINGLE}
+
 implementation
 
 { TADObject }
