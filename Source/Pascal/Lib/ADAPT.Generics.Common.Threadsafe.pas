@@ -37,8 +37,6 @@ type
     // Setters
     { IADObjectOwner }
     procedure SetOwnership(const AOwnership: TADOwnership); override;
-    { IADObjectHolder<T> }
-    procedure SetObject(const AObject: T); override;
   public
     constructor Create(const AObject: T; const AOwnership: TADOwnership = oOwnsObjects); override;
     destructor Destroy; override;
@@ -84,16 +82,6 @@ begin
     Result := inherited;
   finally
     FLock.ReleaseRead;
-  end;
-end;
-
-procedure TADObjectHolderTS<T>.SetObject(const AObject: T);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
   end;
 end;
 

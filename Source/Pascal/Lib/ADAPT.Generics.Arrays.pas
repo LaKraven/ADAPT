@@ -51,6 +51,7 @@ type
     procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
   public
     constructor Create(const ACapacity: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
     procedure Clear; virtual;
     procedure Delete(const AIndex: Integer); virtual;
     procedure Finalize(const AIndex, ACount: Integer); virtual;
@@ -110,6 +111,12 @@ begin
   Finalize(AIndex, 1);
   if AIndex < Length(FArray) - 1 then
     Move(AIndex + 1, AIndex, (Length(FArray) - 1) - AIndex);
+end;
+
+destructor TADArray<T>.Destroy;
+begin
+//  Clear;
+  inherited;
 end;
 
 procedure TADArray<T>.Finalize(const AIndex, ACount: Integer);

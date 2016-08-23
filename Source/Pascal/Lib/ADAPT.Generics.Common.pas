@@ -47,8 +47,6 @@ type
     // Setters
     { IADObjectOwner }
     procedure SetOwnership(const AOwnership: TADOwnership); virtual;
-    { IADObjectHolder<T> }
-    procedure SetObject(const AObject: T); virtual;
   public
     constructor Create(const AObject: T; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; virtual;
     destructor Destroy; override;
@@ -56,7 +54,7 @@ type
     { IADObjectOwner }
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
     { IADObjectHolder<T> }
-    property HeldObject: T read GetObject write SetObject;
+    property HeldObject: T read GetObject;
   end;
 
   TADKeyValuePair<TKey, TValue> = class(TADObject, IADKeyValuePair<TKey, TValue>)
@@ -99,11 +97,6 @@ end;
 function TADObjectHolder<T>.GetOwnership: TADOwnership;
 begin
   Result := FOwnership;
-end;
-
-procedure TADObjectHolder<T>.SetObject(const AObject: T);
-begin
-  FObject := AObject;
 end;
 
 procedure TADObjectHolder<T>.SetOwnership(const AOwnership: TADOwnership);

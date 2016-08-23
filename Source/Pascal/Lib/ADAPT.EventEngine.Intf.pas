@@ -46,6 +46,13 @@ type
   { Sets }
   TADEventDispatchTargets = set of TADEventDispatchTarget;
 
+  { Exceptions }
+  EADEventEngineException = class(EADException);
+    EADEventEngineEventException = class(EADEventEngineException);
+    EADEventEngineEventListenerException = class(EADEventEngineException);
+      EADEventEngineEventListenerCallbackUnassigned = class(EADEventEngineEventListenerException);
+    EADEventEngineEventThreadException = class(EADEventEngineException);
+
   { Generic Collections }
   IADEventHolder = IADObjectHolder<TADEventBase>;
   IADEventList = IADList<IADEventHolder>;
@@ -253,22 +260,6 @@ type
     ///    <para>False<c> if this Listener doesn't care whether an Event is newer or older than the last Processed Event.</c></para>
     ///  </returns>
     property NewestOnly: Boolean read GetNewestOnly write SetNewestOnly;
-  end;
-
-  ///  <summary><c>Event Listeners are invoked when their relevent Event Type is processed through the Event Engine.</c></summary>
-  IADEventListener<T: TADEventBase> = interface(IADEventListener)
-    // Getters
-    ///  <returns><c>A reference to the Event to be invoked when the approrpriate Event Type is being processed through the Event Engine.</c></returns>
-    function GetOnEvent: TADEventCallback<T>;
-
-    // Setters
-    ///  <summary><c>Defines the Callback to be invoked when the appropriate Event Type is being processed through the Event Engine.</c><summary>
-    procedure SetOnEvent(const AOnEvent: TADEventCallback<T>);
-
-    // Properties
-    ///  <summary><c>Defines the Callback to be invoked when the appropriate Event Type is being processed through the Event Engine.</c><summary>
-    ///  <returns><c>A reference to the Event to be invoked when the approrpriate Event Type is being processed through the Event Engine.</c></returns>
-    property OnEvent: TADEventCallback<T> read GetOnEvent write SetOnEvent;
   end;
 
   ///  <summary><c>Any Type containing an Event Queue and Stack.</c></summary>

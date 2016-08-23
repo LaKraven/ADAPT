@@ -40,22 +40,20 @@ type
   ///  <summary><c>A Collection that can Own Objects.</c></summary>
   IADObjectOwner = interface(IADInterface)
   ['{5756A232-26B6-4395-9F1D-CCCC071E5701}']
-  // Getters
-  function GetOwnership: TADOwnership;
-  // Setters
-  procedure SetOwnership(const AOwnership: TADOwnership);
-  // Properties
-  property Ownership: TADOwnership read GetOwnership write SetOwnership;
+    // Getters
+    function GetOwnership: TADOwnership;
+    // Setters
+    procedure SetOwnership(const AOwnership: TADOwnership);
+    // Properties
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
   ///  <summary><c>A Generic Object Holder that can Own the Object it Holds.</c></summary>
   IADObjectHolder<T: class> = interface(IADObjectOwner)
-  // Getters
-  function GetObject: T;
-  // Setters
-  procedure SetObject(const AObject: T);
-  // Properties
-  property HeldObject: T read GetObject write SetObject;
+    // Getters
+    function GetObject: T;
+    // Properties
+    property HeldObject: T read GetObject;
   end;
 
   ///  <summary><c>Common Interface for any Iterable Collection.</c></summary>
