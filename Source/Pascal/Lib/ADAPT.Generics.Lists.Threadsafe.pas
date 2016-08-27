@@ -167,7 +167,6 @@ type
     function GetOldestIndex: Integer; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
-    procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
     constructor Create(const ACapacity: Integer); override;
     destructor Destroy; override;
@@ -216,7 +215,6 @@ type
     function GetOldestIndex: Integer; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
-    procedure SetItem(const AIndex: Integer; const AItem: T); override;
   public
     constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); override;
     destructor Destroy; override;
@@ -1083,16 +1081,6 @@ begin
   end;
 end;
 
-procedure TADCircularListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
-end;
-
 { TADCircularObjectListTS<T> }
 
 function TADCircularObjectListTS<T>.Add(const AItem: T): Integer;
@@ -1307,16 +1295,6 @@ begin
 end;
 
 procedure TADCircularObjectListTS<T>.SetCapacity(const ACapacity: Integer);
-begin
-  FLock.AcquireWrite;
-  try
-    inherited;
-  finally
-    FLock.ReleaseWrite;
-  end;
-end;
-
-procedure TADCircularObjectListTS<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
   FLock.AcquireWrite;
   try

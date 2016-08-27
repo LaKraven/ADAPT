@@ -273,11 +273,11 @@ type
     ///  <returns><c>The number of Events currently contained within the Stack.</c></returns>
     function GetEventStackCount: Integer;
     ///  <returns><c>The overall Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></returns>
-    function GetMaxEventCount: Cardinal;
+    function GetMaxEventCount: Integer;
 
     // Setters
     ///  <summary><c>Defines the Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></summary>
-    procedure SetMaxEventCount(const AMaxEventCount: Cardinal);
+    procedure SetMaxEventCount(const AMaxEventCount: Integer);
 
     // Management Methods
     ///  <summary><c>Places the given Event into this Container's Event Queue.</c></summary>
@@ -294,7 +294,7 @@ type
     property EventStackCount: Integer read GetEventStackCount;
     ///  <summary><c>Defines the Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></summary>
     ///  <returns><c>The overall Limit to the number of Events the Queue and Stack (combined) can contain at any one time.</c></returns>
-    property MaxEventCount: Cardinal read GetMaxEventCount write SetMaxEventCount;
+    property MaxEventCount: Integer read GetMaxEventCount write SetMaxEventCount;
   end;
 
   ///  <summary><c>Event Threads are specialized "Precision Threads" designed to process Asynchronous Events.</c></summary>
@@ -331,11 +331,11 @@ type
   ['{6E6D99BF-BAD7-4E43-8CA6-3CF25F262329}']
     // Getters
     ///  <returns><c>The Global Maximum number of Events the Engine can handle at any one time.</c></returns>
-    function GetGlobalMaxEvents: Cardinal;
+    function GetGlobalMaxEvents: Integer;
 
     // Setters
     ///  <summary><c>Defines the Global Maximum number of Events the Engine can handle at any one time.</c></returns>
-    procedure SetGlobalMaxEvents(const AGlobalMaxEvents: Cardinal);
+    procedure SetGlobalMaxEvents(const AGlobalMaxEvents: Integer);
 
     // Management Methods
     ///  <summary><c>Dispatches the given Event across the entire Event Engine via the Queues.</c></summary>
@@ -346,7 +346,7 @@ type
     // Properties
     ///  <summary><c>Defines the Global Maximum number of Events the Engine can handle at any one time.</c></returns>
     ///  <returns><c>The Global Maximum number of Events the Engine can handle at any one time.</c></returns>
-    property GlobalMaxEvents: Cardinal read GetGlobalMaxEvents write SetGlobalMaxEvents;
+    property GlobalMaxEvents: Integer read GetGlobalMaxEvents write SetGlobalMaxEvents;
   end;
 
 implementation

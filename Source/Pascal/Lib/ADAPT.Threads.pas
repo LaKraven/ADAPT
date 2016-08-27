@@ -13,9 +13,9 @@ interface
 
 uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-    System.Classes, System.SysUtils, System.SyncObjs, System.Diagnostics, System.Math,
+    System.Classes, System.SysUtils, System.SyncObjs, System.Math,
   {$ELSE}
-    Classes, SysUtils, SyncObjs, {$IFDEF FPC}ADAPT.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
+    Classes, SysUtils, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Performance.Intf,
@@ -184,21 +184,12 @@ type
     property ThrottleInterval: Cardinal read GetThrottleInterval write SetThrottleInterval;
   end;
 
-function GetReferenceTime: ADFloat;
-
 implementation
 
 uses
+  ADAPT.Math.Delta,
   ADAPT.Performance.Threadsafe;
   {$I ADAPT_RTTI.inc}
-
-var
-  ReferenceWatch: TStopwatch;
-
-function GetReferenceTime: ADFloat;
-begin
-  Result := TStopwatch.GetTimeStamp / TStopwatch.Frequency;
-end;
 
 { TADThread }
 
@@ -307,7 +298,7 @@ procedure TADPrecisionThread.Bump;
 begin
   FLock.AcquireWrite;
   try
-    FNextTickTime := GetReferenceTime;
+    FNextTickTime := ADReferenceTime;
   finally
     FLock.ReleaseWrite;
   end;
@@ -315,7 +306,7 @@ end;
 
 function TADPrecisionThread.CalculateExtraTime: ADFloat;
 begin
-  Result := NextTickTime - GetReferenceTime;
+  Result := NextTickTime - ADReferenceTime;
 end;
 
 constructor TADPrecisionThread.Create(const ACreateSuspended: Boolean);
@@ -352,7 +343,7 @@ begin
   begin
     if ThreadState = tsRunning then
     begin
-      LCurrentTime := GetReferenceTime;
+      LCurrentTime := ADReferenceTime;
       AtomicInitializeCycleValues(LTickRateLimit, LTickRateDesired, LThrottleInterval);
       LDelta := (LCurrentTime - FNextTickTime);
 
@@ -377,7 +368,7 @@ begin
         Tick(LDelta, LCurrentTime);
       end else
       begin
-        if (FNextTickTime - GetReferenceTime >= LThrottleInterval / 1000) then
+        if (FNextTickTime - ADReferenceTime >= LThrottleInterval / 1000) then
           TThread.Sleep(LThrottleInterval);
       end;
     end else
@@ -477,7 +468,7 @@ end;
 
 procedure TADPrecisionThread.InitializeTickVariables(var ACurrentTime, ALastAverageCheckpoint, ANextAverageCheckpoint, ATickRate: ADFloat; var AAverageTicks: Integer);
 begin
-  ACurrentTime := GetReferenceTime;
+  ACurrentTime := ADReferenceTime;
   FLock.AcquireWrite;
   try
   FNextTickTime := ACurrentTime;
@@ -581,8 +572,5 @@ begin
     FLock.ReleaseWrite;
   end;
 end;
-
-initialization
-  ReferenceWatch := TStopwatch.Create;
 
 end.

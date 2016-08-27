@@ -13,16 +13,16 @@ interface
 
 uses
   {$IFDEF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-    System.Classes,
+    System.Classes, System.SyncObjs,
   {$ELSE}
-    Classes,
+    Classes, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Comparers.Intf,
   ADAPT.Generics.Sorters.Intf,
   ADAPT.Generics.Lists.Intf,
-  ADAPT.Threads,
+  ADAPT.Threads, ADAPT.Threads.Intf,
   ADAPT.EventEngine.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -144,19 +144,51 @@ type
   private
     FEventQueue: IADEventList;
     FEventStack: IADEventList;
-    FMaxEventCount: Cardinal;
+    FMaxEventCount: Integer;
+    FMaxEventSignal: TEvent;
+    FSleepAt: ADFloat;
     // Getters
     { IADEventContainer }
     function GetEventCount: Integer;
     function GetEventQueueCount: Integer;
     function GetEventStackCount: Integer;
-    function GetMaxEventCount: Cardinal;
+    function GetMaxEventCount: Integer;
 
     // Setters
     { IADEventContainer }
-    procedure SetMaxEventCount(const AMaxEventCount: Cardinal);
+    procedure SetMaxEventCount(const AMaxEventCount: Integer);
+
+    // Internal Methods
+    procedure WaitOnEventCountIfNecessary;
+    procedure ResetEventCountSignal;
+    procedure SmartSleep;
+    procedure SmartWake;
+  protected
+    { TADPrecisionThread Overrides }
+    function GetInitialThreadState: TADThreadState; override;
+    procedure Tick(const ADelta, AStartTime: ADFloat); override;
+    { Overridables }
+    ///  <returns><c>How long the Thread should wait for new Events before self-Pausing.</c></returns>
+    ///  <remarks>
+    ///    <para><c>A small delay is good when performance is critical.</c></para>
+    ///    <para><c>Value is presented in Seconds.</c></para>
+    ///    <para><c>Default =</c> 0.25 <c>seconds</c></para>
+    ///  </remarks>
+    function GetDefaultPauseDelay: ADFloat; virtual;
+    ///  <returns><c>The default Maximum number of Events the Container can hold at any one time.</c></returns>
+    ///  <remarks><c>Default =</c> 0<c> (No Limit)</c></remarks>
+    function GetDefaultMaxEventCount: Integer; virtual;
+    ///  <returns><c>Whether or not this Thread self-Pause when there are no Events in the Stack or Queue.</c></returns>
+    ///  <remarks><c>Default =</c> True</remarks>
+    function GetPauseOnNoEvent: Boolean; virtual;
+    ///  <returns><c>Whether or not this Thread self-Wake when a new Event is placed into the Stack or Queue.</c></returns>
+    ///  <remarks><c>Default =</c> True</remarks>
+    function GetWakeOnEvent: Boolean; virtual;
+    ///  <summary><c>You MUST override "ProcessEvent" to define what action is to take place when the Event Stack and Queue are being processed.</c></summary>
+    procedure ProcessEvent(const AEvent: IADEventHolder; const ADelta, AStartTime: ADFloat); virtual; abstract;
   public
     constructor Create; override;
+    destructor Destroy; override;
     // Management Methods
     { IADEventContainer }
     procedure QueueEvent(const AEvent: TADEventBase);
@@ -167,7 +199,7 @@ type
     property EventCount: Integer read GetEventCount;
     property EventQueueCount: Integer read GetEventQueueCount;
     property EventStackCount: Integer read GetEventStackCount;
-    property MaxEventCount: Cardinal read GetMaxEventCount write SetMaxEventCount;
+    property MaxEventCount: Integer read GetMaxEventCount write SetMaxEventCount;
   end;
 
   TADEventThread = class(TADEventContainer, IADEventThread)
@@ -198,11 +230,12 @@ type
   end;
 
 function ADEventEngine: IADEventEngine;
-function ADEventComparer: IADEventComparer;
+function ADEventClassComparer: IADEventComparer;
 
 implementation
 
 uses
+  ADAPT.Math.Delta,
   ADAPT.Generics.Common,
   ADAPT.Generics.Comparers,
   ADAPT.Generics.Lists,
@@ -216,14 +249,14 @@ type
 
   TADEventEngine = class(TADObjectTS, IADEventEngine, IADReadWriteLock)
   private
-    FGlobalMaxEvents: Cardinal;
+    FGlobalMaxEvents: Integer;
     // Getters
     { IADEventEngine }
-    function GetGlobalMaxEvents: Cardinal;
+    function GetGlobalMaxEvents: Integer;
 
     // Setters
     { IADEventEngine }
-    procedure SetGlobalMaxEvents(const AGlobalMaxEvents: Cardinal);
+    procedure SetGlobalMaxEvents(const AGlobalMaxEvents: Integer);
 
     // Internal Methods
     function ScheduleIfRequired(const AEvent: IADEvent): Boolean;
@@ -237,10 +270,10 @@ type
 
     // Properties
     { IADEventEngine }
-    property GlobalMaxEvents: Cardinal read GetGlobalMaxEvents write SetGlobalMaxEvents;
+    property GlobalMaxEvents: Integer read GetGlobalMaxEvents write SetGlobalMaxEvents;
   end;
 
-  TADEventComparer = class(TADComparer<TADEventBaseClass>)
+  TADEventClassComparer = class(TADComparer<TADEventBaseClass>)
   public
     function AEqualToB(const A, B: TADEventBaseClass): Boolean; override;
     function AGreaterThanB(const A, B: TADEventBaseClass): Boolean; override;
@@ -251,16 +284,16 @@ type
 
 var
   GEventEngine: IADEventEngine;
-  GEventComparer: IADEventComparer;
+  GEventClassComparer: IADEventComparer;
 
 function ADEventEngine: IADEventEngine;
 begin
   Result := GEventEngine;
 end;
 
-function ADEventComparer: IADEventComparer;
+function ADEventClassComparer: IADEventComparer;
 begin
-  Result := GEventComparer;
+  Result := GEventClassComparer;
 end;
 
 { TADEvent }
@@ -269,7 +302,7 @@ constructor TADEvent.Create;
 begin
   inherited;
   FLock := TADReadWriteLock.Create(Self);
-  FCreatedTime := GetReferenceTime;
+  FCreatedTime := ADReferenceTime;
   FState := esNotDispatched;
   FDispatchAfter := GetDefaultDispatchAfter;
   FExpiresAfter := GetDefaultExpiresAfter;
@@ -301,7 +334,7 @@ function TADEvent.GetDelta: ADFloat;
 begin
   FLock.AcquireRead;
   try
-    Result := GetReferenceTime - FDispatchTime;
+    Result := ADReferenceTime - FDispatchTime;
   finally
     FLock.ReleaseRead;
   end;
@@ -430,7 +463,7 @@ procedure TADEvent.Schedule(const AScheduleFor: ADFloat);
 begin
   FLock.AcquireWrite;
   try
-    FDispatchAt := GetReferenceTime + AScheduleFor;
+    FDispatchAt := ADReferenceTime + AScheduleFor;
     FState := esScheduled;
   finally
     FLock.ReleaseWrite;
@@ -569,8 +602,28 @@ end;
 constructor TADEventContainer.Create;
 begin
   inherited;
+  FSleepAt := ADFLOAT_ZERO;
   FEventQueue := TADEventList.Create;
   FEventStack := TADEventList.Create;
+  FMaxEventSignal := TEvent.Create(nil, True, False, '');
+  FMaxEventCount := GetDefaultMaxEventCount;
+end;
+
+destructor TADEventContainer.Destroy;
+begin
+  FMaxEventSignal.SetEvent;
+  FMaxEventSignal.Free;
+  inherited;
+end;
+
+function TADEventContainer.GetDefaultMaxEventCount: Integer;
+begin
+  Result := 0;
+end;
+
+function TADEventContainer.GetDefaultPauseDelay: ADFloat;
+begin
+  Result := 0.25;
 end;
 
 function TADEventContainer.GetEventCount: Integer;
@@ -603,7 +656,12 @@ begin
   end;
 end;
 
-function TADEventContainer.GetMaxEventCount: Cardinal;
+function TADEventContainer.GetInitialThreadState: TADThreadState;
+begin
+  Result := tsPaused;
+end;
+
+function TADEventContainer.GetMaxEventCount: Integer;
 begin
   FLock.AcquireRead;
   try
@@ -613,12 +671,35 @@ begin
   end;
 end;
 
-procedure TADEventContainer.QueueEvent(const AEvent: TADEventBase);
+function TADEventContainer.GetPauseOnNoEvent: Boolean;
 begin
-  FEventQueue.Add(AEvent.Holder);
+  Result := True;
 end;
 
-procedure TADEventContainer.SetMaxEventCount(const AMaxEventCount: Cardinal);
+function TADEventContainer.GetWakeOnEvent: Boolean;
+begin
+  Result := True;
+end;
+
+procedure TADEventContainer.QueueEvent(const AEvent: TADEventBase);
+begin
+  WaitOnEventCountIfNecessary;
+  FEventQueue.Add(AEvent.Holder);
+  ResetEventCountSignal;
+  SmartWake;
+end;
+
+procedure TADEventContainer.ResetEventCountSignal;
+var
+  LMaxEventsLocal: Integer;
+begin
+  LMaxEventsLocal := MaxEventCount;
+
+  if (LMaxEventsLocal > 0) or (EventCount < LMaxEventsLocal) then
+    FMaxEventSignal.ResetEvent;
+end;
+
+procedure TADEventContainer.SetMaxEventCount(const AMaxEventCount: Integer);
 begin
   FLock.AcquireRead;
   try
@@ -628,9 +709,44 @@ begin
   end;
 end;
 
+procedure TADEventContainer.SmartSleep;
+begin
+
+end;
+
+procedure TADEventContainer.SmartWake;
+begin
+  if GetWakeOnEvent then
+  begin
+    Wake;
+    FSleepAt := ADFLOAT_ZERO;
+  end;
+end;
+
 procedure TADEventContainer.StackEvent(const AEvent: TADEventBase);
 begin
+  WaitOnEventCountIfNecessary;
   FEventStack.Add(AEvent.Holder);
+  ResetEventCountSignal;
+  SmartWake;
+end;
+
+procedure TADEventContainer.Tick(const ADelta, AStartTime: ADFloat);
+begin
+  // Do nothing.
+end;
+
+procedure TADEventContainer.WaitOnEventCountIfNecessary;
+var
+  LMaxEventsLocal: Integer;
+begin
+  LMaxEventsLocal := MaxEventCount;
+
+  if (LMaxEventsLocal > 0) then
+  begin
+    if EventCount > LMaxEventsLocal then
+      FMaxEventSignal.WaitFor(INFINITE);
+  end;
 end;
 
 { TADEventThread }
@@ -638,7 +754,7 @@ end;
 constructor TADEventThread.Create;
 begin
   inherited;
-  FListeners := TADEventListenerMap.Create(ADEventComparer);
+  FListeners := TADEventListenerMap.Create(ADEventClassComparer);
 end;
 
 function TADEventThread.GetPauseOnNoEvent: Boolean;
@@ -690,7 +806,7 @@ begin
   inherited;
 end;
 
-function TADEventEngine.GetGlobalMaxEvents: Cardinal;
+function TADEventEngine.GetGlobalMaxEvents: Integer;
 begin
   FLock.AcquireRead;
   try
@@ -714,7 +830,7 @@ begin
   Result := False; // TODO -oDaniel -cEvent Engine Scheduler: Handle Scheduled Events.
 end;
 
-procedure TADEventEngine.SetGlobalMaxEvents(const AGlobalMaxEvents: Cardinal);
+procedure TADEventEngine.SetGlobalMaxEvents(const AGlobalMaxEvents: Integer);
 begin
   FLock.AcquireWrite;
   try
@@ -732,35 +848,35 @@ begin
   end;
 end;
 
-{ TADEventComparer }
+{ TADEventComparerClass }
 
-function TADEventComparer.AEqualToB(const A, B: TADEventBaseClass): Boolean;
+function TADEventClassComparer.AEqualToB(const A, B: TADEventBaseClass): Boolean;
 begin
   Result := (A = B);
 end;
 
-function TADEventComparer.AGreaterThanB(const A, B: TADEventBaseClass): Boolean;
+function TADEventClassComparer.AGreaterThanB(const A, B: TADEventBaseClass): Boolean;
 begin
   Result := (Cardinal(A.ClassInfo) > Cardinal(B.ClassInfo));
 end;
 
-function TADEventComparer.AGreaterThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
+function TADEventClassComparer.AGreaterThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
 begin
   Result := (Cardinal(A.ClassInfo) >= Cardinal(B.ClassInfo));
 end;
 
-function TADEventComparer.ALessThanB(const A, B: TADEventBaseClass): Boolean;
+function TADEventClassComparer.ALessThanB(const A, B: TADEventBaseClass): Boolean;
 begin
   Result := (Cardinal(A.ClassInfo) < Cardinal(B.ClassInfo));
 end;
 
-function TADEventComparer.ALessThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
+function TADEventClassComparer.ALessThanOrEqualToB(const A, B: TADEventBaseClass): Boolean;
 begin
   Result := (Cardinal(A.ClassInfo) <= Cardinal(B.ClassInfo));
 end;
 
 initialization
-  GEventComparer := TADEventComparer.Create;
+  GEventClassComparer := TADEventClassComparer.Create;
   GEventEngine := TADEventEngine.Create;
 
 end.

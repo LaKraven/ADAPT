@@ -54,7 +54,11 @@ uses
   ADAPT.Generics.Sorters in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas',
   ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas',
   ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
-  ADAPT.Generics.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas';
+  ADAPT.Generics.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas',
+  ADAPT.Math.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.Intf.pas',
+  ADAPT.Math.Common in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.pas',
+  ADAPT.Math.Delta.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Intf.pas',
+  ADAPT.Math.Delta in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.pas';
 
 var
   runner : ITestRunner;

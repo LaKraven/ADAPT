@@ -189,11 +189,10 @@ type
     // Setters
     { IADCircularList<T> }
     procedure SetCapacity(const ACapacity: Integer); virtual;
-    procedure SetItem(const AIndex: Integer; const AItem: T); virtual;
 
     // Management Methods
     { IADCircularList<T> }
-    function AddActual(const AItem: T): Integer;
+    function AddActual(const AItem: T): Integer; virtual;
     procedure CreateItemArray(const ACapacity: Integer); virtual;
   public
     constructor Create(const ACapacity: Integer); reintroduce; virtual;
@@ -223,7 +222,7 @@ type
     // Properties
     property Capacity: Integer read GetCapacity;
     property Count: Integer read GetCount;
-    property Items[const AIndex: Integer]:  T read GetItem write SetItem;
+    property Items[const AIndex: Integer]:  T read GetItem;// write SetItem;
     property Newest: T read GetNewest;
     property NewestIndex: Integer read GetNewestIndex;
     property Oldest: T read GetOldest;
@@ -337,7 +336,7 @@ type
     function ContainsNone(const AItems: Array of T): Boolean; virtual;
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
-    function EqualItems(const AList: IADSortedList<T>): Boolean; virtual;
+    function EqualItems(const AList: IADSortedListReader<T>): Boolean; virtual;
     function IndexOf(const AItem: T): Integer; virtual;
     procedure Remove(const AItem: T); virtual;
     procedure RemoveItems(const AItems: Array of T); virtual;
@@ -381,7 +380,7 @@ type
   ///    <para><c>Can take Ownership of its Items.</c></para>
   ///    <para><c>This type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADObjectSortedList<T: class> = class(TADSortedList<T>, IADObjectOwner)
+  TADSortedObjectList<T: class> = class(TADSortedList<T>, IADObjectOwner)
   protected
     // Getters
     function GetOwnership: TADOwnership; virtual;
@@ -393,6 +392,26 @@ type
   public
     // Properties
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
+  end;
+
+  TADSortedCircularList<T> = class(TADCircularList<T>)
+  protected
+    function AddActual(const AItem: T): Integer; override;
+  end;
+
+  TADSortedCircularObjectList<T: class> = class(TADSortedCircularList<T>, IADObjectOwner)
+  private
+    FDefaultOwnership: TADOwnership;
+  protected
+    // Getters
+    function GetOwnership: TADOwnership; virtual;
+    // Setters
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
+  protected
+    procedure CreateItemArray(const ACapacity: Integer); override;
+  public
+    constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); reintroduce; virtual;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -1001,11 +1020,6 @@ begin
   //TODO -cTADCircularList<T> -oDaniel: Expand Array and repopulate with existing Items in order!
 end;
 
-procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
-begin
-  FItems[AIndex] := AItem;// Index Validation is now performed by TADArray<T>.GetItem
-end;
-
 { TADCircularObjectList<T> }
 
 constructor TADCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
@@ -1195,7 +1209,7 @@ begin
   inherited;
 end;
 
-function TADSortedList<T>.EqualItems(const AList: IADSortedList<T>): Boolean;
+function TADSortedList<T>.EqualItems(const AList: IADSortedListReader<T>): Boolean;
 var
   I: Integer;
 begin
@@ -1439,21 +1453,57 @@ begin
   FSorter := ASorter;
 end;
 
-{ TADObjectSortedList<T> }
+{ TADSortedObjectList<T> }
 
-procedure TADObjectSortedList<T>.CreateArray(const AInitialCapacity: Integer);
+procedure TADSortedObjectList<T>.CreateArray(const AInitialCapacity: Integer);
 begin
   FArray := TADObjectArray<T>.Create(oOwnsObjects, AInitialCapacity);
 end;
 
-function TADObjectSortedList<T>.GetOwnership: TADOwnership;
+function TADSortedObjectList<T>.GetOwnership: TADOwnership;
 begin
   Result := TADObjectArray<T>(FArray).Ownership;
 end;
 
-procedure TADObjectSortedList<T>.SetOwnership(const AOwnership: TADOwnership);
+procedure TADSortedObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
   TADObjectArray<T>(FArray).Ownership := AOwnership;
+end;
+
+{ TADSortedCircularList<T> }
+
+function TADSortedCircularList<T>.AddActual(const AItem: T): Integer;
+begin
+  inherited; // TODO -oDaniel -cTADSortedCircularList<T>: Implement Sorted Insertion
+end;
+
+{ TADSortedCircularObjectList<T> }
+
+constructor TADSortedCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
+begin
+  FDefaultOwnership := AOwnership;
+  inherited Create(ACapacity);
+end;
+
+procedure TADSortedCircularObjectList<T>.CreateItemArray(const ACapacity: Integer);
+begin
+  FItems := TADObjectArray<T>.Create(FDefaultOwnership, ACapacity);
+end;
+
+destructor TADSortedCircularObjectList<T>.Destroy;
+begin
+
+  inherited;
+end;
+
+function TADSortedCircularObjectList<T>.GetOwnership: TADOwnership;
+begin
+  Result := TADObjectArray<T>(FItems).Ownership;
+end;
+
+procedure TADSortedCircularObjectList<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+  TADObjectArray<T>(FItems).Ownership := AOwnership;
 end;
 
 end.

@@ -114,7 +114,7 @@ type
     function ContainsNone(const AKeys: Array of TKey): Boolean; virtual;
     procedure Delete(const AIndex: Integer); overload; virtual;
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
-    function EqualItems(const AList: IADMap<TKey, TValue>): Boolean; virtual;
+    function EqualItems(const AList: IADMapReader<TKey, TValue>): Boolean; virtual;
     function IndexOf(const AKey: TKey): Integer; virtual;
     procedure Remove(const AKey: TKey); virtual;
     procedure RemoveItems(const AKeys: Array of TKey); virtual;
@@ -327,7 +327,7 @@ begin
     Delete(I);
 end;
 
-function TADMap<TKey, TValue>.EqualItems(const AList: IADMap<TKey, TValue>): Boolean;
+function TADMap<TKey, TValue>.EqualItems(const AList: IADMapReader<TKey, TValue>): Boolean;
 var
   I: Integer;
 begin
