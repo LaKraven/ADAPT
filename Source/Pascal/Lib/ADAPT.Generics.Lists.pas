@@ -398,9 +398,33 @@ type
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
-  TADSortedCircularList<T> = class(TADCircularList<T>)
+  TADSortedCircularList<T> = class(TADCircularList<T>, IADComparable<T>, IADListSortable<T>)
+  private
+    FComparer: IADComparer<T>;
+    FSorter: IADListSorter<T>;
   protected
+    // Getters
+    { IADComparable<T> }
+    function GetComparer: IADComparer<T>; virtual;
+    { IADListSortable<T> }
+    function GetSorter: IADListSorter<T>; virtual;
+
+    // Setters
+    { IADComparable<T> }
+    procedure SetComparer(const AComparer: IADComparer<T>); virtual;
+    { IADListSortable<T> }
+    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
+
+    { Internal Methods }
     function AddActual(const AItem: T): Integer; override;
+    function GetSortedPosition(const AItem: T): Integer; virtual;
+  public
+    constructor Create(const ACapacity: Integer; const AComparer: IADComparer<T>; const ASorter: IADListSorter<T>); reintroduce; virtual;
+    // Properties
+    { IADComparable<T> }
+    property Comparer: IADComparer<T> read GetComparer write SetComparer;
+    { IADListSortable<T> }
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
   end;
 
   TADSortedCircularObjectList<T: class> = class(TADSortedCircularList<T>, IADObjectOwner)
@@ -414,7 +438,7 @@ type
   protected
     procedure CreateItemArray(const ACapacity: Integer); override;
   public
-    constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer); reintroduce; virtual;
+    constructor Create(const AOwnership: TADOwnership; const ACapacity: Integer; const AComparer: IADComparer<T>; const ASorter: IADListSorter<T>); reintroduce; virtual;
     destructor Destroy; override;
   end;
 
@@ -783,8 +807,6 @@ begin
 end;
 
 function TADCircularList<T>.AddActual(const AItem: T): Integer;
-var
-  I: Integer;
 begin
   if FCount < FItems.Capacity then
     Inc(FCount)
@@ -1449,15 +1471,85 @@ end;
 
 function TADSortedCircularList<T>.AddActual(const AItem: T): Integer;
 begin
-  inherited; // TODO -oDaniel -cTADSortedCircularList<T>: Implement Sorted Insertion
+  Result := GetSortedPosition(AItem);
+  if Result = 0 then
+    FItems[0] := AItem
+  else if Result = FCount then
+    FItems[FCount] := AItem
+  else
+  begin
+    if FCount < FItems.Capacity then
+      Inc(FCount)
+    else
+    begin
+      FItems.Delete(0);
+      Dec(Result);
+    end;
+    FItems.Insert(AItem, Result);
+  end;
+end;
+
+constructor TADSortedCircularList<T>.Create(const ACapacity: Integer; const AComparer: IADComparer<T>; const ASorter: IADListSorter<T>);
+begin
+  inherited Create(ACapacity);
+  FComparer := AComparer;
+  FSorter := ASorter;
+end;
+
+function TADSortedCircularList<T>.GetComparer: IADComparer<T>;
+begin
+  Result := FComparer;
+end;
+
+function TADSortedCircularList<T>.GetSortedPosition(const AItem: T): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+begin
+  Result := 0;
+  LLow := 0;
+  LHigh := FCount - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if FComparer.ALessThanOrEqualToB(AItem, FItems[LIndex]) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if FComparer.ALessThanB(FItems[LHigh], AItem) then
+    Result := LHigh + 1
+  else if FComparer.ALessThanB(FItems[LLow], AItem) then
+    Result := LLow + 1
+  else
+    Result := LLow;
+end;
+
+function TADSortedCircularList<T>.GetSorter: IADListSorter<T>;
+begin
+  Result := FSorter;
+end;
+
+procedure TADSortedCircularList<T>.SetComparer(const AComparer: IADComparer<T>);
+begin
+  FComparer := AComparer;
+end;
+
+procedure TADSortedCircularList<T>.SetSorter(const ASorter: IADListSorter<T>);
+begin
+  FSorter := ASorter;
 end;
 
 { TADSortedCircularObjectList<T> }
 
-constructor TADSortedCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
+constructor TADSortedCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer; const AComparer: IADComparer<T>; const ASorter: IADListSorter<T>);
 begin
   FDefaultOwnership := AOwnership;
-  inherited Create(ACapacity);
+  inherited Create(ACapacity, AComparer, ASorter);
 end;
 
 procedure TADSortedCircularObjectList<T>.CreateItemArray(const ACapacity: Integer);
