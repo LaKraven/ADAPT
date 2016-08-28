@@ -213,6 +213,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Common.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Delta.pas"/>
+        <DCCReference Include="ADAPT.UnitTests.Maths.Averagers.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

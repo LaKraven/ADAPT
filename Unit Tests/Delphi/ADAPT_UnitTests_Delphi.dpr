@@ -58,7 +58,8 @@ uses
   ADAPT.Math.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.Intf.pas',
   ADAPT.Math.Common in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.pas',
   ADAPT.Math.Delta.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Intf.pas',
-  ADAPT.Math.Delta in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.pas';
+  ADAPT.Math.Delta in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.pas',
+  ADAPT.UnitTests.Maths.Averagers in 'ADAPT.UnitTests.Maths.Averagers.pas';
 
 var
   runner : ITestRunner;
