@@ -71,42 +71,17 @@ type
     constructor Create(const AStream: IADStream; const APosition: Int64); reintroduce; overload;
     destructor Destroy; override;
     { IADStreamCaret }
-    ///  <summary><c>Deletes the given number of Bytes from the current Position in the Stream, then compacts the Stream by that number of Bytes (shifting any subsequent Bytes to the left)</c></summary>
-    ///  <returns><c>Returns the number of Bytes deleted.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes deleted.</c></para>
-    ///  </remarks>
     function Delete(const ALength: Int64): Int64; virtual;
-    ///  <summary><c>Inserts the given Buffer into the current Position within the Stream (shifting any subsequent Bytes to the right)</c></summary>
-    ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes inserted.</c></para>
-    ///  </remarks>
     function Insert(const ABuffer; const ALength: Int64): Int64; virtual;
-    ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
-    ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
     function Read(var ABuffer; const ALength: Int64): Int64; virtual;
-    ///  <summary><c>Writes the given Buffer into the current Position within the Stream (overwriting any existing data, and expanding the Size of the Stream if required)</c></summary>
-    ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
-    ///  <remarks>
-    ///    <para><c>DOES NOT shift the position of any subsequent Carets!</c></para>
-    ///  </remarks>
     function Write(const ABuffer; const ALength: Int64): Int64; virtual;
-    ///  <returns><c>Returns the new </c>Position<c> in the Stream.</c></returns>
     function Seek(const AOffset: Int64; const AOrigin: TSeekOrigin): Int64; virtual;
-    ///  <summary><c>Invalidates the Caret.</c></summary>
-    ///  <remarks><c>This is usually called by the owning Stream when a Caret has been Invalidated by an operation from another Caret.</c></remarks>
     procedure Invalidate; virtual;
 
-    ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
     property IsInvalid: Boolean read GetIsInvalid;
-    ///  <summary><c>If </c>True<c>, this Caret is still Valid.</c></summary>
     property IsValid: Boolean read GetIsValid;
-    ///  <summary><c>The Position of this Caret within the Stream.</c></summary>
     property Position: Int64 read GetPosition write SetPosition;
-    ///  <summary><c>Reference to the Caret's owning Stream</c></summary>
     property Stream: IADStream read GetStream;
-    ///  <summary><c>Reference to the Caret's owning Stream's Management Methods.</c><summary>
     property StreamManagement: IADStreamManagement read GetStreamManagement;
   end;
 
@@ -136,27 +111,18 @@ type
     destructor Destroy; override;
 
     { IADStream }
-    ///  <summary><c>Populate the Stream from a File.</c></summary>
     procedure LoadFromFile(const AFileName: String); virtual; abstract;
-    ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
     procedure LoadFromStream(const AStream: IADStream); overload; virtual; abstract;
-    ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
     procedure LoadFromStream(const AStream: TStream); overload; virtual; abstract;
-
-    ///  <returns><c>A new Stream Caret.</c></returns>
     function NewCaret: IADStreamCaret; overload;
-    ///  <returns><c>A new Stream Caret.</c></returns>
     function NewCaret(const APosition: Int64): IADStreamCaret; overload;
-
-    ///  <summary><c>Save contents of the Stream to a File.</c></summary>
+    function NewCaretReader: IADStreamCaretReader; overload;
+    function NewCaretReader(const APosition: Int64): IADStreamCaretReader; overload;
     procedure SaveToFile(const AFileName: String); virtual; abstract;
-    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: IADStream); overload; virtual; abstract;
-    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
     procedure SaveToStream(const AStream: TStream); overload; virtual; abstract;
 
     // Properties
-    ///  <summary><c>Size of the Stream.</c></summary>
     property Size: Int64 read GetSize write SetSize;
   end;
 
@@ -437,6 +403,16 @@ begin
   Result := MakeNewCaret;
   Result.Position := APosition;
   FCaretList.Add(Result);
+end;
+
+function TADStream.NewCaretReader: IADStreamCaretReader;
+begin
+  Result := NewCaret;
+end;
+
+function TADStream.NewCaretReader(const APosition: Int64): IADStreamCaretReader;
+begin
+  Result := NewCaret(APosition);
 end;
 
 procedure TADStream.ShiftCaretLeft(const ACaret: IADStreamCaret; const AFromPosition, ACount: Int64);

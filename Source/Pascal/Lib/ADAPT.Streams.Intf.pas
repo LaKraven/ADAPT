@@ -31,14 +31,48 @@ type
     EADStreamCaretException = class(EADStreamException);
       EADStreamCaretInvalid = class(EADStreamCaretException);
 
-  ///  <summary><c>A Caret for operating on a Stream at a particular position.</c></summary>
+  ///  <summary><c>A Caret for Reading from a Stream at a particular position.</c></summary>
+  IADStreamCaretReader = interface(IADInterface)
+  ['{3A03B581-5861-4566-9897-3B1EF58B656F}']
+    // Getters
+    ///  <returns>
+    ///    <para>False<c> if the Caret is Valid.</c></para>
+    ///    <para>True<c> if the Caret is Invalid.</c></para>
+    ///  </returns>
+    function GetIsInvalid: Boolean;
+    ///  <returns>
+    ///    <para>False<c> if the Caret is Invalid.</c></para>
+    ///    <para>True<c> if the Caret is Valid.</c></para>
+    ///  </returns>
+    function GetIsValid: Boolean;
+    ///  <returns><c>The Position of this Caret within the Stream.</c></returns>
+    function GetPosition: Int64;
+
+    // Management Methods
+    ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
+    ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
+    function Read(var ABuffer; const ALength: Int64): Int64;
+
+    // Properties
+    ///  <returns>
+    ///    <para>False<c> if the Caret is Valid.</c></para>
+    ///    <para>True<c> if the Caret is Invalid.</c></para>
+    ///  </returns>
+    property IsInvalid: Boolean read GetIsInvalid;
+    ///  <returns>
+    ///    <para>False<c> if the Caret is Invalid.</c></para>
+    ///    <para>True<c> if the Caret is Valid.</c></para>
+    ///  </returns>
+    property IsValid: Boolean read GetIsValid;
+    ///  <returns><c>The Position of this Caret within the Stream.</c></returns>
+    property Position: Int64 read GetPosition;
+  end;
+
+  ///  <summary><c>A Caret for Operating on a Stream at a particular position.</c></summary>
   ///  <remarks><c>A Caret should take responsibility for ensuring any operation affecting OTHER Carets updates those Carets as necessary.</c></remarks>
-  IADStreamCaret = interface(IADInterface)
+  IADStreamCaret = interface(IADStreamCaretReader)
   ['{D8E849E5-A5A1-4B4F-9AF6-BBD397216C5B}']
     // Getters
-    function GetIsInvalid: Boolean;
-    function GetIsValid: Boolean;
-    function GetPosition: Int64;
     function GetStream: IADStream;
     function GetStreamManagement: IADStreamManagement;
     // Setters
@@ -57,9 +91,6 @@ type
     ///    <para><c>Automatically shifts the Position of subsequent Carets by the offset of Bytes inserted.</c></para>
     ///  </remarks>
     function Insert(const ABuffer; const ALength: Int64): Int64;
-    ///  <summary><c>Reads the specified number of Bytes from the Array into the specified Address</c></summary>
-    ///  <returns><c>Returns the number of Bytes actually read.</c></returns>
-    function Read(var ABuffer; const ALength: Int64): Int64;
     ///  <summary><c>Writes the given Buffer into the current Position within the Stream (overwriting any existing data, and expanding the Size of the Stream if required)</c></summary>
     ///  <returns><c>Returns the number of Bytes actually written.</c></returns>
     function Write(const ABuffer; const ALength: Int64): Int64;
@@ -71,10 +102,6 @@ type
     procedure Invalidate;
 
     // Properties
-    ///  <summary><c>Has an operation on the Stream rendered this Caret invalid?</c></summary>
-    property IsInvalid: Boolean read GetIsInvalid;
-    ///  <summary><c>If </c>True<c>, this Caret is still Valid.</c></summary>
-    property IsValid: Boolean read GetIsValid;
     ///  <summary><c>The Position of this Caret within the Stream.</c></summary>
     property Position: Int64 read GetPosition write SetPosition;
     ///  <summary><c>Reference to the Caret's owning Stream</c></summary>
@@ -84,11 +111,33 @@ type
   end;
 
   ///  <summary><c>A Stream.</c></summary>
-  ///  <remarks><c>The Stream enables you to request one or more Carets, and these Carets are used to operate on the Stream.</c></remarks>
-  IADStream = interface(IADInterface)
-  ['{07F45B12-1DFC-453A-B95C-E00C9F5F4285}']
+  ///  <remarks><c>The Stream enables you to request one or more Carets, and these Carets are used to Read from the Stream.</c></remarks>
+  IADStreamReader = interface(IADInterface)
+  ['{23E572B8-A998-4808-8EB8-D30EEE88044C}']
     // Getters
     function GetSize: Int64;
+
+    // Management Methods
+    ///  <returns><c>A new Stream Caret Reader pointing to the first Byte of the Stream.</c></returns>
+    function NewCaretReader: IADStreamCaretReader; overload;
+    ///  <returns><c>A new Stream Caret Reader pointing to a specific Byte of the Stream.</c></returns>
+    function NewCaretReader(const APosition: Int64): IADStreamCaretReader; overload;
+    ///  <summary><c>Save contents of the Stream to a File.</c></summary>
+    procedure SaveToFile(const AFileName: String);
+    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
+    procedure SaveToStream(const AStream: IADStream); overload;
+    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
+    procedure SaveToStream(const AStream: TStream); overload;
+
+    // Properties
+    ///  <summary><c>Size of the Stream.</c></summary>
+    property Size: Int64 read GetSize;
+  end;
+
+  ///  <summary><c>A Stream.</c></summary>
+  ///  <remarks><c>The Stream enables you to request one or more Carets, and these Carets are used to operate on the Stream.</c></remarks>
+  IADStream = interface(IADStreamReader)
+  ['{07F45B12-1DFC-453A-B95C-E00C9F5F4285}']
     // Setters
     procedure SetSize(const ASize: Int64);
 
@@ -99,18 +148,10 @@ type
     procedure LoadFromStream(const AStream: IADStream); overload;
     ///  <summary><c>Populate the Stream from the contents of another Stream.</c></summary>
     procedure LoadFromStream(const AStream: TStream); overload;
-
-    ///  <returns><c>A new Stream Caret.</c></returns>
+    ///  <returns><c>A new Stream Caret pointing to the first Byte of the Stream.</c></returns>
     function NewCaret: IADStreamCaret; overload;
-    ///  <returns><c>A new Stream Caret.</c></returns>
+    ///  <returns><c>A new Stream Caret pointing to a specific Byte of the Stream.</c></returns>
     function NewCaret(const APosition: Int64): IADStreamCaret; overload;
-
-    ///  <summary><c>Save contents of the Stream to a File.</c></summary>
-    procedure SaveToFile(const AFileName: String);
-    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
-    procedure SaveToStream(const AStream: IADStream); overload;
-    ///  <summary><c>Save contents of the Stream to another Stream.</c></summary>
-    procedure SaveToStream(const AStream: TStream); overload;
 
     // Properties
     ///  <summary><c>Size of the Stream.</c></summary>
