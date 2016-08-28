@@ -29,13 +29,8 @@ type
   ///  <remarks>
   ///    <para><c>Accessible in Read-Only Mode.</c></para>
   ///  </remarks>
-  IADListReader<T> = interface(IADCollection)
-    // Getters
-    ///  <returns><c>The Item at the given Index.</c></returns>
-    function GetItem(const AIndex: Integer): T;
+  IADListReader<T> = interface(IADCollectionList<T>)
 
-    // Properties
-    property Items[const AIndex: Integer]: T read GetItem; default;
   end;
 
   ///  <summary><c>Generic List Type</c></summary>
@@ -100,9 +95,6 @@ type
     function Add(const AItem: T): Integer;
     procedure AddItems(const AItems: Array of T);
     procedure Delete(const AIndex: Integer);
-
-    // Properties
-    property Items[const AIndex: Integer]:  T read GetItem; default;
   end;
 
   ///  <summary><c>A Generic Sorted List.</c></summary>

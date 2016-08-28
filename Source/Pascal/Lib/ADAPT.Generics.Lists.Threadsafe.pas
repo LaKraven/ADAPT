@@ -46,6 +46,7 @@ type
     function GetIsEmpty: Boolean; override;
     function GetItem(const AIndex: Integer): T; override;
     function GetSorter: IADListSorter<T>; override;
+    function GetSortedState: TADSortedState; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); override;
@@ -105,6 +106,7 @@ type
     function GetCount: Integer; override;
     function GetExpander: IADCollectionExpander; override;
     function GetItem(const AIndex: Integer): T; override;
+    function GetSortedState: TADSortedState; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
     procedure SetCompactor(const ACompactor: IADCollectionCompactor); override;
@@ -165,6 +167,7 @@ type
     function GetNewestIndex: Integer; override;
     function GetOldest: T; override;
     function GetOldestIndex: Integer; override;
+    function GetSortedState: TADSortedState; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
   public
@@ -213,6 +216,7 @@ type
     function GetNewestIndex: Integer; override;
     function GetOldest: T; override;
     function GetOldestIndex: Integer; override;
+    function GetSortedState: TADSortedState; override;
     // Setters
     procedure SetCapacity(const ACapacity: Integer); override;
   public
@@ -419,6 +423,16 @@ end;
 function TADListTS<T>.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+function TADListTS<T>.GetSortedState: TADSortedState;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
 end;
 
 function TADListTS<T>.GetSorter: IADListSorter<T>;
@@ -734,6 +748,16 @@ begin
   Result := FLock;
 end;
 
+function TADObjectListTS<T>.GetSortedState: TADSortedState;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 procedure TADObjectListTS<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
   FLock.AcquireWrite;
@@ -1007,6 +1031,16 @@ begin
   end;
 end;
 
+function TADCircularListTS<T>.GetSortedState: TADSortedState;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADCircularListTS<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
   begin
@@ -1225,6 +1259,16 @@ begin
   FLock.AcquireRead;
   try
     inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADCircularObjectListTS<T>.GetSortedState: TADSortedState;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
   finally
     FLock.ReleaseRead;
   end;

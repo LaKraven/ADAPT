@@ -208,7 +208,7 @@ type
     FPauseOnNoEvent: Boolean;
     // Getters
     { IADEventThread }
-    function GetPauseOnNoEvent: Boolean;
+    function GetPauseOnNoEvent: Boolean; override;
 
     // Setters
     { IADEventThread }

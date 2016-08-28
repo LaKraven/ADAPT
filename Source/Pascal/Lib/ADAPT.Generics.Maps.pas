@@ -59,6 +59,7 @@ type
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AKey: TKey): TValue; virtual;
     function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>; virtual;
+    function GetSortedState: TADSortedState;
 
     // Setters
     { IADCompactable }
@@ -421,6 +422,11 @@ begin
     Result := LLow + 1
   else
     Result := LLow;
+end;
+
+function TADMap<TKey, TValue>.GetSortedState: TADSortedState;
+begin
+  Result := ssSorted;
 end;
 
 function TADMap<TKey, TValue>.GetSorter: IADMapSorter<TKey, TValue>;

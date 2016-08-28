@@ -24,6 +24,7 @@ uses
 type
   // Enums
   TADIterateDirection = (idLeft, idRight);
+  TADSortedState = (ssUnknown, ssUnsorted, ssSorted);
 
   // Callbacks
   {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -129,6 +130,12 @@ type
     ///    <para>False<c> if there are Items in the Collection.</c></para>
     ///  </returns>
     function GetIsEmpty: Boolean;
+    ///  <returns>
+    ///    <para>ssSorted<c> if the Collection is Sorted.</c></para>
+    ///    <para>ssUnsorted<c> if the Collection is NOT Sorted.</c></para>
+    ///    <para>ssUnknown<c> if the Sorted State of the Collection is Unknown.</c></para>
+    ///  </returns>
+    function GetSortedState: TADSortedState;
 
     // Setters
     ///  <summary><c>Manually specify the Capacity of the Collection.</c></summary>
@@ -158,6 +165,22 @@ type
     ///    <para>False<c> if there are Items in the Collection.</c></para>
     ///  </returns>
     property IsEmpty: Boolean read GetIsEmpty;
+    ///  <returns>
+    ///    <para>ssSorted<c> if the Collection is Sorted.</c></para>
+    ///    <para>ssUnsorted<c> if the Collection is NOT Sorted.</c></para>
+    ///    <para>ssUnknown<c> if the Sorted State of the Collection is Unknown.</c></para>
+    ///  </returns>
+    property SortedState: TADSortedState read GetSortedState;
+  end;
+
+  ///  <summary><c>Common Type-Specialized Ancestor Interface for all "List" type Collections.</c></summary>
+  IADCollectionList<T> = interface(IADCollection)
+    // Getters
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    function GetItem(const AIndex: Integer): T;
+
+    // Properties
+    property Items[const AIndex: Integer]: T read GetItem; default;
   end;
 
 implementation

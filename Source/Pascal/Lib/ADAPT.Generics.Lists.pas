@@ -37,6 +37,7 @@ type
     FCompactor: IADCollectionCompactor;
     FExpander: IADCollectionExpander;
     FInitialCapacity: Integer;
+    FSortedState: TADSortedState;
     FSorter: IADListSorter<T>;
   protected
     FArray: IADArray<T>;
@@ -49,6 +50,7 @@ type
     function GetInitialCapacity: Integer;
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
+    function GetSortedState: TADSortedState; virtual;
     { IADCompactable }
     function GetCompactor: IADCollectionCompactor; virtual;
     { IADExpandable }
@@ -124,6 +126,7 @@ type
     property InitialCapacity: Integer read GetInitialCapacity;
     property IsCompact: Boolean read GetIsCompact;
     property IsEmpty: Boolean read GetIsEmpty;
+    property SortedState: TADSortedState read GetSortedState;
     { IADCompactable }
     property Compactor: IADCollectionCompactor read GetCompactor;
     { IADExpandable }
@@ -177,6 +180,7 @@ type
     function GetCapacity: Integer; virtual;
     function GetCount: Integer; virtual;
     function GetInitialCapacity: Integer;
+    function GetSortedState: TADSortedState; virtual;
     { IADCircularList<T> }
     function GetItem(const AIndex: Integer): T; virtual;
     function GetIsCompact: Boolean; virtual;
@@ -281,6 +285,7 @@ type
     function GetIsCompact: Boolean; virtual;
     function GetIsEmpty: Boolean; virtual;
     function GetItem(const AIndex: Integer): T; virtual;
+    function GetSortedState: TADSortedState;
 
     // Setters
     { IADCompactable }
@@ -442,6 +447,7 @@ end;
 constructor TADList<T>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AInitialCapacity: Integer = 0);
 begin
   inherited Create;
+  FSortedState := ssUnknown;
   FCount := 0;
   FCompactor := ACompactor;
   FExpander := AExpander;
@@ -476,6 +482,7 @@ procedure TADList<T>.AddActual(const AItem: T);
 begin
   FArray[FCount] := AItem;
   Inc(FCount);
+  FSortedState := ssUnsorted;
 end;
 
 procedure TADList<T>.AddItems(const AItems: Array of T);
@@ -510,6 +517,7 @@ begin
   FArray.Finalize(0, FCount);
   FCount := 0;
   FArray.Capacity := FInitialCapacity;
+  FSortedState := ssUnknown;
 end;
 
 procedure TADList<T>.Compact;
@@ -529,6 +537,7 @@ begin
     FArray.Move(AIndex + 1, AIndex, FCount - AIndex); // Shift all subsequent items left by 1
   Dec(FCount);
   CheckCompact(1);
+  FSortedState := ssUnsorted;
 end;
 
 procedure TADList<T>.DeleteRange(const AFirst, ACount: Integer);
@@ -538,6 +547,7 @@ begin
     FArray.Move(AFirst + FCount + 1, AFirst, ACount); // Shift all subsequent items left
   Dec(FCount, ACount);
   CheckCompact(ACount);
+  FSortedState := ssUnsorted;
 end;
 
 function TADList<T>.GetCapacity: Integer;
@@ -580,6 +590,11 @@ begin
   Result := FArray[AIndex];
 end;
 
+function TADList<T>.GetSortedState: TADSortedState;
+begin
+  Result := FSortedState;
+end;
+
 function TADList<T>.GetSorter: IADListSorter<T>;
 begin
   Result := FSorter;
@@ -588,11 +603,13 @@ end;
 procedure TADList<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
   //TODO -oDaniel -cTADList<T>: Implement Insert method
+  FSortedState := ssUnsorted;
 end;
 
 procedure TADList<T>.InsertItems(const AItems: Array of T; const AIndex: Integer);
 begin
   //TODO -oDaniel -cTADList<T>: Implement InsertItems method
+  FSortedState := ssUnsorted;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -718,6 +735,7 @@ end;
 procedure TADList<T>.Sort(const AComparer: IADComparer<T>);
 begin
   FSorter.Sort(FArray, AComparer, 0, FCount - 1);
+  FSortedState := ssSorted;
 end;
 
 { TADObjectList<T> }
@@ -890,6 +908,11 @@ begin
       Result := 0;
   end else
     Result := -1;
+end;
+
+function TADCircularList<T>.GetSortedState: TADSortedState;
+begin
+  Result := ssUnsorted;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -1294,6 +1317,11 @@ begin
     Result := LLow + 1
   else
     Result := LLow;
+end;
+
+function TADSortedList<T>.GetSortedState: TADSortedState;
+begin
+  Result := ssSorted;
 end;
 
 function TADSortedList<T>.GetSorter: IADListSorter<T>;
