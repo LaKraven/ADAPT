@@ -13,7 +13,7 @@ uses
   DUnitX.TestFramework,
   ADAPT.Common,
   ADAPT.Generics.Lists.Intf,
-  ADAPT.Math.Common.Intf;
+  ADAPT.Math.Averagers.Intf;
 
 type
   [TestFixture]
@@ -63,7 +63,8 @@ implementation
 uses
   ADAPT.Generics.Lists,
   ADAPT.Generics.Comparers,
-  ADAPT.Math.Common;
+  ADAPT.Math.Common,
+  ADAPT.Math.Averagers;
 
 { TAdaptUnitTestMathAveragerFloatMean }
 
