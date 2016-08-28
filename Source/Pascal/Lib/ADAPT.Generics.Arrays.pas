@@ -41,7 +41,7 @@ type
   ///  </remarks>
   TADArray<T> = class(TADObject, IADArray<T>)
   protected
-    FArray: TArray<T>;
+    FArray: TArray<IADValueHolder<T>>;
     FCapacityInitial: Integer;
     // Getters
     function GetCapacity: Integer; virtual;
@@ -107,10 +107,19 @@ begin
 end;
 
 procedure TADArray<T>.Delete(const AIndex: Integer);
+var
+  I: Integer;
 begin
-  Finalize(AIndex, 1);
+  FArray[AIndex] := nil;
+//  System.FillChar(FArray[AIndex], SizeOf(IADValueHolder<T>), 0);
   if AIndex < Length(FArray) - 1 then
-    Move(AIndex + 1, AIndex, (Length(FArray) - 1) - AIndex);
+  begin
+//    System.Move(FArray[AIndex + 1],
+//                FArray[AIndex],
+//                ((Length(FArray) - 1) - AIndex) * SizeOf(IADValueHolder<T>));
+    for I := AIndex to Length(FArray) - 2 do
+      FArray[I] := FArray[I + 1];
+  end;
 end;
 
 destructor TADArray<T>.Destroy;
@@ -134,14 +143,14 @@ function TADArray<T>.GetItem(const AIndex: Integer): T;
 begin
   if (AIndex < Low(FArray)) or (AIndex > High(FArray)) then
     raise EADGenericsRangeException.CreateFmt('Index [%d] Out Of Range', [AIndex]);
-  Result := FArray[AIndex];
+  Result := FArray[AIndex].Value;
 end;
 
 procedure TADArray<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
   Move(AIndex, AIndex + 1, (Capacity - AIndex) - 1);
   Finalize(AIndex, 1);
-  FArray[AIndex] := AItem;
+  FArray[AIndex] := TADValueHolder<T>.Create(AItem);
 end;
 
 procedure TADArray<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
@@ -164,7 +173,7 @@ end;
 
 procedure TADArray<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
-  FArray[AIndex] := AItem;
+  FArray[AIndex] := TADValueHolder<T>.Create(AItem);
 end;
 
 { TADObjectArray<T> }
@@ -175,8 +184,8 @@ var
 begin
   if Ownership = oOwnsObjects then
     for I := Low(FArray) to High(FArray) do
-      if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then // TODO -oDaniel -cGeneric Object Array: I really need to test to make sure this won't evaluate as "True" even if a previously-assigned Object at the given Index (I) has been Disposed.
-        FArray[I].{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+      if ((Assigned(FArray[I]))) and (FArray[I] <> nil) then
+        FArray[I].Value.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
 end;
 

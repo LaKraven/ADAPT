@@ -57,6 +57,14 @@ type
     property HeldObject: T read GetObject;
   end;
 
+  ///  <summary><c>A Generic Value Holder.</c></summary>
+  IADValueHolder<T> = interface(IADInterface)
+    // Getters
+    function GetValue: T;
+    // Properties
+    property Value: T read GetValue;
+  end;
+
   ///  <summary><c>Common Interface for any Iterable Collection.</c></summary>
   IADIterable<T> = interface(IADInterface)
   ['{910A3785-06C0-4512-A823-3AA4D77BDB18}'] // If we don't provide a GUID here, we cannot cast-reference Collections as "Iterables".

@@ -171,7 +171,6 @@ type
   TADCircularList<T> = class(TADObject, IADCircularList<T>, IADIterable<T>)
   private
     FCount: Integer;
-    FIndex: Integer;
     FInitialCapacity: Integer;
     FItems: IADArray<T>;
   protected
@@ -784,16 +783,17 @@ begin
 end;
 
 function TADCircularList<T>.AddActual(const AItem: T): Integer;
+var
+  I: Integer;
 begin
-  Result := FIndex;
-  if FIndex <= FCount then
-    FItems.Finalize(FIndex, 1);
-  FItems[FIndex] := AItem;
-  Inc(FIndex);
-  if FIndex > FItems.Capacity - 1 then
-    FIndex := 0;
-  if FCount <= FItems.Capacity - 1 then
-    Inc(FCount);
+  if FCount < FItems.Capacity then
+    Inc(FCount)
+  else
+    FItems.Delete(0);
+
+  Result := FCount - 1;
+
+  FItems[Result] := AItem;         // Assign the Item to the Array at the Index.
 end;
 
 procedure TADCircularList<T>.AddItems(const AItems: array of T);
@@ -808,7 +808,6 @@ procedure TADCircularList<T>.Clear;
 begin
   FItems.Clear;
   FCount := 0;
-  FIndex := 0;
 end;
 
 constructor TADCircularList<T>.Create(const ACapacity: Integer);
@@ -817,7 +816,6 @@ begin
   FInitialCapacity := ACapacity;
   CreateItemArray(ACapacity);
   FCount := 0;
-  FIndex := 0;
 end;
 
 procedure TADCircularList<T>.CreateItemArray(const ACapacity: Integer);
@@ -831,8 +829,6 @@ begin
   if AIndex < FItems.Capacity then
     FItems.Move(AIndex + 1, AIndex, FCount - AIndex); // Shift all subsequent items left by 1
   Dec(FCount); // Decrement the Count
-  if AIndex <= FIndex then
-    Dec(FIndex); // Shift the Index back by 1
 end;
 
 destructor TADCircularList<T>.Destroy;
@@ -881,13 +877,7 @@ end;
 
 function TADCircularList<T>.GetNewestIndex: Integer;
 begin
-  if FCount > 0 then
-  begin
-    Result := FIndex - 1;
-    if Result = -1 then
-      Result := FItems.Capacity - 1;
-  end else
-    Result := -1;
+  Result := FCount - 1;
 end;
 
 function TADCircularList<T>.GetOldest: T;
@@ -901,13 +891,10 @@ end;
 
 function TADCircularList<T>.GetOldestIndex: Integer;
 begin
-  if FCount > 0 then
-  begin
-    Result := FIndex;
-    if Result > FCount - 1 then
-      Result := 0;
-  end else
-    Result := -1;
+  if FCount = 0 then
+    Result := -1
+  else
+    Result := 0;
 end;
 
 function TADCircularList<T>.GetSortedState: TADSortedState;
@@ -952,12 +939,8 @@ end;
   var
     I: Integer;
   begin
-    if FIndex > 0 then
-      for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-        ACallback(FItems[I]);
-    if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-      for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
-        ACallback(FItems[I]);
+    for I := FCount - 1 downto 0 do
+      ACallback(FItems[I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
@@ -965,24 +948,16 @@ procedure TADCircularList<T>.IterateBackward(const ACallback: TADListItemCallbac
 var
   I: Integer;
 begin
-  if FIndex > 0 then
-    for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-      ACallback(FItems[I]);
-  if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-    for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
-      ACallback(FItems[I]);
+  for I := FCount - 1 downto 0 do
+    ACallback(FItems[I]);
 end;
 
 procedure TADCircularList<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin
-  if FIndex > 0 then
-    for I := FIndex downto 0 do // Iterate from the current Index (latest item) back to 0
-      ACallback(FItems[I]);
-  if FCount > FIndex then // If there are other (older) Items at the right-hand side of the Array...
-    for I := FCount - 1 downto FIndex + Ord(FIndex > 0) do // Iterate from the Right to one Item Right of the Newest (this would be the Oldest)
-      ACallback(FItems[I]);
+  for I := FCount - 1 downto 0 do
+    ACallback(FItems[I]);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -990,17 +965,8 @@ end;
   var
     I: Integer;
   begin
-    if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
-    begin
-      for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
-        ACallback(FItems[I]);
-    end else                       // if the Index <> Count - 1 (as in, NOT top item)
-    begin
-      for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
-        ACallback(FItems[I]);
-      for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
-        ACallback(FItems[I]);
-    end;
+    for I := 0 to FCount - 1 do
+      ACallback(FItems[I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
@@ -1008,34 +974,16 @@ procedure TADCircularList<T>.IterateForward(const ACallback: TADListItemCallback
 var
   I: Integer;
 begin
-  if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
-  begin
-    for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
-      ACallback(FItems[I]);
-  end else                       // if the Index <> Count - 1 (as in, NOT top item)
-  begin
-    for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
-      ACallback(FItems[I]);
-    for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
-      ACallback(FItems[I]);
-  end;
+  for I := 0 to FCount - 1 do
+    ACallback(FItems[I]);
 end;
 
 procedure TADCircularList<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 var
   I: Integer;
 begin
-  if FIndex = FCount - 1 then    // if the Index = Count - 1 (as in, top item)
-  begin
-    for I := 0 to FCount - 1 do  // Iterate from 0 to Count - 1
-      ACallback(FItems[I]);
-  end else                       // if the Index <> Count - 1 (as in, NOT top item)
-  begin
-    for I := FIndex to FCount - 1 do // Iterate from Index to Count - 1
-      ACallback(FItems[I]);
-    for I := 0 to FIndex - 1 do      // Iterate from 0 to Index
-      ACallback(FItems[I]);
-  end;
+  for I := 0 to FCount - 1 do
+    ACallback(FItems[I]);
 end;
 
 procedure TADCircularList<T>.SetCapacity(const ACapacity: Integer);
@@ -1130,7 +1078,6 @@ end;
 
 procedure TADSortedList<T>.Clear;
 begin
-//  FArray.Finalize(0, FCount);
   FArray.Clear;
   FCount := 0;
   FArray.Capacity := FInitialCapacity;

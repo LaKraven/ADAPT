@@ -326,16 +326,16 @@ begin
   LList := TCircularStringList.Create(10);
   LList.AddItems(ALPHABET);
 
-  Assert.IsTrue(LList.Items[0] = 'U', Format('Item 0 should be "U" but has come up as "%s"', [LList.Items[0]]));
-  Assert.IsTrue(LList.Items[1] = 'V', Format('Item 1 should be "V" but has come up as "%s"', [LList.Items[1]]));
-  Assert.IsTrue(LList.Items[2] = 'W', Format('Item 2 should be "W" but has come up as "%s"', [LList.Items[2]]));
-  Assert.IsTrue(LList.Items[3] = 'X', Format('Item 3 should be "X" but has come up as "%s"', [LList.Items[3]]));
-  Assert.IsTrue(LList.Items[4] = 'Y', Format('Item 4 should be "Y" but has come up as "%s"', [LList.Items[4]]));
-  Assert.IsTrue(LList.Items[5] = 'Z', Format('Item 5 should be "Z" but has come up as "%s"', [LList.Items[5]]));
-  Assert.IsTrue(LList.Items[6] = 'Q', Format('Item 6 should be "Q" but has come up as "%s"', [LList.Items[6]]));
-  Assert.IsTrue(LList.Items[7] = 'R', Format('Item 7 should be "R" but has come up as "%s"', [LList.Items[7]]));
-  Assert.IsTrue(LList.Items[8] = 'S', Format('Item 8 should be "S" but has come up as "%s"', [LList.Items[8]]));
-  Assert.IsTrue(LList.Items[9] = 'T', Format('Item 9 should be "T" but has come up as "%s"', [LList.Items[9]]));
+  Assert.IsTrue(LList.Items[0] = 'Q', Format('Item 0 should be "Q" but has come up as "%s"', [LList.Items[0]]));
+  Assert.IsTrue(LList.Items[1] = 'R', Format('Item 1 should be "R" but has come up as "%s"', [LList.Items[1]]));
+  Assert.IsTrue(LList.Items[2] = 'S', Format('Item 2 should be "S" but has come up as "%s"', [LList.Items[2]]));
+  Assert.IsTrue(LList.Items[3] = 'T', Format('Item 3 should be "T" but has come up as "%s"', [LList.Items[3]]));
+  Assert.IsTrue(LList.Items[4] = 'U', Format('Item 4 should be "U" but has come up as "%s"', [LList.Items[4]]));
+  Assert.IsTrue(LList.Items[5] = 'V', Format('Item 5 should be "V" but has come up as "%s"', [LList.Items[5]]));
+  Assert.IsTrue(LList.Items[6] = 'W', Format('Item 6 should be "W" but has come up as "%s"', [LList.Items[6]]));
+  Assert.IsTrue(LList.Items[7] = 'X', Format('Item 7 should be "X" but has come up as "%s"', [LList.Items[7]]));
+  Assert.IsTrue(LList.Items[8] = 'Y', Format('Item 8 should be "Y" but has come up as "%s"', [LList.Items[8]]));
+  Assert.IsTrue(LList.Items[9] = 'Z', Format('Item 9 should be "Z" but has come up as "%s"', [LList.Items[9]]));
 end;
 
 procedure TAdaptUnitTestGenericsCircularList.CircularIteratorIntegrityNewestToOldest;
@@ -386,7 +386,7 @@ var
 begin
   LList := TCircularStringList.Create(5);
   LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
-  Assert.IsTrue(LList.NewestIndex = 2, Format('Newest Item Index should be 2 but instead got %d', [LList.NewestIndex]));
+  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
   Assert.IsTrue(LList.Newest = 'H', Format('Newest Item should be "H" but instead got "%s"', [LList.Newest]));
 end;
 
@@ -426,7 +426,7 @@ var
 begin
   LList := TCircularStringList.Create(5);
   LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
-  Assert.IsTrue(LList.OldestIndex = 3, Format('Oldest Item Index should be 3 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
   Assert.IsTrue(LList.Oldest = 'D', Format('Oldest Item should be "D" but instead got "%s"', [LList.Oldest]));
 end;
 
@@ -436,7 +436,7 @@ var
 begin
   LList := TCircularStringList.Create(5);
   LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']);
-  Assert.IsTrue(LList.OldestIndex = 4, Format('Oldest Item Index should be 4 but instead got %d', [LList.OldestIndex]));
+  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
   Assert.IsTrue(LList.Oldest = 'E', Format('Oldest Item should be "E" but instead got "%s"', [LList.Oldest]));
 end;
 

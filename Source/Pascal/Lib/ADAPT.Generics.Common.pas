@@ -57,6 +57,17 @@ type
     property HeldObject: T read GetObject;
   end;
 
+  TADValueHolder<T> = class(TADObject, IADValueHolder<T>)
+  private
+    FValue: T;
+  protected
+    function GetValue: T; virtual;
+  public
+    constructor Create(const AValue: T); reintroduce;
+
+    property Value: T read GetValue;
+  end;
+
   TADKeyValuePair<TKey, TValue> = class(TADObject, IADKeyValuePair<TKey, TValue>)
   protected
     FKey: TKey;
@@ -102,6 +113,19 @@ end;
 procedure TADObjectHolder<T>.SetOwnership(const AOwnership: TADOwnership);
 begin
   FOwnership := AOwnership;
+end;
+
+{ TADValueHolder<T> }
+
+constructor TADValueHolder<T>.Create(const AValue: T);
+begin
+  inherited Create;
+  FValue := AValue;
+end;
+
+function TADValueHolder<T>.GetValue: T;
+begin
+  Result := FValue;
 end;
 
 { TADKeyValuePair<TKey, TValue> }

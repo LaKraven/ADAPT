@@ -36,7 +36,9 @@ type
     procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual; abstract;
     procedure SetValueNow(const AValue: T);
   public
-    constructor Create; override;
+    constructor Create; overload; override;
+    constructor Create(const AValueNow: T); reintroduce; overload;
+    constructor Create(const ADelta: ADFloat; const AValue: T); reintroduce; overload;
     // Properties
     { IADDeltaValue<T> }
     property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt;
@@ -105,7 +107,19 @@ end;
 
 constructor TADDeltaValue<T>.Create;
 begin
+  inherited Create;
+end;
 
+constructor TADDeltaValue<T>.Create(const AValueNow: T);
+begin
+  Create;
+  SetValueNow(AValueNow);
+end;
+
+constructor TADDeltaValue<T>.Create(const ADelta: ADFloat; const AValue: T);
+begin
+  Create;
+  SetValueAt(ADelta, AValue);
 end;
 
 function TADDeltaValue<T>.GetValueNow: T;
