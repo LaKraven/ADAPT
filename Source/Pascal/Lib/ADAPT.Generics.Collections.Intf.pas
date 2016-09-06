@@ -58,6 +58,23 @@ type
     function CheckExpand(const ACapacity, ACurrentcount, AAdditionalRequired: Integer): Integer;
   end;
 
+  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
+  ///  </remarks>
+  IADExpanderGeometric = interface(IADExpander)
+  ['{CAF4B15C-9BE5-4A66-B31F-804AB752A102}']
+    // Getters
+    function GetCapacityMultiplier: Single;
+    function GetCapacityThreshold: Integer;
+    // Setters
+    procedure SetCapacityMultiplier(const AMultiplier: Single);
+    procedure SetCapacityThreshold(const AThreshold: Integer);
+    // Properties
+    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
+    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
+  end;
+
   ///  <summary><c>Provides Getter and Setter for any Type utilizing a Expander Type.</c></summary>
   IADExpandable = interface(IADInterface)
   ['{586ED0C9-E067-468F-B929-92F086E43D91}']

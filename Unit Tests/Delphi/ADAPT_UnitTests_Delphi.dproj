@@ -182,12 +182,9 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Arrays.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Common.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.Threadsafe.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas"/>

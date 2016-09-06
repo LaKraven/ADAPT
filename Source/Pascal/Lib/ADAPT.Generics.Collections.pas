@@ -81,6 +81,46 @@ type
     property Ownership: TADOwnership read GetOwnership write SetOwnership;
   end;
 
+  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
+  TADCollectionExpander = class abstract(TADObject, IADExpander)
+  public
+    ///  <summary><c>Override this to implement the actual Allocation Algorithm</c></summary>
+    ///  <remarks><c>Must return the amount by which the Array has been Expanded.</c></remarks>
+    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; virtual; abstract;
+  end;
+
+  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
+  ///    <para><c>This Expander Type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADCollectionExpanderGeometric = class(TADCollectionExpander, IADExpanderGeometric)
+  private
+    FMultiplier: Single;
+    FThreshold: Integer;
+  protected
+    // Getters
+    function GetCapacityMultiplier: Single; virtual;
+    function GetCapacityThreshold: Integer; virtual;
+    // Setters
+    procedure SetCapacityMultiplier(const AMultiplier: Single); virtual;
+    procedure SetCapacityThreshold(const AThreshold: Integer); virtual;
+  public
+    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
+  public
+    // Properties
+    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
+    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
+  end;
+
+  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
+  TADCollectionCompactor = class abstract(TADObject, IADCompactor)
+  public
+    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; virtual; abstract;
+  end;
+
   ///  <summary><c>Abstract Base Class for all Collection Types.</c></summary>
   TADCollection = class abstract(TADObject, IADCollection)
   protected
@@ -593,13 +633,45 @@ type
     property Pair[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;
 
+// Allocators
+function ADCollectionExpanderDefault: IADExpander;
+function ADCollectionCompactorDefault: IADCompactor;
+
 implementation
 
 uses
   ADAPT.Generics.Common,
-  ADAPT.Generics.Allocators,
   ADAPT.Generics.Comparers,
   ADAPT.Generics.Sorters;
+
+type
+  ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>By default, the Array will grow by 1 each time it becomes full</c></remarks>
+  TADCollectionExpanderDefault = class(TADCollectionExpander)
+  public
+    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
+  end;
+
+  ///  <summary><c>The Default Deallocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>By default, the Array will shrink by 1 each time an Item is removed.</c></remarks>
+  TADCollectionCompactorDefault = class(TADCollectionCompactor)
+  public
+    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
+  end;
+
+var
+  GCollectionExpanderDefault: IADExpander;
+  GCollectionCompactorDefault: IADCompactor;
+
+function ADCollectionExpanderDefault: IADExpander;
+begin
+  Result := GCollectionExpanderDefault;
+end;
+
+function ADCollectionCompactorDefault: IADCompactor;
+begin
+  Result := GCollectionCompactorDefault;
+end;
 
 { TADArray<T> }
 
@@ -1930,5 +2002,57 @@ procedure TADMap<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValu
 begin
   FSorter := ASorter;
 end;
+
+{ TADCollectionExpanderGeometric }
+
+function TADCollectionExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  // TODO -oDaniel -cTADCollectionExpanderGeometric: Implement Geometric Expansion Algorithm
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
+function TADCollectionExpanderGeometric.GetCapacityMultiplier: Single;
+begin
+  Result := FMultiplier;
+end;
+
+function TADCollectionExpanderGeometric.GetCapacityThreshold: Integer;
+begin
+  Result := FThreshold;
+end;
+
+procedure TADCollectionExpanderGeometric.SetCapacityMultiplier(const AMultiplier: Single);
+begin
+  FMultiplier := AMultiplier;
+end;
+
+procedure TADCollectionExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
+begin
+  FThreshold := AThreshold;
+end;
+
+{ TADCollectionExpanderDefault }
+
+function TADCollectionExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
+{ TADCollectionCompactorDefault }
+
+function TADCollectionCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
+begin
+  Result := AVacating;
+end;
+
+initialization
+  GCollectionExpanderDefault := TADCollectionExpanderDefault.Create;
+  GCollectionCompactorDefault := TADCollectionCompactorDefault.Create;
 
 end.
