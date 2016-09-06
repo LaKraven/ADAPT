@@ -193,7 +193,6 @@
         <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas"/>

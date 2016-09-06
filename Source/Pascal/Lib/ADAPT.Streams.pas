@@ -22,6 +22,7 @@ uses
     {$IFDEF POSIX}Posix,{$ENDIF POSIX}
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Collections.Intf,
   ADAPT.Streams.Intf;
 

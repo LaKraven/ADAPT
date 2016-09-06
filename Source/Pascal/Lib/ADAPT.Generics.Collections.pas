@@ -633,6 +633,36 @@ type
     property Pair[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;
 
+  { List Sorters }
+  ///  <summary><c>Abstract Base Class for all List Sorters.</c></summary>
+  TADListSorter<T> = class abstract(TADObject, IADListSorter<T>)
+  public
+    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; virtual; abstract;
+    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; virtual; abstract;
+  end;
+
+  ///  <summary><c>Sorter for Lists using the Quick Sort implementation.</c></summary>
+  TADListSorterQuick<T> = class(TADListSorter<T>)
+  public
+    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; override;
+    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; override;
+  end;
+
+  { Map Sorters }
+  ///  <summary><c>Abstract Base Class for all Map Sorters.</c></summary>
+  TADMapSorter<TKey, TValue> = class abstract(TADObject, IADMapSorter<TKey, TValue>)
+  public
+    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey,TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; virtual; abstract;
+    procedure Sort(AArray: Array of IADKeyValuePair<TKey,TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; virtual; abstract;
+  end;
+
+  ///  <summary><c>Sorter for Maps using the Quick SOrt implementation.</c></summary>
+  TADMapSorterQuick<TKey, TValue> = class(TADMapSorter<TKey, TValue>)
+  public
+    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey,TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; override;
+    procedure Sort(AArray: Array of IADKeyValuePair<TKey,TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; override;
+  end;
+
 // Allocators
 function ADCollectionExpanderDefault: IADExpander;
 function ADCollectionCompactorDefault: IADCompactor;
@@ -641,8 +671,7 @@ implementation
 
 uses
   ADAPT.Generics.Common,
-  ADAPT.Generics.Comparers,
-  ADAPT.Generics.Sorters;
+  ADAPT.Generics.Comparers;
 
 type
   ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
@@ -671,6 +700,54 @@ end;
 function ADCollectionCompactorDefault: IADCompactor;
 begin
   Result := GCollectionCompactorDefault;
+end;
+
+{ TADCollectionExpanderGeometric }
+
+function TADCollectionExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  // TODO -oDaniel -cTADCollectionExpanderGeometric: Implement Geometric Expansion Algorithm
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
+function TADCollectionExpanderGeometric.GetCapacityMultiplier: Single;
+begin
+  Result := FMultiplier;
+end;
+
+function TADCollectionExpanderGeometric.GetCapacityThreshold: Integer;
+begin
+  Result := FThreshold;
+end;
+
+procedure TADCollectionExpanderGeometric.SetCapacityMultiplier(const AMultiplier: Single);
+begin
+  FMultiplier := AMultiplier;
+end;
+
+procedure TADCollectionExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
+begin
+  FThreshold := AThreshold;
+end;
+
+{ TADCollectionExpanderDefault }
+
+function TADCollectionExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
+{ TADCollectionCompactorDefault }
+
+function TADCollectionCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
+begin
+  Result := AVacating;
 end;
 
 { TADArray<T> }
@@ -2003,52 +2080,146 @@ begin
   FSorter := ASorter;
 end;
 
-{ TADCollectionExpanderGeometric }
+{ TADListSorterQuick<T> }
 
-function TADCollectionExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+procedure TADListSorterQuick<T>.Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot, LTemp: T;
 begin
-  // TODO -oDaniel -cTADCollectionExpanderGeometric: Implement Geometric Expansion Algorithm
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
-    Result := 0;
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1];
+    repeat
+
+      while AComparer.ALessThanB(AArray[I], LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J], LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
 end;
 
-function TADCollectionExpanderGeometric.GetCapacityMultiplier: Single;
+procedure TADListSorterQuick<T>.Sort(AArray: array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot, LTemp: T;
 begin
-  Result := FMultiplier;
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1];
+    repeat
+
+      while AComparer.ALessThanB(AArray[I], LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J], LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
 end;
 
-function TADCollectionExpanderGeometric.GetCapacityThreshold: Integer;
+{ TMapSorterQuick<TKey, TValue> }
+
+procedure TADMapSorterQuick<TKey, TValue>.Sort(const AArray: IADArray<IADKeyValuePair<TKey, TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot: TKey;
+  LTemp: IADKeyValuePair<TKey, TValue>;
 begin
-  Result := FThreshold;
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1].Key;
+    repeat
+
+      while AComparer.ALessThanB(AArray[I].Key, LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J].Key, LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
 end;
 
-procedure TADCollectionExpanderGeometric.SetCapacityMultiplier(const AMultiplier: Single);
+procedure TADMapSorterQuick<TKey, TValue>.Sort(AArray: array of IADKeyValuePair<TKey, TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot: TKey;
+  LTemp: IADKeyValuePair<TKey, TValue>;
 begin
-  FMultiplier := AMultiplier;
-end;
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1].Key;
+    repeat
 
-procedure TADCollectionExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
-begin
-  FThreshold := AThreshold;
-end;
+      while AComparer.ALessThanB(AArray[I].Key, LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J].Key, LPivot) do
+        Dec(J);
 
-{ TADCollectionExpanderDefault }
-
-function TADCollectionExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
-begin
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
-    Result := 0;
-end;
-
-{ TADCollectionCompactorDefault }
-
-function TADCollectionCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
-begin
-  Result := AVacating;
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
 end;
 
 initialization

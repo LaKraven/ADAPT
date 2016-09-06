@@ -38,7 +38,6 @@ uses
   ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas',
   ADAPT.Generics.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas',
   ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas',
-  ADAPT.Generics.Sorters in '..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas',
   ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas',
   ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
   ADAPT.Generics.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas',
