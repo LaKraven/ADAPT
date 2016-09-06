@@ -236,8 +236,7 @@ uses
   ADAPT.Math.Delta,
   ADAPT.Generics.Common,
   ADAPT.Generics.Comparers,
-  ADAPT.Generics.Collections,
-  ADAPT.Generics.Maps;
+  ADAPT.Generics.Collections;
 
 type
   { Generic Collections }

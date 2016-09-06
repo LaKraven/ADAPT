@@ -15,7 +15,7 @@ uses
 implementation
 
 uses
-  ADAPT.Generics.Maps.Intf, ADAPT.Generics.Maps,
+  ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections,
   ADAPT.Generics.Comparers,
   ADAPT.UnitTests.Generics.Common;
 

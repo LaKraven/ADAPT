@@ -182,8 +182,6 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Arrays.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Common.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Intf.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas"/>
@@ -191,7 +189,6 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Maps.pas"/>
@@ -280,7 +277,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -592,16 +598,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
