@@ -19,7 +19,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common.Intf,
   ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Lists.Intf;
+  ADAPT.Generics.Collections.Intf;
 
   {$I ADAPT_RTTI.inc}
 
@@ -29,13 +29,7 @@ type
   ///    <para><c>Maps utilize organized Keys to ensure that all Lookups can be performed efficiently.</c></para>
   ///    <para><c>Accessible in Read-Only Mode.</c></para>
   ///  </remarks>
-  IADMapReader<TKey, TValue> = interface(IADCollection)
-    // Getters
-    ///  <returns><c>The Item corresponding to the given Key.</c></returns>
-    function GetItem(const AKey: TKey): TValue;
-    ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
-    function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
-
+  IADMapReader<TKey, TValue> = interface(IADCollectionMap<TKey, TValue>)
     // Management Methods
     ///  <summary><c>Performs a Lookup to determine whether the given Item is in the Map.</c></summary>
     ///  <returns>
@@ -75,12 +69,6 @@ type
     ///    <para>0 or Greater<c> if the given Item IS in the Map.</c></para>
     ///  </returns>
     function IndexOf(const AKey: TKey): Integer;
-
-    // Properties
-    ///  <returns><c>The Item corresponding to the given Key.</c></returns>
-    property Item[const AKey: TKey]: TValue read GetItem; default;
-    ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
-    property Pair[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;
 
   ///  <summary><c>A Generic Map.</c></summary>

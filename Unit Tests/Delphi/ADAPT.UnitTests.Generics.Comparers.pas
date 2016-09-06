@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-  ADAPT.Generics.Comparers.Intf, ADAPT.Generics.Comparers;
+  ADAPT.Generics.Comparers;
 
 { TAdaptUnitTestGenericsComparer }
 

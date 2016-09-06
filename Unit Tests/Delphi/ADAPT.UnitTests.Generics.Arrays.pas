@@ -19,8 +19,6 @@ type
     [Test]
     procedure TestIntegrity;
     [Test]
-    procedure TestIntegrityThreadsafe;
-    [Test]
     [TestCase('In Range at 1', '1,True')]
     [TestCase('Out Of Range at 11', '11,False')]
     [TestCase('In Range at 2', '2,True')]
@@ -29,17 +27,7 @@ type
     [TestCase('Out Of Range at 10', '10,False')]
     procedure TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
     [Test]
-    [TestCase('In Range at 1', '1,True')]
-    [TestCase('Out Of Range at 11', '11,False')]
-    [TestCase('In Range at 2', '2,True')]
-    [TestCase('Out Of Range at 1337', '1337,False')]
-    [TestCase('In Range at 9', '9,True')]
-    [TestCase('Out Of Range at 10', '10,False')]
-    procedure TestItemInRangeThreadsafe(const AIndex: Integer; const AExpectInRange: Boolean);
-    [Test]
     procedure TestDummyObjectIntegrity;
-    [Test]
-    procedure TestDummyObjectIntegrityThreadsafe;
   end;
 
 implementation
@@ -47,16 +35,14 @@ implementation
 uses
   ADAPT.Common,
   ADAPT.Generics.Common,
-  ADAPT.Generics.Arrays, ADAPT.Generics.Arrays.Intf, ADAPT.Generics.Arrays.Threadsafe,
+  ADAPT.Generics.Collections, ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections.Threadsafe,
   ADAPT.UnitTests.Generics.Common;
 
 type
   IStringArray = IADArray<String>;
   TStringArray = class(TADArray<String>);
-  TStringArrayTS = class(TADArrayTS<String>);
   IDummyArray = IADArray<TDummyObject>;
   TDummyArray = class(TADObjectArray<TDummyObject>);
-  TDummyArrayTS = class(TADObjectArrayTS<TDummyObject>);
 
 { TAdaptUnitTestGenericsArray }
 
@@ -66,18 +52,6 @@ var
   LArray: IStringArray;
 begin
   LArray := TStringArray.Create(10);
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LArray.Items[I] := BASIC_ITEMS[I];
-  for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
-end;
-
-procedure TAdaptUnitTestGenericsArray.TestIntegrityThreadsafe;
-var
-  I: Integer;
-  LArray: IStringArray;
-begin
-  LArray := TStringArrayTS.Create(10);
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
   for I := 0 to LArray.Capacity - 1 do
@@ -104,44 +78,12 @@ begin
     Assert.IsTrue(LArray.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LArray.Items[AIndex]]))
 end;
 
-procedure TAdaptUnitTestGenericsArray.TestItemInRangeThreadsafe(const AIndex: Integer; const AExpectInRange: Boolean);
-var
-  I: Integer;
-  LArray: IStringArray;
-begin
-  LArray := TStringArrayTS.Create(10);
-  for I := Low(LETTERS) to High(LETTERS) do
-    LArray.Items[I] := LETTERS[I];
-
-  if not (AExpectInRange) then
-    Assert.WillRaise(procedure
-                     begin
-                       LArray.Items[AIndex]
-                     end,
-                     EADGenericsRangeException,
-                     Format('Item %d SHOULD be out of range!', [AIndex]))
-  else
-    Assert.IsTrue(LArray.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LArray.Items[AIndex]]));
-end;
-
 procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrity;
 var
   I: Integer;
   LArray: IDummyArray;
 begin
   LArray := TDummyArray.Create(oOwnsObjects, 10);
-  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
-  for I := 0 to LArray.Capacity - 1 do
-    Assert.IsTrue(LArray.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, LArray.Items[I].Foo, BASIC_ITEMS[I]]));
-end;
-
-procedure TAdaptUnitTestGenericsArray.TestDummyObjectIntegrityThreadsafe;
-var
-  I: Integer;
-  LArray: IDummyArray;
-begin
-  LArray := TDummyArrayTS.Create(oOwnsObjects, 10);
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := TDummyObject.Create(BASIC_ITEMS[I]);
   for I := 0 to LArray.Capacity - 1 do

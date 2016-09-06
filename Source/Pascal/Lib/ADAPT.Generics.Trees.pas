@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Generics.Trees.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -133,7 +133,7 @@ type
 implementation
 
 uses
-  ADAPT.Generics.Lists;
+  ADAPT.Generics.Collections;
 
 { TADTreeNode<T> }
 

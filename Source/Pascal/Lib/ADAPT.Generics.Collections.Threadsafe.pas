@@ -5,7 +5,7 @@
   Original Source Location: https://github.com/LaKraven/ADAPT
   Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
 }
-unit ADAPT.Streams.Threadsafe;
+unit ADAPT.Generics.Collections.Threadsafe;
 
 {$I ADAPT.inc}
 
@@ -18,8 +18,8 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
-  ADAPT.Generics.Collections.Intf,
-  ADAPT.Streams;
+  ADAPT.Generics.Common.Intf,
+  ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections;
 
   {$I ADAPT_RTTI.inc}
 

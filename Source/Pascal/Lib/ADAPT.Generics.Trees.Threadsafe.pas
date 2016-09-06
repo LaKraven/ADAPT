@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
-  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Generics.Trees;
 
   {$I ADAPT_RTTI.inc}

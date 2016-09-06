@@ -131,7 +131,7 @@ uses
   ADAPT.Common,
   ADAPT.Generics.Common, ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Comparers,
-  ADAPT.Generics.Lists, ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Collections, ADAPT.Generics.Collections.Intf,
   ADAPT.UnitTests.Generics.Common;
 
 type
@@ -142,8 +142,6 @@ type
 
   ICircularStringList = IADCircularList<String>;
   TCircularStringList = TADCircularList<String>;
-
-  IStringIterable = IADIterable<String>;
 
   IIntegerSortedList = IADSortedList<Integer>;
   IStringSortedList = IADSortedList<String>;
@@ -193,7 +191,7 @@ begin
 
   I := High(BASIC_ITEMS);
 
-  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
+  LList.IterateBackward(procedure(const AItem: String)
                         begin
                           Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                           Dec(I);
@@ -212,7 +210,7 @@ begin
 
   I := 0;
 
-  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
+  LList.IterateForward(procedure(const AItem: String)
                        begin
                          Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                          Inc(I);
@@ -277,7 +275,7 @@ begin
 
   I := High(BASIC_ITEMS);
 
-  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
+  LList.IterateBackward(procedure(const AItem: String)
                               begin
                                 Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
                                 Dec(I);
@@ -296,11 +294,11 @@ begin
 
   I := 0;
 
-  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
-                              begin
-                                Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
-                                Inc(I);
-                              end);
+  LList.IterateForward(procedure(const AItem: String)
+                       begin
+                         Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
+                         Inc(I);
+                       end);
 
   Assert.IsTrue(I = Length(BASIC_ITEMS), Format('Iterator should have Index of %d but instead shows Index of %d', [Length(BASIC_ITEMS), I]));
 end;
@@ -350,11 +348,11 @@ begin
 
   I := MAX_CAPACITY;
 
-  (LList as IStringIterable).IterateBackward(procedure(const AItem: String)
-                              begin
-                                Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY - 1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY - 1], AItem]));
-                                Dec(I);
-                              end);
+  LList.IterateBackward(procedure(const AItem: String)
+                        begin
+                          Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY - 1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY - 1], AItem]));
+                          Dec(I);
+                        end);
 
   Assert.IsTrue(I = 0, Format('Iterator should have Index of 0 but instead shows Index of %d', [I]));
 end;
@@ -371,11 +369,11 @@ begin
 
   I := 0;
 
-  (LList as IStringIterable).IterateForward(procedure(const AItem: String)
-                              begin
-                                Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], AItem]));
-                                Inc(I);
-                              end);
+  LList.IterateForward(procedure(const AItem: String)
+                       begin
+                         Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], AItem]));
+                         Inc(I);
+                       end);
 
   Assert.IsTrue(I = MAX_CAPACITY, Format('Iterator should have Index of %d but instead shows Index of %d', [MAX_CAPACITY, I]));
 end;
@@ -493,7 +491,7 @@ begin
   LListOrigin.AddItems(BASIC_ITEMS);
 
   LListDestination := TStringSortedList.Create(ADStringComparer, LListOrigin.Count);
-  LListDestination.AddItems(LListOrigin);
+  LListDestination.Add(LListOrigin);
 
   Assert.IsTrue(LListDestination.Count = Length(BASIC_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_ITEMS), LListDestination.Count]));
   Assert.IsTrue(LListDestination[0] = 'Andy', Format('List Item 0 should be "Andy", is instead "%s".', [LListDestination[0]]));
@@ -651,7 +649,7 @@ begin
   LListOrigin.AddItems(BASIC_INTEGER_ITEMS);
 
   LListDestination := TIntegerSortedList.Create(ADIntegerComparer, LListOrigin.Count);
-  LListDestination.AddItems(LListOrigin);
+  LListDestination.Add(LListOrigin);
 
   Assert.IsTrue(LListDestination.Count = Length(BASIC_INTEGER_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_INTEGER_ITEMS), LListDestination.Count]));
   Assert.IsTrue(LListDestination[0] = 1, Format('List Item 0 should be "1", is instead "%d.', [LListDestination[0]]));

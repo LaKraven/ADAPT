@@ -19,6 +19,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Common.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Generics.Allocators.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -26,7 +27,7 @@ uses
 type
   ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
-  TADCollectionExpander = class abstract(TADObject, IADCollectionExpander)
+  TADCollectionExpander = class abstract(TADObject, IADExpander)
   public
     ///  <summary><c>Override this to implement the actual Allocation Algorithm</c></summary>
     ///  <remarks><c>Must return the amount by which the Array has been Expanded.</c></remarks>
@@ -38,7 +39,7 @@ type
   ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
   ///    <para><c>This Expander Type is NOT Threadsafe.</c></para>
   ///  </remarks>
-  TADCollectionExpanderGeometric = class(TADCollectionExpander, IADCollectionExpanderGeometric)
+  TADCollectionExpanderGeometric = class(TADCollectionExpander, IADExpanderGeometric)
   private
     FMultiplier: Single;
     FThreshold: Integer;
@@ -59,13 +60,13 @@ type
 
   ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
   ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
-  TADCollectionCompactor = class abstract(TADObject, IADCollectionCompactor)
+  TADCollectionCompactor = class abstract(TADObject, IADCompactor)
   public
     function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; virtual; abstract;
   end;
 
-function ADCollectionExpanderDefault: IADCollectionExpander;
-function ADCollectionCompactorDefault: IADCollectionCompactor;
+function ADCollectionExpanderDefault: IADExpander;
+function ADCollectionCompactorDefault: IADCompactor;
 
 implementation
 
@@ -85,15 +86,15 @@ type
   end;
 
 var
-  GCollectionExpanderDefault: IADCollectionExpander;
-  GCollectionCompactorDefault: IADCollectionCompactor;
+  GCollectionExpanderDefault: IADExpander;
+  GCollectionCompactorDefault: IADCompactor;
 
-function ADCollectionExpanderDefault: IADCollectionExpander;
+function ADCollectionExpanderDefault: IADExpander;
 begin
   Result := GCollectionExpanderDefault;
 end;
 
-function ADCollectionCompactorDefault: IADCollectionCompactor;
+function ADCollectionCompactorDefault: IADCompactor;
 begin
   Result := GCollectionCompactorDefault;
 end;

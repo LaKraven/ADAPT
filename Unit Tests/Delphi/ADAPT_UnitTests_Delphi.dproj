@@ -169,9 +169,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threads.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.SIUnits.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Maths.SIUnits.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streamables.pas"/>
@@ -180,8 +178,6 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threads.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Defaults.Intf.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Intf.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Intf.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Arrays.pas"/>
@@ -192,20 +188,17 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Common.Threadsafe.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Arrays.Threadsafe.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Allocators.Threadsafe.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Lists.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Maps.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Trees.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Maps.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Comparers.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas"/>
-        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Sorters.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas"/>
@@ -217,6 +210,8 @@
         <DCCReference Include="ADAPT.UnitTests.Maths.Averagers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.Intf.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -285,16 +280,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -606,7 +592,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

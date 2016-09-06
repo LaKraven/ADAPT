@@ -20,9 +20,7 @@ uses
   ADAPT.Common, ADAPT.Common.Intf,
   ADAPT.Generics.Common.Intf,
   ADAPT.Generics.Allocators.Intf,
-  ADAPT.Generics.Comparers.Intf,
-  ADAPT.Generics.Arrays.Intf,
-  ADAPT.Generics.Sorters.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Generics.Maps.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -32,11 +30,11 @@ type
   ///  <remarks>
   ///    <para><c></c></para>
   ///  </remarks>
-  TADMap<TKey, TValue> = class(TADObject, IADMap<TKey, TValue>, IADComparable<TKey>, IADIterablePair<TKey, TValue>, IADMapSortable<TKey, TValue>, IADCompactable, IADExpandable)
+  TADMap<TKey, TValue> = class(TADObject, IADMap<TKey, TValue>, IADComparable<TKey>, IADSortableMap<TKey, TValue>, IADCompactable, IADExpandable)
   private
-    FCompactor: IADCollectionCompactor;
+    FCompactor: IADCompactor;
     FComparer: IADComparer<TKey>;
-    FExpander: IADCollectionExpander;
+    FExpander: IADExpander;
     FInitialCapacity: Integer;
     FSorter: IADMapSorter<TKey, TValue>;
   protected
@@ -44,12 +42,12 @@ type
     FCount: Integer;
     // Getters
     { IADCompactable }
-    function GetCompactor: IADCollectionCompactor; virtual;
+    function GetCompactor: IADCompactor; virtual;
     { IADComparable<T> }
     function GetComparer: IADComparer<TKey>; virtual;
     { IADExpandable }
-    function GetExpander: IADCollectionExpander; virtual;
-    { IADMapSortable<TKey, TValue> }
+    function GetExpander: IADExpander; virtual;
+    { IADSortableMap<TKey, TValue> }
     function GetSorter: IADMapSorter<TKey, TValue>; virtual;
     { IADMap<TKey, TValue> }
     function GetCapacity: Integer; virtual;
@@ -63,12 +61,12 @@ type
 
     // Setters
     { IADCompactable }
-    procedure SetCompactor(const ACompactor: IADCollectionCompactor); virtual;
+    procedure SetCompactor(const ACompactor: IADCompactor); virtual;
     { IADComparable<T> }
     procedure SetComparer(const AComparer: IADComparer<TKey>); virtual;
     { IADExpandable }
-    procedure SetExpander(const AExpander: IADCollectionExpander); virtual;
-    { IADMapSortable<TKey, TValue> }
+    procedure SetExpander(const AExpander: IADExpander); virtual;
+    { IADSortableMap<TKey, TValue> }
     procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADMap<TKey, TValue> }
     procedure SetCapacity(const ACapacity: Integer); virtual;
@@ -95,11 +93,11 @@ type
     ///  <summary><c>Creates an instance of your Sorted List using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander Instance, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    constructor Create(const AExpander: IADExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your Sorted List using the default Expander Type, and a Custom Compactor Instance.</c></summary>
-    constructor Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    constructor Create(const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander and Compactor Instance.</c></summary>
-    constructor Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+    constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     destructor Destroy; override;
 
     // Management Methods
@@ -122,28 +120,28 @@ type
 
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+      procedure Iterate(const ACallback: TADListMapCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
-    procedure Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+    procedure Iterate(const ACallback: TADListMapCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
+    procedure Iterate(const ACallback: TADListMapCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload; virtual;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload; virtual;
+      procedure IterateBackward(const ACallback: TADListMapCallbackAnon<TKey, TValue>); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload; virtual;
-    procedure IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>); overload; virtual;
+    procedure IterateBackward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>); overload; virtual;
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-      procedure IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>); overload; virtual;
+      procedure IterateForward(const ACallback: TADListMapCallbackAnon<TKey, TValue>); overload; virtual;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-    procedure IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>); overload; virtual;
-    procedure IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>); overload; virtual;
+    procedure IterateForward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>); overload; virtual;
 
     // Properties
     { IADCompactable }
-    property Compactor: IADCollectionCompactor read GetCompactor write SetCompactor;
+    property Compactor: IADCompactor read GetCompactor write SetCompactor;
     { IADComparable<T> }
     property Comparer: IADComparer<TKey> read GetComparer write SetComparer;
     { IADExpandable }
-    property Expander: IADCollectionExpander read GetExpander write SetExpander;
+    property Expander: IADExpander read GetExpander write SetExpander;
     { IADMap<TKey, TValue> }
     property Count: Integer read GetCount;
     property IsCompact: Boolean read GetIsCompact;
@@ -157,7 +155,7 @@ implementation
 uses
   ADAPT.Generics.Common,
   ADAPT.Generics.Allocators,
-  ADAPT.Generics.Arrays,
+  ADAPT.Generics.Collections,
   ADAPT.Generics.Sorters;
 
 { TADMap<TKey, TValue> }
@@ -203,7 +201,7 @@ var
 begin
   CheckExpand(AMap.Count);
   for I := 0 to AMap.Count - 1 do
-    AddActual(AMap.Pair[I]);
+    AddActual(AMap.Pairs[I]);
 end;
 
 procedure TADMap<TKey, TValue>.CheckCompact(const AAmount: Integer);
@@ -281,17 +279,17 @@ begin
   Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
-constructor TADMap<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+constructor TADMap<TKey, TValue>.Create(const AExpander: IADExpander; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
   Create(AExpander, ADCollectionCompactorDefault, AComparer, AInitialCapacity);
 end;
 
-constructor TADMap<TKey, TValue>.Create(const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+constructor TADMap<TKey, TValue>.Create(const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AComparer, AInitialCapacity);
 end;
 
-constructor TADMap<TKey, TValue>.Create(const AExpander: IADCollectionExpander; const ACompactor: IADCollectionCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+constructor TADMap<TKey, TValue>.Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
 begin
   inherited Create;
   FCount := 0;
@@ -335,7 +333,7 @@ begin
   Result := AList.Count = FCount;
   if Result then
     for I := 0 to AList.Count - 1 do
-      if (not FComparer.AEqualToB(AList.Pair[I].Key, FArray[I].Key)) then
+      if (not FComparer.AEqualToB(AList.Pairs[I].Key, FArray[I].Key)) then
       begin
         Result := False;
         Break;
@@ -347,7 +345,7 @@ begin
   Result := FArray.Capacity;
 end;
 
-function TADMap<TKey, TValue>.GetCompactor: IADCollectionCompactor;
+function TADMap<TKey, TValue>.GetCompactor: IADCompactor;
 begin
   Result := FCompactor;
 end;
@@ -362,7 +360,7 @@ begin
   Result := FCount;
 end;
 
-function TADMap<TKey, TValue>.GetExpander: IADCollectionExpander;
+function TADMap<TKey, TValue>.GetExpander: IADExpander;
 begin
   Result := FExpander;
 end;
@@ -456,7 +454,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
+  procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
   begin
     case ADirection of
       idLeft: IterateBackward(ACallback);
@@ -467,7 +465,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
+procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
 begin
   case ADirection of
     idLeft: IterateBackward(ACallback);
@@ -477,7 +475,7 @@ begin
   end;
 end;
 
-procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListPairCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection);
+procedure TADMap<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection);
 begin
   case ADirection of
     idLeft: IterateBackward(ACallback);
@@ -488,7 +486,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackAnon<TKey, TValue>);
   var
     I: Integer;
   begin
@@ -497,7 +495,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>);
 var
   I: Integer;
 begin
@@ -505,7 +503,7 @@ begin
     ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
-procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+procedure TADMap<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>);
 var
   I: Integer;
 begin
@@ -514,7 +512,7 @@ begin
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-  procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackAnon<TKey, TValue>);
+  procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackAnon<TKey, TValue>);
   var
     I: Integer;
   begin
@@ -523,7 +521,7 @@ end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
-procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackOfObject<TKey, TValue>);
+procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>);
 var
   I: Integer;
 begin
@@ -531,7 +529,7 @@ begin
     ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
-procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListPairCallbackUnbound<TKey, TValue>);
+procedure TADMap<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>);
 var
   I: Integer;
 begin
@@ -564,7 +562,7 @@ begin
     FArray.Capacity := ACapacity;
 end;
 
-procedure TADMap<TKey, TValue>.SetCompactor(const ACompactor: IADCollectionCompactor);
+procedure TADMap<TKey, TValue>.SetCompactor(const ACompactor: IADCompactor);
 begin
   FCompactor := ACompactor;
   CheckCompact(0);
@@ -576,7 +574,7 @@ begin
   FSorter.Sort(FArray, AComparer, 0, FCount - 1);
 end;
 
-procedure TADMap<TKey, TValue>.SetExpander(const AExpander: IADCollectionExpander);
+procedure TADMap<TKey, TValue>.SetExpander(const AExpander: IADExpander);
 begin
   FExpander := AExpander;
 end;

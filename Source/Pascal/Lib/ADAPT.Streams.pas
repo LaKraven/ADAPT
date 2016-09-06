@@ -22,8 +22,7 @@ uses
     {$IFDEF POSIX}Posix,{$ENDIF POSIX}
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Comparers.Intf,
-  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Streams.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -256,8 +255,8 @@ function ADStreamCaretComparer: IADStreamCaretComparer;
 implementation
 
 uses
-  ADAPT.Generics.Comparers,
-  ADAPT.Generics.Lists;
+  ADAPT.Generics.Collections,
+  ADAPT.Generics.Comparers;
 
   {$I ADAPT_RTTI.inc}
 

@@ -12,7 +12,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   DUnitX.TestFramework,
   ADAPT.Common,
-  ADAPT.Generics.Lists.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Math.Averagers.Intf;
 
 type
@@ -61,7 +61,7 @@ type
 implementation
 
 uses
-  ADAPT.Generics.Lists,
+  ADAPT.Generics.Collections,
   ADAPT.Generics.Comparers,
   ADAPT.Math.Common,
   ADAPT.Math.Averagers;

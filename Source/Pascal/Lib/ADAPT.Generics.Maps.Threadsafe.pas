@@ -19,7 +19,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Generics.Defaults.Intf,
-  ADAPT.Generics.Arrays.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Generics.Maps;
 
   {$I ADAPT_RTTI.inc}
