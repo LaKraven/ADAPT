@@ -5,7 +5,7 @@
   Original Source Location: https://github.com/LaKraven/ADAPT
   Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
 }
-unit ADAPT.Generics.Defaults;
+unit ADAPT.Generics.Hashers;
 
 {$I ADAPT.inc}
 
@@ -18,7 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Defaults.Intf;
+  ADAPT.Generics.Hashers.Intf;
 
   {$I ADAPT_RTTI.inc}
 

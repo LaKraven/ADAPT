@@ -21,7 +21,7 @@ implementation
 
 uses
   ADAPT.Common,
-  ADAPT.Generics.Defaults, ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
+  ADAPT.Generics.Arrays, ADAPT.Generics.Lists;
 
 procedure TAdaptUnitTestGenericsArray.TestHookUp;
 begin
