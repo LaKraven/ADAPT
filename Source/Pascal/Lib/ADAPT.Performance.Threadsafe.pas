@@ -65,7 +65,7 @@ implementation
 
 constructor TADPerformanceCounterTS.Create(const AAverageOver: Cardinal);
 begin
-  FLock := TADReadWriteLock.Create(Self);
+  FLock := ADReadWriteLock(Self);
   inherited;
 end;
 

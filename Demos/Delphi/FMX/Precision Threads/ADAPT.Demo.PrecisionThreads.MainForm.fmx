@@ -17,4 +17,11 @@ object DemoForm: TDemoForm
     Size.PlatformDefault = False
     TabOrder = 0
   end
+  object PaintBox1: TPaintBox
+    Align = Client
+    Size.Width = 640.000000000000000000
+    Size.Height = 367.000000000000000000
+    Size.PlatformDefault = False
+    OnPaint = PaintBox1Paint
+  end
 end

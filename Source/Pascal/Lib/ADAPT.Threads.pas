@@ -189,6 +189,7 @@ implementation
 uses
   ADAPT.Math.Delta,
   ADAPT.Performance.Threadsafe;
+
   {$I ADAPT_RTTI.inc}
 
 { TADThread }

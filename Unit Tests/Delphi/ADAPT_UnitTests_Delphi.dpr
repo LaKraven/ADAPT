@@ -38,8 +38,6 @@ uses
   ADAPT.UnitTests.Generics.Comparers in 'ADAPT.UnitTests.Generics.Comparers.pas',
   ADAPT.Generics.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Intf.pas',
   ADAPT.Generics.Common in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.pas',
-  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas',
-  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
   ADAPT.Generics.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Generics.Common.Threadsafe.pas',
   ADAPT.Math.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.Intf.pas',
   ADAPT.Math.Common in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.pas',
@@ -49,7 +47,9 @@ uses
   ADAPT.Math.Averagers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Intf.pas',
   ADAPT.Math.Averagers in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas',
   ADAPT.Generics.Collections.Intf in '..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.Intf.pas',
-  ADAPT.Generics.Collections in '..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.pas';
+  ADAPT.Generics.Collections in '..\..\Source\Pascal\Lib\ADAPT.Generics.Collections.pas',
+  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
+  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas';
 
 var
   runner : ITestRunner;

@@ -51,7 +51,7 @@ implementation
 constructor TADObjectHolderTS<T>.Create(const AObject: T; const AOwnership: TADOwnership);
 begin
   inherited;
-  FLock := TADReadWriteLock.Create(Self);
+  FLock := ADReadWriteLock(Self);
 end;
 
 destructor TADObjectHolderTS<T>.Destroy;

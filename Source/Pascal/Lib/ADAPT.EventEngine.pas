@@ -38,7 +38,6 @@ type
     FDispatchTime: ADFloat;
     FExpiresAfter: ADFloat;
     FHolder: IADEventHolder;
-    FLock: TADReadWriteLock;
     FOrigin: TADEventOrigin;
     FProcessedTime: ADFloat;
     FState: TADEventState;
@@ -298,7 +297,6 @@ end;
 constructor TADEvent.Create;
 begin
   inherited;
-  FLock := TADReadWriteLock.Create(Self);
   FCreatedTime := ADReferenceTime;
   FState := esNotDispatched;
   FDispatchAfter := GetDefaultDispatchAfter;

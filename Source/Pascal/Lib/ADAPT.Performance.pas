@@ -136,7 +136,7 @@ var
 begin
   if AValue > 0 then // Can't divide by 0
   begin
-    FInstantRate := 1 / AValue; // Calculate Instant Rate
+    FInstantRate := {1 / }AValue; // Calculate Instant Rate
     FSamples[FSampleIndex] := AValue; // Add this Sample
     Inc(FSampleIndex); // Increment the Sample Index
     if FSampleIndex > High(FSamples) then // If the next sample would be Out Of Bounds...
@@ -149,7 +149,7 @@ begin
     for I := 0 to FSampleCount - 1 do
       LTotal := LTotal + FSamples[I];
     if LTotal > 0 then // Can't divide by 0
-      FAverageRate := 1 / (LTotal / FSampleCount);
+      FAverageRate := {1 / }(LTotal / FSampleCount);
   end;
 end;
 

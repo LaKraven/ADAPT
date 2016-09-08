@@ -6,9 +6,9 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  ADAPT.Common,
+  ADAPT.Common.Intf, ADAPT.Common,
   ADAPT.Threads,
-  ADAPT.Generics.Lists.Intf;
+  ADAPT.Generics.Collections.Intf;
 
 type
   TTestPerformanceData = record
@@ -20,9 +20,117 @@ type
     TickRateAverageOver: Cardinal;
   end;
 
+  ITestPerformanceSummary = interface(IADInterface)
+  ['{E3C3E313-9B0D-4442-880D-E4561587957B}']
+    // Getters
+    function GetDesiredTickRateMax: ADFloat;
+    function GetDesiredTickRateMin: ADFloat;
+    function GetExtraTimeMax: ADFloat;
+    function GetExtraTimeMin: ADFLoat;
+    function GetTickRateLimitMax: ADFloat;
+    function GetTickRateLimitMin: ADFloat;
+    function GetTickRateMax: ADFloat;
+    function GetTickRateMin: ADFloat;
+    function GetTickRateAverageMax: ADFloat;
+    function GetTickRateAverageMin: ADFloat;
+    function GetTickRateAverageOverMax: Cardinal;
+    function GetTickRateAverageOverMin: Cardinal;
+
+    // Setters
+    procedure SetDesiredTickRateMax(const ADesiredTickRateMax: ADFloat);
+    procedure SetDesiredTickRateMin(const ADesiredTickRateMin: ADFloat);
+    procedure SetExtraTimeMax(const AExtraTimeMax: ADFloat);
+    procedure SetExtraTimeMin(const AExtraTimeMin: ADFloat);
+    procedure SetTickRateLimitMax(const ATickRateLimitMax: ADFloat);
+    procedure SetTickRateLimitMin(const ATickRateLimitMin: ADFloat);
+    procedure SetTickRateMax(const ATickRateMax: ADFloat);
+    procedure SetTickRateMin(const ATickRateMin: ADFloat);
+    procedure SetTickRateAverageMax(const ATickRateAverageMax: ADFloat);
+    procedure SetTickRateAverageMin(const ATickRateAverageMin: ADFloat);
+    procedure SetTickRateAverageOverMax(const ATickRateAverageOverMax: Cardinal);
+    procedure SetTickRateAverageOverMin(const ATickRateAverageOverMin: Cardinal);
+
+    // Properties
+    property DesiredTickRateMax: ADFloat read GetDesiredTickRateMax write SetDesiredTickRateMax;
+    property DesiredTickRateMin: ADFloat read GetDesiredTickRateMin write SetDesiredTickRateMin;
+    property ExtraTimeMax: ADFloat read GetExtraTimeMax write SetExtraTimeMax;
+    property ExtraTimeMin: ADFloat read GetExtraTimeMin write SetExtraTimeMin;
+    property TickRateLimitMax: ADFloat read GetTickRateLimitMax write SetTickRateLimitMax;
+    property TickRateLimitMin: ADFloat read GetTickRateLimitMin write SetTickRateLimitMin;
+    property TickRateMax: ADFloat read GetTickRateMax write SetTickRateMax;
+    property TickRateMin: ADFloat read GetTickRateMin write SetTickRateMin;
+    property TickRateAverageMax: ADFloat read GetTickRateAverageMax write SetTickRateAverageMax;
+    property TickRateAverageMin: ADFloat read GetTickRateAverageMin write SetTickRateAverageMin;
+    property TickRateAverageOverMax: Cardinal read GetTickRateAverageOverMax write SetTickRateAverageOverMax;
+    property TickRateAverageOverMin: Cardinal read GetTickRateAverageOverMin write SetTickRateAverageOverMin;
+  end;
+
+  TTestPerformanceSummary = class(TADObject, ITestPerformanceSummary)
+  private
+    FDesiredTickRateMax,
+    FDesiredTickRateMin: ADFloat;
+    FExtraTimeMax,
+    FExtraTimeMin: ADFloat;
+    FTickRateLimitMax,
+    FTickRateLimitMin: ADFloat;
+    FTickRateMax,
+    FTickRateMin: ADFloat;
+    FTickRateAverageMax,
+    FTickRateAverageMin: ADFloat;
+    FTickRateAverageOverMax,
+    FTickRateAverageOVerMin: Cardinal;
+
+    // Getters
+    { ITestPerformanceSummary }
+    function GetDesiredTickRateMax: ADFloat;
+    function GetDesiredTickRateMin: ADFloat;
+    function GetExtraTimeMax: ADFloat;
+    function GetExtraTimeMin: ADFLoat;
+    function GetTickRateLimitMax: ADFloat;
+    function GetTickRateLimitMin: ADFloat;
+    function GetTickRateMax: ADFloat;
+    function GetTickRateMin: ADFloat;
+    function GetTickRateAverageMax: ADFloat;
+    function GetTickRateAverageMin: ADFloat;
+    function GetTickRateAverageOverMax: Cardinal;
+    function GetTickRateAverageOverMin: Cardinal;
+
+    // Setters
+    { ITestPerformanceSummary }
+    procedure SetDesiredTickRateMax(const ADesiredTickRateMax: ADFloat);
+    procedure SetDesiredTickRateMin(const ADesiredTickRateMin: ADFloat);
+    procedure SetExtraTimeMax(const AExtraTimeMax: ADFloat);
+    procedure SetExtraTimeMin(const AExtraTimeMin: ADFloat);
+    procedure SetTickRateLimitMax(const ATickRateLimitMax: ADFloat);
+    procedure SetTickRateLimitMin(const ATickRateLimitMin: ADFloat);
+    procedure SetTickRateMax(const ATickRateMax: ADFloat);
+    procedure SetTickRateMin(const ATickRateMin: ADFloat);
+    procedure SetTickRateAverageMax(const ATickRateAverageMax: ADFloat);
+    procedure SetTickRateAverageMin(const ATickRateAverageMin: ADFloat);
+    procedure SetTickRateAverageOverMax(const ATickRateAverageOverMax: Cardinal);
+    procedure SetTickRateAverageOverMin(const ATickRateAverageOverMin: Cardinal);
+  public
+    constructor Create(const AFirstValues: TTestPerformanceData); reintroduce;
+
+    // Properties
+    { ITestPerformanceSummary }
+    property DesiredTickRateMax: ADFloat read GetDesiredTickRateMax write SetDesiredTickRateMax;
+    property DesiredTickRateMin: ADFloat read GetDesiredTickRateMin write SetDesiredTickRateMin;
+    property ExtraTimeMax: ADFloat read GetExtraTimeMax write SetExtraTimeMax;
+    property ExtraTimeMin: ADFloat read GetExtraTimeMin write SetExtraTimeMin;
+    property TickRateLimitMax: ADFloat read GetTickRateLimitMax write SetTickRateLimitMax;
+    property TickRateLimitMin: ADFloat read GetTickRateLimitMin write SetTickRateLimitMin;
+    property TickRateMax: ADFloat read GetTickRateMax write SetTickRateMax;
+    property TickRateMin: ADFloat read GetTickRateMin write SetTickRateMin;
+    property TickRateAverageMax: ADFloat read GetTickRateAverageMax write SetTickRateAverageMax;
+    property TickRateAverageMin: ADFloat read GetTickRateAverageMin write SetTickRateAverageMin;
+    property TickRateAverageOverMax: Cardinal read GetTickRateAverageOverMax write SetTickRateAverageOverMax;
+    property TickRateAverageOverMin: Cardinal read GetTickRateAverageOverMin write SetTickRateAverageOverMin;
+  end;
+
   ITestPerformanceDataCircularList = IADCircularList<TTestPerformanceData>;
 
-  TTestTickCallback = procedure(const APerformanceLog: ITestPerformanceDataCircularList) of object; // Our Callback Type.
+  TTestTickCallback = procedure(const APerformanceLog: ITestPerformanceDataCircularList; const APerformanceSummary: ITestPerformanceSummary) of object; // Our Callback Type.
 
   {
     This Test Thread simply builds a historical dataset of Thread Performance Data.
@@ -43,7 +151,6 @@ type
     // Internal Methods
     procedure LogPerformanceData;
     procedure InvokeCallbackIfAssigned;
-    procedure TransferExistingPerformanceData(const Item: TTestPerformanceData);
   protected
     { TADPrecisionThread }
     function GetDefaultTickRateLimit: ADFloat; override;
@@ -59,17 +166,156 @@ type
 implementation
 
 uses
-  ADAPT.Generics.Lists;
+  ADAPT.Generics.Collections;
 
 type
   TTestPerformanceDataCircularList = class(TADCircularList<TTestPerformanceData>);
+
+{ TTestPerformanceSummary }
+
+constructor TTestPerformanceSummary.Create(const AFirstValues: TTestPerformanceData);
+begin
+  inherited Create;
+  FDesiredTickRateMax := AFirstValues.DesiredTickRate;
+  FDesiredTickRateMin := AFirstValues.DesiredTickRate;
+  FExtraTimeMax := AFirstValues.ExtraTime;
+  FExtraTimeMin := AFirstValues.ExtraTime;
+  FTickRateLimitMax := AFirstValues.TickRateLimit;
+  FTickRateLimitMin := AFirstValues.TickRateLimit;
+  FTickRateMax := AFirstValues.TickRate;
+  FTickRateMin := AFirstValues.TickRate;
+  FTickRateAverageMax := AFirstValues.TickRateAverage;
+  FTickRateAverageMin := AFirstValues.TickRateAverage;
+  FTickRateAverageOverMax := AFirstValues.TickRateAverageOver;
+  FTickRateAverageOVerMin := AFirstValues.TickRateAverageOver;
+end;
+
+function TTestPerformanceSummary.GetDesiredTickRateMax: ADFloat;
+begin
+  Result := FDesiredTickRateMax;
+end;
+
+function TTestPerformanceSummary.GetDesiredTickRateMin: ADFloat;
+begin
+  Result := FDesiredTickRateMin;
+end;
+
+function TTestPerformanceSummary.GetExtraTimeMax: ADFloat;
+begin
+  Result := FExtraTimeMax;
+end;
+
+function TTestPerformanceSummary.GetExtraTimeMin: ADFLoat;
+begin
+  Result := FExtraTimeMin;
+end;
+
+function TTestPerformanceSummary.GetTickRateAverageMax: ADFloat;
+begin
+  Result := FTickRateAverageMax;
+end;
+
+function TTestPerformanceSummary.GetTickRateAverageMin: ADFloat;
+begin
+  Result := FTickRateAverageMin;
+end;
+
+function TTestPerformanceSummary.GetTickRateAverageOverMax: Cardinal;
+begin
+  Result := FTickRateAverageOverMax;
+end;
+
+function TTestPerformanceSummary.GetTickRateAverageOverMin: Cardinal;
+begin
+  Result := FTickRateAverageOverMin;
+end;
+
+function TTestPerformanceSummary.GetTickRateLimitMax: ADFloat;
+begin
+  Result := FTickRateLimitMax;
+end;
+
+function TTestPerformanceSummary.GetTickRateLimitMin: ADFloat;
+begin
+  Result := FTickRateLimitMin;
+end;
+
+function TTestPerformanceSummary.GetTickRateMax: ADFloat;
+begin
+  Result := FTickRateMax;
+end;
+
+function TTestPerformanceSummary.GetTickRateMin: ADFloat;
+begin
+  Result := FTickRateMin;
+end;
+
+procedure TTestPerformanceSummary.SetDesiredTickRateMax(const ADesiredTickRateMax: ADFloat);
+begin
+  FDesiredTickRateMax := ADesiredTickRateMax;
+end;
+
+procedure TTestPerformanceSummary.SetDesiredTickRateMin(const ADesiredTickRateMin: ADFloat);
+begin
+  FDesiredTickRateMin := ADesiredTickRateMin;
+end;
+
+procedure TTestPerformanceSummary.SetExtraTimeMax(const AExtraTimeMax: ADFloat);
+begin
+  FExtraTimeMax := AExtraTimeMax;
+end;
+
+procedure TTestPerformanceSummary.SetExtraTimeMin(const AExtraTimeMin: ADFloat);
+begin
+  FExtraTimeMin := AExtraTimeMin;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateAverageMax(const ATickRateAverageMax: ADFloat);
+begin
+  FTickRateAverageMax := ATickRateAverageMax;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateAverageMin(const ATickRateAverageMin: ADFloat);
+begin
+  FTickRateAverageMin := ATickRateAverageMin;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateAverageOverMax(const ATickRateAverageOverMax: Cardinal);
+begin
+  FTickRateAverageOverMax := ATickRateAverageOverMax;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateAverageOverMin(const ATickRateAverageOverMin: Cardinal);
+begin
+  FTickRateAverageOverMin := ATickRateAverageOverMin;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateLimitMax(const ATickRateLimitMax: ADFloat);
+begin
+  FTickRateLimitMax := ATickRateLimitMax;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateLimitMin(const ATickRateLimitMin: ADFloat);
+begin
+  FTickRateLimitMin := ATickRateLimitMin;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateMax(const ATickRateMax: ADFloat);
+begin
+  FTickRateMax := ATickRateMax;
+end;
+
+procedure TTestPerformanceSummary.SetTickRateMin(const ATickRateMin: ADFloat);
+begin
+  FTickRateMin := ATickRateMin;
+end;
 
 { TTestThread }
 
 constructor TTestThread.Create(const ACreateSuspended: Boolean);
 begin
   inherited;
-  FPerformanceData := TTestPerformanceDataCircularList.Create(100);
+  FPerformanceData := TTestPerformanceDataCircularList.Create(50);
 end;
 
 function TTestThread.GetDefaultTickRateDesired: ADFloat;
@@ -84,7 +330,7 @@ end;
 
 function TTestThread.GetDefaultTickRateLimit: ADFloat;
 begin
-  Result := 30; // We default the demo to 30 ticks per second.
+  Result := 60; // We default the demo to 30 ticks per second.
 end;
 
 function TTestThread.GetHistoryLimit: Integer;
@@ -108,16 +354,68 @@ begin
 end;
 
 procedure TTestThread.InvokeCallbackIfAssigned;
+var
+  LPerformanceData: ITestPerformanceDataCircularList;
+  LPerformanceSummary: ITestPerformanceSummary;
+  I: Integer;
 begin
-  FLock.AcquireRead; // We acquire the Lock so that the Callback cannot be changed while we're using it...
-  try
-    if Assigned(FTickCallback) then // We need to check that the Callback has been Assigned
-      Synchronize(procedure // We Synchronize the Callback because our Demo consumes it on the UI Thread.
-                  begin
-                    FTickCallback(FPerformanceData); // Invoke the Callback...
-                  end);
-  finally
-    FLock.ReleaseRead; // ...Now we can release the Lock as we're done with the Callback.
+  if FPerformanceData.Count > 0 then
+  begin
+    FLock.AcquireRead; // We acquire the Lock so that the Callback cannot be changed while we're using it...
+    try
+      LPerformanceData := TTestPerformanceDataCircularList.Create(FPerformanceData.Capacity);
+      LPerformanceSummary := TTestPerformanceSummary.Create(FPerformanceData[0]);
+      for I := 0 to FPerformanceData.Count - 1 do
+      begin
+        LPerformanceData.Add(FPerformanceData[I]);
+        if I > 0 then
+        begin
+          // Desired Tick Rate
+          if FPerformanceData[I].DesiredTickRate > LPerformanceSummary.DesiredTickRateMax then
+            LPerformanceSummary.DesiredTickRateMax := FPerformanceData[I].DesiredTickRate;
+          if FPerformanceData[I].DesiredTickRate < LPerformanceSummary.DesiredTickRateMin then
+            LPerformanceSummary.DesiredTickRateMin := FPerformanceData[I].DesiredTickRate;
+
+          // Extra Time
+          if FPerformanceData[I].ExtraTime > LPerformanceSummary.ExtraTimeMax then
+            LPerformanceSummary.ExtraTimeMax := FPerformanceData[I].ExtraTime;
+          if FPerformanceData[I].ExtraTime < LPerformanceSummary.ExtraTimeMin then
+            LPerformanceSummary.ExtraTimeMin := FPerformanceData[I].ExtraTime;
+
+          // Tick Rate Limit
+          if FPerformanceData[I].TickRateLimit > LPerformanceSummary.TickRateLimitMax then
+            LPerformanceSummary.TickRateLimitMax := FPerformanceData[I].TickRateLimit;
+          if FPerformanceData[I].TickRateLimit < LPerformanceSummary.TickRateLimitMin then
+            LPerformanceSummary.TickRateLimitMin := FPerformanceData[I].TickRateLimit;
+
+          // Tick Rate
+          if FPerformanceData[I].TickRate > LPerformanceSummary.TickRateMax then
+            LPerformanceSummary.TickRateMax := FPerformanceData[I].TickRate;
+          if FPerformanceData[I].TickRate < LPerformanceSummary.TickRateMin then
+            LPerformanceSummary.TickRateMin := FPerformanceData[I].TickRate;
+
+          // Tick Rate Average
+          if FPerformanceData[I].TickRateAverage > LPerformanceSummary.TickRateAverageMax then
+            LPerformanceSummary.TickRateMax := FPerformanceData[I].TickRateAverage;
+          if FPerformanceData[I].TickRateAverage < LPerformanceSummary.TickRateAverageMin then
+            LPerformanceSummary.TickRateAverageMin := FPerformanceData[I].TickRateAverage;
+
+          // Tick Rate Average Over
+          if FPerformanceData[I].TickRateAverageOver > LPerformanceSummary.TickRateAverageOverMax then
+            LPerformanceSummary.TickRateAverageOverMax := FPerformanceData[I].TickRateAverageOver;
+          if FPerformanceData[I].TickRateAverageOver < LPerformanceSummary.TickRateAverageOverMin then
+            LPerformanceSummary.TickRateAverageOverMin := FPerformanceData[I].TickRateAverageOver;
+        end;
+      end;
+
+      if Assigned(FTickCallback) then // We need to check that the Callback has been Assigned
+        Synchronize(procedure // We Synchronize the Callback because our Demo consumes it on the UI Thread.
+                    begin
+                      FTickCallback(LPerformanceData, LPerformanceSummary); // Invoke the Callback...
+                    end);
+    finally
+      FLock.ReleaseRead; // ...Now we can release the Lock as we're done with the Callback.
+    end;
   end;
 end;
 
@@ -140,14 +438,10 @@ begin
 end;
 
 procedure TTestThread.SetHistoryLimit(const AHistoryLimit: Integer);
-var
-  LOldPerformanceData: ITestPerformanceDataCircularList;
 begin
   FLock.AcquireWrite;
   try
-    LOldPerformanceData := FPerformanceData; // Store a copy of the old Performance Data container
-    FPerformanceData := TTestPerformanceDataCircularList.Create(AHistoryLimit); // Create our new Performance Data container
-    LOldPerformanceData.IterateOldestToNewest(TransferExistingPerformanceData); // Transfer the content of the OLD container to the NEW.
+    FPerformanceData.Capacity := AHistoryLimit;
   finally
     FLock.ReleaseWrite;
   end;
@@ -169,11 +463,8 @@ begin
   LogPerformanceData;
   // Notify the Callback to consume the updated Performance Dataset
   InvokeCallbackIfAssigned;
-end;
-
-procedure TTestThread.TransferExistingPerformanceData(const Item: TTestPerformanceData);
-begin
-  FPerformanceData.Add(Item);
+  // Simulate some work
+  Sleep(Random(75));
 end;
 
 end.
