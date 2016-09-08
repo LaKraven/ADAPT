@@ -39,7 +39,9 @@ type
     ///  <summary><c>Empties the Array and sets it back to the original Capacity you specified in the Constructor.</c></summary>
     procedure Clear;
     ///  <summary><c>Finalizes the given Index and shifts subsequent Items to the Left.</c></summary>
-    procedure Delete(const AIndex: Integer);
+    procedure Delete(const AIndex: Integer); overload;
+    ///  <summary><c>Finalized the Items from the given Index and shifts all subsequent Items to the Left.</c></summary>
+    procedure Delete(const AFirstIndex, ACount: Integer); overload;
     ///  <summary><c>Low-level Finalization of Items in the Array between the given </c>AIndex<c> and </c>AIndex + ACount<c>.</c></summary>
     procedure Finalize(const AIndex, ACount: Integer);
     ///  <summary><c>Shifts all subsequent Items to the Right to make room for the given Item.</c></summary>

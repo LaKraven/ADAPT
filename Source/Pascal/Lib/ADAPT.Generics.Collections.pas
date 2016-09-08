@@ -43,7 +43,8 @@ type
     constructor Create(const ACapacity: Integer = 0); reintroduce; virtual;
     destructor Destroy; override;
     procedure Clear; virtual;
-    procedure Delete(const AIndex: Integer); virtual;
+    procedure Delete(const AIndex: Integer); overload; virtual;
+    procedure Delete(const AFirstIndex, ACount: Integer); overload; virtual;
     procedure Finalize(const AIndex, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer); virtual;
     procedure Move(const AFromIndex, AToIndex, ACount: Integer); virtual;
@@ -276,6 +277,10 @@ type
     function GetNewestIndex: Integer; virtual;
     function GetOldest: T; virtual;
     function GetOldestIndex: Integer; virtual;
+
+    // Setters
+    { IADCollectionList<T> }
+    procedure SetCapacity(const ACapacity: Integer); override;
 
     function AddActual(const AItem: T): Integer; override;
   public
@@ -770,6 +775,14 @@ begin
   end;
 end;
 
+procedure TADArray<T>.Delete(const AFirstIndex, ACount: Integer);
+var
+  I: Integer;
+begin
+  for I := AFirstIndex + ACount - 1 downto AFirstIndex do
+    Delete(I);
+end;
+
 destructor TADArray<T>.Destroy;
 begin
 //  Clear;
@@ -1229,6 +1242,16 @@ end;
 function TADCircularList<T>.GetSortedState: TADSortedState;
 begin
   Result := ssUnsorted;
+end;
+
+procedure TADCircularList<T>.SetCapacity(const ACapacity: Integer);
+var
+  LDiff: Integer;
+begin
+  LDiff := FArray.Capacity - ACapacity;
+  if LDiff > 0 then
+    FArray.Delete(0, LDiff);
+  FArray.Capacity := ACapacity;
 end;
 
 { TADSortedList<T> }

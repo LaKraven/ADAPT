@@ -142,12 +142,14 @@ type
   private
     FPerformanceData: ITestPerformanceDataCircularList;
     FTickCallback: TTestTickCallback;
+    FWorkSimMax: Integer;
     // Getters
     function GetHistoryLimit: Integer;
     function GetTickCallback: TTestTickCallback;
     // Setters
     procedure SetHistoryLimit(const AHistoryLimit: Integer);
     procedure SetTickCallback(const ACallback: TTestTickCallback);
+    procedure SetWorkSimMax(const AWorkSimMax: Integer);
     // Internal Methods
     procedure LogPerformanceData;
     procedure InvokeCallbackIfAssigned;
@@ -162,6 +164,7 @@ type
     // Properties
     property HistoryLimit: Integer read GetHistoryLimit write SetHistoryLimit;
     property TickCallback: TTestTickCallback read GetTickCallback write SetTickCallback;
+    property WorkSimMax: Integer write FWorkSimMax;
   end;
 
 implementation
@@ -317,6 +320,7 @@ constructor TTestThread.Create(const ACreateSuspended: Boolean);
 begin
   inherited;
   FPerformanceData := TTestPerformanceDataCircularList.Create(50);
+  FWorkSimMax := 50;
 end;
 
 function TTestThread.GetDefaultTickRateAverageOver: Cardinal;
@@ -463,6 +467,11 @@ begin
   end;
 end;
 
+procedure TTestThread.SetWorkSimMax(const AWorkSimMax: Integer);
+begin
+  FWorkSimMax := AWorkSimMax;
+end;
+
 procedure TTestThread.Tick(const ADelta, AStartTime: ADFloat);
 begin
   // Update Historical Performance Dataset
@@ -470,7 +479,7 @@ begin
   // Notify the Callback to consume the updated Performance Dataset
   InvokeCallbackIfAssigned;
   // Simulate some work
-  Sleep(Random(75));
+  Sleep(Random(FWorkSimMax));
 end;
 
 end.

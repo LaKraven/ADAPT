@@ -31,11 +31,12 @@ object DemoForm: TDemoForm
         Max = 9999.000000000000000000
         Value = 60.000000000000000000
         ValueType = Float
+        CanFocus = False
+        RepeatClick = True
         Position.X = 125.000000000000000000
         Size.Width = 124.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
-        OnChange = sbTickRateLimitChange
       end
     end
     object Label2: TLabel
@@ -53,10 +54,58 @@ object DemoForm: TDemoForm
         Max = 9999.000000000000000000
         Value = 30.000000000000000000
         ValueType = Float
+        CanFocus = False
+        RepeatClick = True
         Position.X = 125.000000000000000000
         Size.Width = 124.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
+      end
+    end
+    object Label3: TLabel
+      Position.X = 272.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 113.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Trailing
+      Text = 'History Limit:'
+      object sbHIstoryLimit: TSpinBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 0
+        Cursor = crIBeam
+        Max = 9999.000000000000000000
+        Value = 50.000000000000000000
+        CanFocus = False
+        RepeatClick = True
+        Position.X = 125.000000000000000000
+        Size.Width = 124.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = sbHIstoryLimitChange
+      end
+    end
+    object Label4: TLabel
+      Position.X = 272.000000000000000000
+      Position.Y = 40.000000000000000000
+      Size.Width = 113.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Trailing
+      Text = 'Work Sim Max:'
+      object sbWorkSimMax: TSpinBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 0
+        Cursor = crIBeam
+        Max = 9999.000000000000000000
+        Value = 50.000000000000000000
+        CanFocus = False
+        RepeatClick = True
+        Position.X = 125.000000000000000000
+        Size.Width = 124.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = sbWorkSimMaxChange
       end
     end
   end

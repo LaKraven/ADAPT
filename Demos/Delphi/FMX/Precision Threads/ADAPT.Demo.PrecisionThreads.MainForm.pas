@@ -18,10 +18,15 @@ type
     sbTickRateLimit: TSpinBox;
     Label2: TLabel;
     sbDesiredTickRate: TSpinBox;
+    Label3: TLabel;
+    sbHIstoryLimit: TSpinBox;
+    Label4: TLabel;
+    sbWorkSimMax: TSpinBox;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject; Canvas: TCanvas);
-    procedure sbTickRateLimitChange(Sender: TObject);
+    procedure sbHIstoryLimitChange(Sender: TObject);
+    procedure sbWorkSimMaxChange(Sender: TObject);
   private
     FPerformanceLog: ITestPerformanceDataCircularList;
     FPerformanceSummary: ITestPerformanceSummary;
@@ -291,9 +296,14 @@ begin
   RedrawGraph;
 end;
 
-procedure TDemoForm.sbTickRateLimitChange(Sender: TObject);
+procedure TDemoForm.sbHIstoryLimitChange(Sender: TObject);
 begin
+  FThread.HistoryLimit := Round(sbHIstoryLimit.Value);
+end;
 
+procedure TDemoForm.sbWorkSimMaxChange(Sender: TObject);
+begin
+  FThread.WorkSimMax := Round(sbWorkSimMax.Value);
 end;
 
 {$R *.fmx}

@@ -69,3 +69,24 @@ TestInsightSettings.ini
 *.bak
 dunitx-results.xml
 TestInsightSettings.ini
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads.vsr
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/AndroidManifest.xml
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/classes/classes.dex
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/library/lib/armeabi-v7a/gdbserver
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-hdpi/ic_launcher.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-large/splash_image.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-ldpi/ic_launcher.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-mdpi/ic_launcher.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-normal/splash_image.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-small/splash_image.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-xhdpi/ic_launcher.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-xlarge/splash_image.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable-xxhdpi/ic_launcher.png
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/drawable/splash_image_def.xml
+/Bin/Android/Debug/ADAPT_FMX_PrecisionThreads/res/values/styles.xml
+/Bin/Android/Debug/AndroidManifest.xml
+/Bin/Android/Debug/classes.dex
+/Bin/Android/Debug/splash_image_def.xml
+/Bin/Android/Debug/styles.xml
+/Demos/Delphi/FMX/Precision Threads/ADAPT_FMX_PrecisionThreads.deployproj
+/Demos/Delphi/FMX/Precision Threads/AndroidManifest.template.xml
