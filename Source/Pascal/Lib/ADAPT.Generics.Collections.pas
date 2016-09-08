@@ -24,12 +24,6 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  {$IFNDEF FPC}
-    { Class Forward Declarations }
-    TADArray<T> = class;
-    TADObjectArray<T: Class> = class;
-  {$ENDIF FPC}
-
   ///  <summary><c>A Simple Generic Array with basic Management Methods.</c></summary>
   ///  <remarks>
   ///    <para><c>Use IADArray if you want to take advantage of Reference Counting.</c></para>
@@ -64,7 +58,7 @@ type
   ///    <para><c>Use IADObjectArray if you want to take advantage of Reference Counting.</c></para>
   ///    <para><c>This is NOT Threadsafe</c></para>
   ///  </remarks>
-  TADObjectArray<T: Class> = class(TADArray<T>, IADObjectOwner)
+  TADObjectArray<T: class> = class(TADArray<T>, IADObjectOwner)
   private
     FOwnership: TADOwnership;
   protected
@@ -340,10 +334,6 @@ type
     function GetOldest: T; virtual;
     function GetOldestIndex: Integer; virtual;
 
-    // Setters
-    { IADCircularList<T> }
-    procedure SetCapacity(const ACapacity: Integer); override;
-
     // Management Methods
     { IADCircularList<T> }
     function AddActual(const AItem: T): Integer; override;
@@ -511,7 +501,7 @@ type
 
   ///  <summary><c>Generic Map Type.</c></summary>
   ///  <remarks>
-  ///    <para><c></c></para>
+  ///    <para><c>Associates a Value with a Key.</c></para>
   ///  </remarks>
   TADMap<TKey, TValue> = class(TADObject, IADMap<TKey, TValue>, IADComparable<TKey>, IADSortableMap<TKey, TValue>, IADCompactable, IADExpandable)
   private
@@ -665,6 +655,7 @@ type
 
 // Allocators
 function ADCollectionExpanderDefault: IADExpander;
+function ADCollectionExpanderGeometric: IADExpanderGeometric;
 function ADCollectionCompactorDefault: IADCompactor;
 
 implementation
@@ -697,6 +688,11 @@ begin
   Result := GCollectionExpanderDefault;
 end;
 
+function ADCollectionExpanderGeometric: IADExpanderGeometric;
+begin
+  Result := TADCollectionExpanderGeometric.Create;
+end;
+
 function ADCollectionCompactorDefault: IADCompactor;
 begin
   Result := GCollectionCompactorDefault;
@@ -706,10 +702,13 @@ end;
 
 function TADCollectionExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
 begin
-  // TODO -oDaniel -cTADCollectionExpanderGeometric: Implement Geometric Expansion Algorithm
-  if ACurrentCount + AAdditionalRequired > ACapacity then
-    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
-  else
+  if (AAdditionalRequired < FThreshold) then
+  begin
+    if (Round(ACapacity * FMultiplier)) > (FMultiplier + FThreshold) then
+      Result :=  Round(ACapacity * FMultiplier)
+    else
+      Result := ACapacity + AAdditionalRequired + FThreshold; // Expand to ensure everything fits
+  end else
     Result := 0;
 end;
 
@@ -1195,13 +1194,16 @@ end;
 
 procedure TADList<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
-  //TODO -oDaniel -cTADList<T>: Implement Insert method
+  FArray.Insert(AItem, AIndex);
   FSortedState := ssUnsorted;
 end;
 
 procedure TADList<T>.InsertItems(const AItems: Array of T; const AIndex: Integer);
+var
+  I: Integer;
 begin
-  //TODO -oDaniel -cTADList<T>: Implement InsertItems method
+  for I := 0 to Length(AItems) - 1 do
+    FArray.Insert(AItems[I], AIndex + I);
   FSortedState := ssUnsorted;
 end;
 
@@ -1319,11 +1321,6 @@ begin
   Result := ssUnsorted;
 end;
 
-procedure TADCircularList<T>.SetCapacity(const ACapacity: Integer);
-begin
-  //TODO -cTADCircularList<T> -oDaniel: Expand Array and repopulate with existing Items in order!
-end;
-
 { TADCircularObjectList<T> }
 
 constructor TADCircularObjectList<T>.Create(const AOwnership: TADOwnership; const ACapacity: Integer);
@@ -1357,7 +1354,6 @@ end;
 
 function TADSortedList<T>.AddActual(const AItem: T): Integer;
 begin
-  // TODO -oDaniel -cTADSortedList<T>: Need to add check to ensure Item not already in List. This MIGHT need to be optional!
   Result := GetSortedPosition(AItem);
   if Result = FCount then
     FArray[FCount] := AItem
@@ -1672,7 +1668,6 @@ end;
 
 function TADMap<TKey, TValue>.AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
 begin
-  // TODO -oDaniel -cTADMapList<TKey, TValue>: Need to add check to ensure Item not already in List. This MIGHT need to be optional!
   Result := GetSortedPosition(AItem.Key);
   if Result = FCount then
     FArray[FCount] := AItem

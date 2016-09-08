@@ -23,7 +23,6 @@ uses
 
   {$I ADAPT_RTTI.inc}
 
-
 type
   ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
   ///  <remarks>
