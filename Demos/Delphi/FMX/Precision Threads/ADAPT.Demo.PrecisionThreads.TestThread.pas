@@ -153,6 +153,7 @@ type
     procedure InvokeCallbackIfAssigned;
   protected
     { TADPrecisionThread }
+    function GetDefaultTickRateAverageOver: Cardinal; override;
     function GetDefaultTickRateLimit: ADFloat; override;
     function GetDefaultTickRateDesired: ADFloat; override;
     procedure Tick(const ADelta, AStartTime: ADFloat); override;
@@ -318,9 +319,14 @@ begin
   FPerformanceData := TTestPerformanceDataCircularList.Create(50);
 end;
 
+function TTestThread.GetDefaultTickRateAverageOver: Cardinal;
+begin
+  Result := 50;
+end;
+
 function TTestThread.GetDefaultTickRateDesired: ADFloat;
 begin
-  Result := 30; // Since our demo defaults to 30 ticks per second, we want to indicate our desire for this rate.
+  Result := 30;
   {
      Remember that a "Desired" Tick Rate is NOT the same as a "Tick Rate Limit".
      We might want to have NO Rate Limit, but still desire a MINIMUM rate.
@@ -330,7 +336,7 @@ end;
 
 function TTestThread.GetDefaultTickRateLimit: ADFloat;
 begin
-  Result := 60; // We default the demo to 30 ticks per second.
+  Result := 60; // We default the demo to 60 ticks per second.
 end;
 
 function TTestThread.GetHistoryLimit: Integer;
@@ -407,15 +413,15 @@ begin
             LPerformanceSummary.TickRateAverageOverMin := FPerformanceData[I].TickRateAverageOver;
         end;
       end;
-
-      if Assigned(FTickCallback) then // We need to check that the Callback has been Assigned
-        Synchronize(procedure // We Synchronize the Callback because our Demo consumes it on the UI Thread.
-                    begin
-                      FTickCallback(LPerformanceData, LPerformanceSummary); // Invoke the Callback...
-                    end);
     finally
       FLock.ReleaseRead; // ...Now we can release the Lock as we're done with the Callback.
     end;
+
+    if Assigned(FTickCallback) then // We need to check that the Callback has been Assigned
+      Synchronize(procedure // We Synchronize the Callback because our Demo consumes it on the UI Thread.
+                  begin
+                    FTickCallback(LPerformanceData, LPerformanceSummary); // Invoke the Callback...
+                  end);
   end;
 end;
 

@@ -13,14 +13,57 @@ object DemoForm: TDemoForm
   object Layout1: TLayout
     Align = Top
     Size.Width = 640.000000000000000000
-    Size.Height = 113.000000000000000000
+    Size.Height = 73.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
+    object Label1: TLabel
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 113.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Trailing
+      Text = 'Tick Rate Limit:'
+      object sbTickRateLimit: TSpinBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 0
+        Cursor = crIBeam
+        Max = 9999.000000000000000000
+        Value = 60.000000000000000000
+        ValueType = Float
+        Position.X = 125.000000000000000000
+        Size.Width = 124.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = sbTickRateLimitChange
+      end
+    end
+    object Label2: TLabel
+      Position.X = 8.000000000000000000
+      Position.Y = 40.000000000000000000
+      Size.Width = 113.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Trailing
+      Text = 'Desired Tick Rate:'
+      object sbDesiredTickRate: TSpinBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 1
+        Cursor = crIBeam
+        Max = 9999.000000000000000000
+        Value = 30.000000000000000000
+        ValueType = Float
+        Position.X = 125.000000000000000000
+        Size.Width = 124.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
   end
   object PaintBox1: TPaintBox
     Align = Client
     Size.Width = 640.000000000000000000
-    Size.Height = 367.000000000000000000
+    Size.Height = 407.000000000000000000
     Size.PlatformDefault = False
     OnPaint = PaintBox1Paint
   end

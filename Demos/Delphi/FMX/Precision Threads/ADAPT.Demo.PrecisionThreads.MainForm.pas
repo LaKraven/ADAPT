@@ -7,15 +7,21 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   ADAPT.Threads.Intf, FMX.Objects, FMX.Layouts,
   ADAPT.Demo.PrecisionThreads.TestThread,
-  ADAPT.Common;
+  ADAPT.Common, FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Controls.Presentation,
+  FMX.StdCtrls;
 
 type
   TDemoForm = class(TForm)
     Layout1: TLayout;
     PaintBox1: TPaintBox;
+    Label1: TLabel;
+    sbTickRateLimit: TSpinBox;
+    Label2: TLabel;
+    sbDesiredTickRate: TSpinBox;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject; Canvas: TCanvas);
+    procedure sbTickRateLimitChange(Sender: TObject);
   private
     FPerformanceLog: ITestPerformanceDataCircularList;
     FPerformanceSummary: ITestPerformanceSummary;
@@ -42,6 +48,8 @@ end;
 
 procedure TDemoForm.PerformanceCallback(const APerformanceLog: ITestPerformanceDataCircularList; const APerformanceSummary: ITestPerformanceSummary);
 begin
+  FThread.TickRateDesired := sbDesiredTickRate.Value;
+  FThread.TickRateLimit := sbTickRateLimit.Value;
   FPerformanceLog := APerformanceLog;
   FPerformanceSummary := APerformanceSummary;
   Invalidate;
@@ -69,8 +77,7 @@ const
 var
   LRectOuter,
   LRectInner,
-  LRectGraph,
-  LRectKey: TRectF;
+  LRectGraph: TRectF;
   LSeriesMarginX: Single;
   I: Integer;
   LRateLowest, LRateHighest, LRateRange,
@@ -84,18 +91,7 @@ begin
                        LRectOuter.Right - MARGIN_RIGHT,
                        LRectOuter.Bottom - MARGIN_BOTTOM
                      );
-  LRectGraph := RectF(
-                       LRectInner.Left,
-                       LRectInner.Top,
-                       (LRectInner.Width / 100 * 80) - MARGIN_DIVIDER,
-                       LRectInner.Bottom
-                     );
-  LRectKey := RectF(
-                     (LRectInner.Width / 100 * 80),
-                     LRectInner.Top,
-                     LRectInner.Right,
-                     LRectInner.Bottom
-                   );
+  LRectGraph := LRectInner;
 
   // Calculate Margins
   LSeriesMarginX := LRectGraph.Width / (FPerformanceLog.Capacity - 1);
@@ -123,9 +119,6 @@ begin
 
     // Fill Graph Rect
     PaintBox1.Canvas.ClearRect(LRectGraph, COLOR_BACKGROUND_GRAPH);
-
-    // Fill Key Rect
-    PaintBox1.Canvas.ClearRect(LRectKey, COLOR_BACKGROUND_KEY);
 
     // Draw Series
     if FPerformanceLog <> nil then
@@ -296,6 +289,11 @@ end;
 procedure TDemoForm.PaintBox1Paint(Sender: TObject; Canvas: TCanvas);
 begin
   RedrawGraph;
+end;
+
+procedure TDemoForm.sbTickRateLimitChange(Sender: TObject);
+begin
+
 end;
 
 {$R *.fmx}

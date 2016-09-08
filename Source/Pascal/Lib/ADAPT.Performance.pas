@@ -18,6 +18,8 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Common.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Performance.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -39,11 +41,7 @@ type
     FInstantRate: ADFloat;
 
     ///  <summary><c>A humble Dynamic Array, fixed to the specified "Average Over" value, containing each Sample used to determine the Average Rate.</c></summary>
-    FSamples: Array of ADFloat;
-    ///  <summary><c>The number of Samples currently being held. This will reach the "Average Over" value and stay there (unless the "Average Over" value changes)</c></summary>
-    FSampleCount: Cardinal;
-    ///  <summary><c>The Index of the NEXT Sample to be stored. This simply rolls around from 0 to N, replacing each oldest value.</c></summary>
-    FSampleIndex: Integer;
+    FSamples: IADCircularList<ADFloat>;
 
     { Getters }
     function GetAverageOver: Cardinal; virtual;
@@ -100,6 +98,10 @@ type
 
 implementation
 
+uses
+  ADAPT.Math.Averagers,
+  ADAPT.Generics.Collections;
+
 { TADPerformanceCounter }
 
 procedure TADPerformanceCounter.AfterConstruction;
@@ -112,6 +114,7 @@ constructor TADPerformanceCounter.Create(const AAverageOver: Cardinal);
 begin
   inherited Create;
   FAverageOver := AAverageOver;
+  FSamples := TADCircularList<ADFloat>.Create(AAverageOver);
 end;
 
 function TADPerformanceCounter.GetAverageOver: Cardinal;
@@ -134,30 +137,15 @@ var
   I: Integer;
   LTotal: ADFloat;
 begin
-  if AValue > 0 then // Can't divide by 0
-  begin
-    FInstantRate := {1 / }AValue; // Calculate Instant Rate
-    FSamples[FSampleIndex] := AValue; // Add this Sample
-    Inc(FSampleIndex); // Increment the Sample Index
-    if FSampleIndex > High(FSamples) then // If the next sample would be Out Of Bounds...
-      FSampleIndex := 0; // ... roll back around to index 0
-    if FSampleCount < FAverageOver then // If we haven't yet recorded the desired number of Samples...
-      Inc(FSampleCount); // .. increment the Sample Count
+  FInstantRate := AValue; // Calculate Instant Rate
+  FSamples.Add(AValue);
 
-    // Now we'll calculate the Average
-    LTotal := 0;
-    for I := 0 to FSampleCount - 1 do
-      LTotal := LTotal + FSamples[I];
-    if LTotal > 0 then // Can't divide by 0
-      FAverageRate := {1 / }(LTotal / FSampleCount);
-  end;
+  FAverageRate := ADAveragerFloatMean.CalculateAverage(FSamples);
 end;
 
 procedure TADPerformanceCounter.Reset;
 begin
-  SetLength(FSamples, FAverageOver);
-  FSampleCount := 0;
-  FSampleIndex := 0;
+  FSamples.Clear;
   FInstantRate := 0;
   FAverageRate := 0;
 end;
@@ -165,7 +153,7 @@ end;
 procedure TADPerformanceCounter.SetAverageOver(const AAverageOver: Cardinal);
 begin
   FAverageOver := AAverageOver;
-  Reset;
+  FSamples.Capacity := AAverageOver;
 end;
 
 { TADPerformanceLimiter }
