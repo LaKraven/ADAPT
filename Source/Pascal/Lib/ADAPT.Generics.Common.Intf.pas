@@ -26,18 +26,6 @@ type
   TADIterateDirection = (idLeft, idRight);
   TADSortedState = (ssUnknown, ssUnsorted, ssSorted);
 
-  // Callbacks
-  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    TADListItemCallbackAnon<T> = reference to procedure(const AItem: T);
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-  TADListItemCallbackOfObject<T> = procedure(const AItem: T) of object;
-  TADListItemCallbackUnbound<T> = procedure(const AItem: T);
-  {$IFDEF SUPPORTS_REFERENCETOMETHOD}
-    TADListMapCallbackAnon<TKey, TValue> = reference to procedure(const AKey: TKey; const AValue: TValue);
-  {$ENDIF SUPPORTS_REFERENCETOMETHOD}
-  TADListMapCallbackOfObject<TKey, TValue> = procedure(const AKey: TKey; const AValue: TValue) of object;
-  TADListMapCallbackUnbound<TKey, TValue> = procedure(const AKey: TKey; const AValue: TValue);
-
   ///  <summary><c>A Collection that can Own Objects.</c></summary>
   IADObjectOwner = interface(IADInterface)
   ['{5756A232-26B6-4395-9F1D-CCCC071E5701}']

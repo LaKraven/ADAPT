@@ -133,9 +133,6 @@ begin
 end;
 
 procedure TADPerformanceCounter.RecordSample(const AValue: ADFloat);
-var
-  I: Integer;
-  LTotal: ADFloat;
 begin
   FInstantRate := AValue; // Calculate Instant Rate
   FSamples.Add(AValue);

@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes, Math,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common;
+  ADAPT.Common.Intf;
 
   {$I ADAPT_RTTI.inc}
 

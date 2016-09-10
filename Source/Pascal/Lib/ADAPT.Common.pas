@@ -55,23 +55,6 @@ type
   TADPersistent = class;
   TADAggregatedObject = class;
 
-  { Enums }
-  ///  <summary><c>Defines the Ownership role of a container.</c></summary>
-  TADOwnership = (oOwnsObjects, oNotOwnsObjects);
-
-  {$IFDEF ADAPT_FLOAT_SINGLE}
-    ///  <summary><c>Single-Precision Floating Point Type.</c></summary>
-    ADFloat = Single;
-  {$ELSE}
-    {$IFDEF ADAPT_FLOAT_EXTENDED}
-      ///  <summary><c>Extended-Precision Floating Point Type.</c></summary>
-      ADFloat = Extended;
-    {$ELSE}
-      ///  <summary><c>Double-Precision Floating Point Type.</c></summary>
-      ADFloat = Double; // This is our default
-    {$ENDIF ADAPT_FLOAT_DOUBLE}
-  {$ENDIF ADAPT_FLOAT_SINGLE}
-
   ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
   EADException = class abstract(Exception);
 
