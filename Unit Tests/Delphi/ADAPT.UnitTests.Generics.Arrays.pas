@@ -33,7 +33,7 @@ type
 implementation
 
 uses
-  ADAPT.Common,
+  ADAPT.Common.Intf,
   ADAPT.Generics.Common,
   ADAPT.Generics.Collections, ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections.Threadsafe,
   ADAPT.UnitTests.Generics.Common;

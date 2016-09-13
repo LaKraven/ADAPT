@@ -282,6 +282,10 @@ type
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
     function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
 
+    // Setters
+    ///  <summary><c>Assigns the given Value to the given Key (replacing any existing Value.)</c></summary>
+    procedure SetItem(const AKey: TKey; const AValue: TValue);
+
     // Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListMapCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload;
@@ -369,8 +373,9 @@ type
     procedure RemoveItems(const AKeys: Array of TKey);
 
     // Properties
+    ///  <summary><c>Assigns the given Value to the given Key (replacing any existing Value.)</c></summary>
     ///  <returns><c>The Item corresponding to the given Key.</c></returns>
-    property Items[const AKey: TKey]: TValue read GetItem; default;
+    property Items[const AKey: TKey]: TValue read GetItem write SetItem; default;
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
     property Pairs[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;

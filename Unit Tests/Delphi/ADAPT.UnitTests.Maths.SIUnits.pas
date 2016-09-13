@@ -11,7 +11,8 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   DUnitX.TestFramework,
-  ADAPT.Common, ADAPT.Math.SIUnits;
+  ADAPT.Common.Intf,
+  ADAPT.Math.SIUnits;
 
 type
   [TestFixture]

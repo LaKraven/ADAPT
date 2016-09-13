@@ -425,6 +425,7 @@ type
     procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADMap<TKey, TValue> }
     procedure SetCapacity(const ACapacity: Integer); virtual;
+    procedure SetItem(const AKey: TKey; const AValue: TValue); virtual;
 
     // Management Methods
     ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
@@ -501,7 +502,7 @@ type
     property Count: Integer read GetCount;
     property IsCompact: Boolean read GetIsCompact;
     property IsEmpty: Boolean read GetIsEmpty;
-    property Item[const AKey: TKey]: TValue read GetItem; default;
+    property Item[const AKey: TKey]: TValue read GetItem write SetItem; default;
     property Pair[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
   end;
 
@@ -2021,6 +2022,15 @@ end;
 procedure TADMap<TKey, TValue>.SetExpander(const AExpander: IADExpander);
 begin
   FExpander := AExpander;
+end;
+
+procedure TADMap<TKey, TValue>.SetItem(const AKey: TKey; const AValue: TValue);
+var
+  LIndex: Integer;
+begin
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    FArray[LIndex].Value := AValue;
 end;
 
 procedure TADMap<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValue>);

@@ -11,7 +11,6 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   DUnitX.TestFramework,
-  ADAPT.Common,
   ADAPT.Generics.Collections.Intf,
   ADAPT.Math.Averagers.Intf;
 
@@ -61,6 +60,7 @@ type
 implementation
 
 uses
+  ADAPT.Common.Intf,
   ADAPT.Generics.Collections,
   ADAPT.Generics.Comparers,
   ADAPT.Math.Common,

@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes, SysUtils, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
+  ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
   ADAPT.Performance.Intf,
   ADAPT.Threads.Intf;
 
@@ -33,7 +33,7 @@ type
   ///    <para><c>ALL Threads in the codebase have a Threadsafe Lock.</c></para>
   ///    <para><c>ALL Threads in the codebase are Interfaced Types.</c></para>
   ///  </remarks>
-  TADThread = class abstract(TThread, IADInterface, {$IFDEF ADAPT_THREADS_USEINTERFACES}IADThread,{$ENDIF ADAPT_THREADS_USEINTERFACES} IADReadWriteLock)
+  TADThread = class abstract(TThread, IADInterface, IADThread, IADReadWriteLock)
   private
     FOwnerInterface: IInterface;
     [volatile] FRefCount: Integer;
@@ -65,7 +65,7 @@ type
   ///    <para><c>Provides extremely precise Delta Time between Ticks.</c></para>
   ///    <para><c>You can set a precise Tick Rate Limit.</c></para>
   ///  </remarks>
-  TADPrecisionThread = class abstract(TADThread{$IFDEF ADAPT_THREADS_USEINTERFACES}, IADPrecisionThread{$ENDIF ADAPT_THREADS_USEINTERFACES})
+  TADPrecisionThread = class abstract(TADThread, IADPrecisionThread)
   private
     FNextTickTime: ADFloat;
     FPerformanceCounter: IADPerformanceCounter;

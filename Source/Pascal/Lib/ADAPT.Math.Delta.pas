@@ -18,6 +18,7 @@ uses
     Classes, {$IFDEF FPC}ADAPT.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Generics.Collections.Intf,
   ADAPT.Math.Common.Intf,
   ADAPT.Math.Delta.Intf;
 
@@ -25,15 +26,17 @@ uses
 
 type
   TADDeltaValue<T> = class abstract(TADObject, IADDeltaValue<T>)
+  private
+    FValues: IADMap<ADFloat, T>;
   protected
     // Getters
     { IADDeltaValue<T> }
-    function GetValueAt(const ADelta: ADFloat): T; virtual; abstract;
+    function GetValueAt(const ADelta: ADFloat): T; virtual;
     function GetValueNow: T;
 
     // Setters
     { IADDeltaValue<T> }
-    procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual; abstract;
+    procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual;
     procedure SetValueNow(const AValue: T);
   public
     constructor Create; overload; override;
@@ -58,25 +61,17 @@ function ADDeltaCardinal: IADDeltaValue<Cardinal>;
 
 implementation
 
+uses
+  ADAPT.Generics.Collections;
+
 var
   ReferenceWatch: TStopwatch;
 
 type
-  TADDeltaFloat = class(TADDeltaValue<ADFloat>)
-
-  end;
-
-  TADDeltaInteger = class(TADDeltaValue<Integer>)
-
-  end;
-
-  TADDeltaInt64 = class(TADDeltaValue<Int64>)
-
-  end;
-
-  TADDeltaCardinal = class(TADDeltaValue<Cardinal>)
-
-  end;
+  TADDeltaFloat = class(TADDeltaValue<ADFloat>);
+  TADDeltaInteger = class(TADDeltaValue<Integer>);
+  TADDeltaInt64 = class(TADDeltaValue<Int64>);
+  TADDeltaCardinal = class(TADDeltaValue<Cardinal>);
 
 function ADReferenceTime: ADFloat;
 begin
@@ -108,6 +103,7 @@ end;
 constructor TADDeltaValue<T>.Create;
 begin
   inherited Create;
+  FValues := TADMap<ADFloat, T>.Create;
 end;
 
 constructor TADDeltaValue<T>.Create(const AValueNow: T);
@@ -122,9 +118,27 @@ begin
   SetValueAt(ADelta, AValue);
 end;
 
+function TADDeltaValue<T>.GetValueAt(const ADelta: ADFloat): T;
+begin
+  if FValues.Contains(ADelta) then
+    Result := FValues.Items[ADelta]
+  else
+  begin
+    //TODO -oDaniel -cTADDeltaValue: Interpolate/Extrapolate Value based on present data.
+  end;
+end;
+
 function TADDeltaValue<T>.GetValueNow: T;
 begin
   Result := GetValueAt(ADReferenceTime);
+end;
+
+procedure TADDeltaValue<T>.SetValueAt(const ADelta: ADFloat; const AValue: T);
+begin
+  if FValues.Contains(ADelta) then
+    FValues.Items[ADelta] := AValue
+  else
+    FValues.Add(ADelta, AValue);
 end;
 
 procedure TADDeltaValue<T>.SetValueNow(const AValue: T);

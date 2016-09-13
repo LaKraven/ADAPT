@@ -58,9 +58,11 @@ type
     // Getters
     function GetKey: TKey;
     function GetValue: TValue;
+    // Setters
+    procedure SetValue(const AValue: TValue);
     // Properties
     property Key: TKey read GetKey;
-    property Value: TValue read GetValue;
+    property Value: TValue read GetValue write SetValue;
   end;
 
   ///  <summary><c>Used to Compare two Generic Values.</c></summary>
