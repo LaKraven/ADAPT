@@ -5,10 +5,11 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
-  ADAPT.Threads.Intf, FMX.Objects, FMX.Layouts,
+  FMX.Objects, FMX.Layouts, FMX.Edit, FMX.EditBox, FMX.SpinBox,
+  FMX.Controls.Presentation, FMX.StdCtrls,
   ADAPT.Demo.PrecisionThreads.TestThread,
-  ADAPT, FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Controls.Presentation,
-  FMX.StdCtrls;
+  ADAPT.Intf, ADAPT,
+  ADAPT.Threads.Intf;
 
 type
   TDemoForm = class(TForm)
