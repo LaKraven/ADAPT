@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT, ADAPT.Intf,
   ADAPT.Collections.Intf,
   ADAPT.Math.Common.Intf,
   ADAPT.Math.Averagers.Intf;

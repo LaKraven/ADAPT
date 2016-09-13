@@ -6,7 +6,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  ADAPT.Common.Intf, ADAPT.Common,
+  ADAPT.Intf, ADAPT,
   ADAPT.Threads,
   ADAPT.Collections.Intf;
 

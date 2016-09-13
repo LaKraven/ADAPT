@@ -20,7 +20,7 @@ type
 implementation
 
 uses
-  ADAPT.Common,
+  ADAPT,
   ADAPT.Collections;
 
 procedure TAdaptUnitTestGenericsArray.TestHookUp;

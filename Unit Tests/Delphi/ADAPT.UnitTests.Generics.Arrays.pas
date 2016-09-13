@@ -33,8 +33,8 @@ type
 implementation
 
 uses
-  ADAPT.Common.Intf,
-  ADAPT.Common,
+  ADAPT.Intf,
+  ADAPT,
   ADAPT.Collections, ADAPT.Collections.Intf, ADAPT.Collections.Threadsafe,
   ADAPT.UnitTests.Generics.Common;
 

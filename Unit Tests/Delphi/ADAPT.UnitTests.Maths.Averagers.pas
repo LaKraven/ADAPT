@@ -60,7 +60,7 @@ type
 implementation
 
 uses
-  ADAPT.Common.Intf,
+  ADAPT.Intf,
   ADAPT.Collections,
   ADAPT.Comparers,
   ADAPT.Math.Common,

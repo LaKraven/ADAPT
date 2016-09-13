@@ -11,7 +11,7 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   ADAPT.UnitTests.Generics.Lists in 'ADAPT.UnitTests.Generics.Lists.pas',
-  ADAPT.Common in '..\..\Source\Pascal\Lib\ADAPT.Common.pas',
+  ADAPT in '..\..\Source\Pascal\Lib\ADAPT.pas',
   ADAPT.Threads in '..\..\Source\Pascal\Lib\ADAPT.Threads.pas',
   ADAPT.Performance in '..\..\Source\Pascal\Lib\ADAPT.Performance.pas',
   ADAPT.Hashers in '..\..\Source\Pascal\Lib\ADAPT.Hashers.pas',
@@ -19,14 +19,14 @@ uses
   ADAPT.UnitTests.Maths.SIUnits in 'ADAPT.UnitTests.Maths.SIUnits.pas',
   ADAPT.Streamables in '..\..\Source\Pascal\Lib\ADAPT.Streamables.pas',
   ADAPT.Streams in '..\..\Source\Pascal\Lib\ADAPT.Streams.pas',
-  ADAPT.Common.Intf in '..\..\Source\Pascal\Lib\ADAPT.Common.Intf.pas',
+  ADAPT.Intf in '..\..\Source\Pascal\Lib\ADAPT.Intf.pas',
   ADAPT.Threads.Intf in '..\..\Source\Pascal\Lib\ADAPT.Threads.Intf.pas',
   ADAPT.Performance.Intf in '..\..\Source\Pascal\Lib\ADAPT.Performance.Intf.pas',
   ADAPT.Hashers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Hashers.Intf.pas',
   ADAPT.UnitTests.Generics.Arrays in 'ADAPT.UnitTests.Generics.Arrays.pas',
   ADAPT.UnitTests.Generics.Common in 'ADAPT.UnitTests.Generics.Common.pas',
   ADAPT.Streams.Intf in '..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas',
-  ADAPT.Common.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Common.Threadsafe.pas',
+  ADAPT.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Threadsafe.pas',
   ADAPT.Collections.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Collections.Threadsafe.pas',
   ADAPT.Performance.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas',
   ADAPT.Streams.Threadsafe in '..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas',
@@ -41,9 +41,7 @@ uses
   ADAPT.Math.Averagers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Intf.pas',
   ADAPT.Math.Averagers in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas',
   ADAPT.Collections.Intf in '..\..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas',
-  ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas',
-  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
-  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas';
+  ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas';
 
 var
   runner : ITestRunner;

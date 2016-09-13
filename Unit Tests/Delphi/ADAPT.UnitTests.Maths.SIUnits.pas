@@ -11,7 +11,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   DUnitX.TestFramework,
-  ADAPT.Common.Intf,
+  ADAPT.Intf,
   ADAPT.Math.SIUnits;
 
 type

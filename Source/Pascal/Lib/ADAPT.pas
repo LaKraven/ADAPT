@@ -5,7 +5,7 @@
   Original Source Location: https://github.com/LaKraven/ADAPT
   Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
 }
-unit ADAPT.Common;
+unit ADAPT;
 
 {$I ADAPT.inc}
 
@@ -45,7 +45,7 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common.Intf;
+  ADAPT.Intf;
 
   {$I ADAPT_RTTI.inc}
 

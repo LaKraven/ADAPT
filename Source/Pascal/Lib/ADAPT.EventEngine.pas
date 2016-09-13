@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
+  ADAPT, ADAPT.Intf, ADAPT.Threadsafe,
   ADAPT.Collections.Intf,
   ADAPT.Threads, ADAPT.Threads.Intf,
   ADAPT.EventEngine.Intf;

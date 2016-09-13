@@ -5,7 +5,7 @@
   Original Source Location: https://github.com/LaKraven/ADAPT
   Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
 }
-unit ADAPT.Common.Threadsafe;
+unit ADAPT.Threadsafe;
 
 {$I ADAPT.inc}
 
@@ -17,7 +17,7 @@ uses
   {$ELSE}
     Classes, SysUtils, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Common.Intf, ADAPT.Common;
+  ADAPT.Intf, ADAPT;
 
   {$I ADAPT_RTTI.inc}
 

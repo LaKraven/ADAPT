@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   ADAPT.Threads.Intf, FMX.Objects, FMX.Layouts,
   ADAPT.Demo.PrecisionThreads.TestThread,
-  ADAPT.Common, FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Controls.Presentation,
+  ADAPT, FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Controls.Presentation,
   FMX.StdCtrls;
 
 type

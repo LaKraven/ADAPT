@@ -5,7 +5,7 @@
   Original Source Location: https://github.com/LaKraven/ADAPT
   Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
 }
-unit ADAPT.Common.Intf;
+unit ADAPT.Intf;
 
 {$I ADAPT.inc}
 
