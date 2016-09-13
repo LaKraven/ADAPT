@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="nx0yu2e6wrt0rh9jm_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="design:view:::0ex1wxyocytgbcmvp_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,132,181" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Threadsafe.TADPersistentTS" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Threadsafe.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Threadsafe.TADReadWriteLock" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Threadsafe.TADObjectTS" />
+    </reference>
+    <reference referencedUin="design:view:::0ubd90eynyt2b75wk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="161,1,161,275" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADInterface" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.ADFloat" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackAnonymous" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackUnbound" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackOfObject" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADOwnership" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADReadWriteLockState" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.@unitclass">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.@unitclass.ADFLOAT_ZERO" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="341,1,166,159" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject.GetInstanceGUID()" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject.FInstanceGUID" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject.Create(System.IInterface)" />
+      <reference referencedUin="delphi:e_property:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject.InstanceGUID" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="341,179,166,159" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject.GetInstanceGUID()" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject.FInstanceGUID" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject.Create()" />
+      <reference referencedUin="delphi:e_property:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject.InstanceGUID" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="152,295,184,159" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent.GetInstanceGUID()" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent.FInstanceGUID" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent.Create()" />
+      <reference referencedUin="delphi:e_property:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent.InstanceGUID" />
+    </reference>
+  </view>
+</nodeSet>

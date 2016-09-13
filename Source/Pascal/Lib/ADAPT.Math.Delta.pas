@@ -18,14 +18,14 @@ uses
     Classes, {$IFDEF FPC}ADAPT.Stopwatch{$ELSE}Diagnostics{$ENDIF FPC},
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Collections.Intf,
+  ADAPT.Collections.Intf,
   ADAPT.Math.Common.Intf,
   ADAPT.Math.Delta.Intf;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  TADDeltaValue<T> = class abstract(TADObject, IADDeltaValue<T>)
+  TADDeltaValue<T> = class(TADObject, IADDeltaValue<T>)
   private
     FValues: IADMap<ADFloat, T>;
   protected
@@ -62,7 +62,7 @@ function ADDeltaCardinal: IADDeltaValue<Cardinal>;
 implementation
 
 uses
-  ADAPT.Generics.Collections;
+  ADAPT.Collections;
 
 var
   ReferenceWatch: TStopwatch;

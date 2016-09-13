@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="q3u98spxwotpjaokr_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="design:view:::dn8cxsjw6rte1x3rq_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,162,198" />
+      <reference referencedUin="design:view:::9zmnsd7tnutfge3fl_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Performance.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Performance.TADPerformanceCounter" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Performance.TADPerformanceLimiter" />
+      <reference referencedUin="design:view:::zmfemub6wut8hqjkl_v" />
+    </reference>
+    <reference referencedUin="design:view:::uxaui7pxirtccpdds_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="191,1,100,164" />
+      <reference referencedUin="design:view:::75fruiezawtnyvzph_v" />
+      <reference referencedUin="design:view:::o6vh39h0wwtpt5bxm_v" />
+      <reference referencedUin="design:view:::37aryoeo5xt1cozle_v" />
+      <reference referencedUin="design:view:::a0adu1yysxtt9n9fq_v" />
+    </reference>
+    <reference referencedUin="design:view:::nx0yu2e6wrt0rh9jm_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="191,184,147,213" />
+      <reference referencedUin="design:view:::0ex1wxyocytgbcmvp_v" />
+      <reference referencedUin="design:view:::0ubd90eynyt2b75wk_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADAggregatedObject" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADObject" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.TADPersistent" />
+    </reference>
+    <reference referencedUin="design:view:::l8ibukbgdst4hp76o_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="22,227,162,288" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.IADStreamCaretComparer" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADMemoryStreamCaret" />
+      <reference referencedUin="design:view:::4t6rh8hmx8g_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADStream" />
+      <reference referencedUin="design:view:::eegb5wudtr_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADStreamCaret" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADStreamCaretClass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADMemoryStream" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADHandleStream" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADHandleStreamCaret" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.TADFileStream" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streams.IADStreamCaretList" />
+    </reference>
+    <reference referencedUin="design:view:::rlricra21tth6iumn_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="376,1,138,183" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Threads.@unitclass" />
+      <reference referencedUin="design:view:::6pkzkdiyq0l_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Threads.TADPrecisionThread" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Threads.TADThread" />
+    </reference>
+    <reference referencedUin="design:view:::0gwlx8g4btteyu3nk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="376,203,100,164" />
+      <reference referencedUin="design:view:::tcod4najspf_v" />
+      <reference referencedUin="design:view:::jmiqtogtrhn_v" />
+      <reference referencedUin="design:view:::losqx407o6o_v" />
+      <reference referencedUin="design:view:::0dza58bw7mi_v" />
+    </reference>
+    <reference referencedUin="design:view:::ozbvvesdktt6c00je_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="376,386,125,134" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Streamables.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::adukf14tyttv2uvql_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="203,416,165,258" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventClassComparer" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventContainer" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventListener" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventEngine" />
+      <reference referencedUin="design:view:::o2e0xjyc17g_v" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventListener&lt;1&gt;" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.IADEventComparer" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEventThread" />
+      <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.EventEngine.TADEvent" />
+    </reference>
+    <reference referencedUin="design:view:::0kt7p6e7ututyojj_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="376,539,100,134" />
+      <reference referencedUin="design:view:::720c9je4zhp_v" />
+      <reference referencedUin="design:view:::n0de4ve6wnj_v" />
+    </reference>
+  </view>
+</nodeSet>

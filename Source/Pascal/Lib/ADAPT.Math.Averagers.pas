@@ -18,8 +18,7 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Collections.Intf,
+  ADAPT.Collections.Intf,
   ADAPT.Math.Common.Intf,
   ADAPT.Math.Averagers.Intf;
 

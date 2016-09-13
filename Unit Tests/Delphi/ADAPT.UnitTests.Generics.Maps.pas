@@ -15,8 +15,8 @@ uses
 implementation
 
 uses
-  ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections,
-  ADAPT.Generics.Comparers,
+  ADAPT.Collections.Intf, ADAPT.Collections,
+  ADAPT.Comparers,
   ADAPT.UnitTests.Generics.Common;
 
 end.

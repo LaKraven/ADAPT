@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="0ubd90eynyt2b75wk_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADInterface">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,166,98" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADInterface.GetInstanceGUID()" />
+      <reference referencedUin="delphi:e_property:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADInterface.InstanceGUID" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.ADFloat">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="195,1,105,36" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackAnonymous">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="200,60,157,36" />
+      <property name="location_set_by_user" value="True" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackUnbound">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="200,120,141,36" />
+      <property name="location_set_by_user" value="True" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.@unitclass">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADCallbackOfObject">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="200,180,140,36" />
+      <property name="location_set_by_user" value="True" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="0,200,165,246" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.AcquireRead()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.AcquireWrite()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.ReleaseRead()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.ReleaseWrite()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.TryAcquireRead()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.TryAcquireWrite()" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithRead(ADAPT.Common.Intf.TADCallbackUnbound)" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithRead(ADAPT.Common.Intf.TADCallbackOfObject)" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithRead(ADAPT.Common.Intf.TADCallbackAnonymous)" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithWrite(ADAPT.Common.Intf.TADCallbackUnbound)" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithWrite(ADAPT.Common.Intf.TADCallbackOfObject)" />
+      <reference referencedUin="delphi:e_method:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock.WithWrite(ADAPT.Common.Intf.TADCallbackAnonymous)" />
+      <reference referencedUin="delphi:l_gnt:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.IADReadWriteLock:ADAPT.Common.Intf.IADInterface">
+        <property name="sourceAnchor" value="87,200" />
+        <property name="targetAnchor" value="87,108" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADOwnership">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="408,1,112,83" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADOwnership.oOwnsObjects" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADOwnership.oNotOwnsObjects" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADReadWriteLockState">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="408,103,158,98" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADReadWriteLockState.lsWaiting" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADReadWriteLockState.lsReading" />
+      <reference referencedUin="delphi:e_field:src:ADAPT_UnitTests_Delphi:ADAPT.Common.Intf.TADReadWriteLockState.lsWriting" />
+    </reference>
+  </view>
+</nodeSet>

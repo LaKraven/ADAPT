@@ -18,8 +18,7 @@ uses
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf,
-  ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Collections.Intf,
+  ADAPT.Collections.Intf,
   ADAPT.Performance.Intf;
 
   {$I ADAPT_RTTI.inc}
@@ -100,7 +99,7 @@ implementation
 
 uses
   ADAPT.Math.Averagers,
-  ADAPT.Generics.Collections;
+  ADAPT.Collections;
 
 { TADPerformanceCounter }
 
@@ -191,3 +190,4 @@ begin
 end;
 
 end.
+

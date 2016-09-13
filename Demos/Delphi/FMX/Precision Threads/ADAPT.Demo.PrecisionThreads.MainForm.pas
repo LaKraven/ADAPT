@@ -44,7 +44,7 @@ implementation
 
 uses
   System.Math,
-  ADAPT.Generics.Collections;
+  ADAPT.Collections;
 
 procedure TDemoForm.FormDestroy(Sender: TObject);
 begin

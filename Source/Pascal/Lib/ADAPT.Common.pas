@@ -57,6 +57,14 @@ type
 
   ///  <summary><c>ADAPT Base Excpetion Type.</c></summary>
   EADException = class abstract(Exception);
+    EADGenericsIterateException = class(EADException);
+      EADGenericsIterateDirectionUnknownException = class(EADGenericsIterateException);
+    EADGenericsRangeException = class(EADException);
+    EADGenericsParameterInvalidException = class(EADException);
+      EADGenericsCapacityLessThanCount = class(EADGenericsParameterInvalidException);
+      EADGenericsCompactorNilException = class(EADGenericsParameterInvalidException);
+      EADGenericsExpanderNilException = class(EADGenericsParameterInvalidException);
+
 
   ///  <summary><c>ADAPT Base Object Type.</c></summary>
   ///  <remarks><c>All Classes in ADAPT are Interfaced unless otherwise stated.</c></remarks>
@@ -95,6 +103,57 @@ type
   public
     constructor Create(const Controller: IInterface); reintroduce; virtual;
     property InstanceGUID: TGUID read GetInstanceGUID;
+  end;
+
+  TADObjectHolder<T: class> = class(TADObject, IADObjectHolder<T>)
+  private
+    FOwnership: TADOwnership;
+    FObject: T;
+  protected
+    // Getters
+    { IADObjectOwner }
+    function GetOwnership: TADOwnership; virtual;
+    { IADObjectHolder<T> }
+    function GetObject: T; virtual;
+
+    // Setters
+    { IADObjectOwner }
+    procedure SetOwnership(const AOwnership: TADOwnership); virtual;
+  public
+    constructor Create(const AObject: T; const AOwnership: TADOwnership = oOwnsObjects); reintroduce; virtual;
+    destructor Destroy; override;
+    // Properties
+    { IADObjectOwner }
+    property Ownership: TADOwnership read GetOwnership write SetOwnership;
+    { IADObjectHolder<T> }
+    property HeldObject: T read GetObject;
+  end;
+
+  TADValueHolder<T> = class(TADObject, IADValueHolder<T>)
+  private
+    FValue: T;
+  protected
+    function GetValue: T; virtual;
+  public
+    constructor Create(const AValue: T); reintroduce;
+
+    property Value: T read GetValue;
+  end;
+
+  TADKeyValuePair<TKey, TValue> = class(TADObject, IADKeyValuePair<TKey, TValue>)
+  protected
+    FKey: TKey;
+    FValue: TValue;
+    // Getters
+    function GetKey: TKey;
+    function GetValue: TValue;
+    // Setters
+    procedure SetValue(const AValue: TValue);
+  public
+    constructor Create(const AKey: TKey; const AValue: TValue); reintroduce;
+    // Properties
+    property Key: TKey read GetKey;
+    property Value: TValue read GetValue write SetValue;
   end;
 
 const
@@ -149,6 +208,74 @@ end;
 function TADAggregatedObject.GetInstanceGUID: TGUID;
 begin
   Result := FInstanceGUID;
+end;
+
+{ TADObjectHolder<T> }
+
+constructor TADObjectHolder<T>.Create(const AObject: T; const AOwnership: TADOwnership);
+begin
+  inherited Create;
+  FObject := AObject;
+  FOwnership := AOwnership;
+end;
+
+destructor TADObjectHolder<T>.Destroy;
+begin
+  if FOwnership = oOwnsObjects then
+    FObject.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+function TADObjectHolder<T>.GetObject: T;
+begin
+  Result := FObject;
+end;
+
+function TADObjectHolder<T>.GetOwnership: TADOwnership;
+begin
+  Result := FOwnership;
+end;
+
+procedure TADObjectHolder<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+  FOwnership := AOwnership;
+end;
+
+{ TADValueHolder<T> }
+
+constructor TADValueHolder<T>.Create(const AValue: T);
+begin
+  inherited Create;
+  FValue := AValue;
+end;
+
+function TADValueHolder<T>.GetValue: T;
+begin
+  Result := FValue;
+end;
+
+{ TADKeyValuePair<TKey, TValue> }
+
+constructor TADKeyValuePair<TKey, TValue>.Create(const AKey: TKey; const AValue: TValue);
+begin
+  inherited Create;
+  FKey := AKey;
+  FValue := AValue;
+end;
+
+function TADKeyValuePair<TKey, TValue>.GetKey: TKey;
+begin
+  Result := FKey;
+end;
+
+function TADKeyValuePair<TKey, TValue>.GetValue: TValue;
+begin
+  Result := FValue;
+end;
+
+procedure TADKeyValuePair<TKey, TValue>.SetValue(const AValue: TValue);
+begin
+  FValue := AValue;
 end;
 
 end.

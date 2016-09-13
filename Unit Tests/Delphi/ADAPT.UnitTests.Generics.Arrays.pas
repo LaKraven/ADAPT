@@ -34,8 +34,8 @@ implementation
 
 uses
   ADAPT.Common.Intf,
-  ADAPT.Generics.Common,
-  ADAPT.Generics.Collections, ADAPT.Generics.Collections.Intf, ADAPT.Generics.Collections.Threadsafe,
+  ADAPT.Common,
+  ADAPT.Collections, ADAPT.Collections.Intf, ADAPT.Collections.Threadsafe,
   ADAPT.UnitTests.Generics.Common;
 
 type

@@ -128,10 +128,9 @@ type
 implementation
 
 uses
-  ADAPT.Common,
-  ADAPT.Generics.Common, ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Comparers,
-  ADAPT.Generics.Collections, ADAPT.Generics.Collections.Intf,
+  ADAPT.Common, ADAPT.Common.Intf,
+  ADAPT.Comparers,
+  ADAPT.Collections, ADAPT.Collections.Intf,
   ADAPT.UnitTests.Generics.Common;
 
 type

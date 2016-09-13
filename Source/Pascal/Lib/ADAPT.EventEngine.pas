@@ -18,8 +18,7 @@ uses
     Classes, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT.Common, ADAPT.Common.Intf, ADAPT.Common.Threadsafe,
-  ADAPT.Generics.Common.Intf,
-  ADAPT.Generics.Collections.Intf,
+  ADAPT.Collections.Intf,
   ADAPT.Threads, ADAPT.Threads.Intf,
   ADAPT.EventEngine.Intf;
 
@@ -233,9 +232,8 @@ implementation
 
 uses
   ADAPT.Math.Delta,
-  ADAPT.Generics.Common,
-  ADAPT.Generics.Comparers,
-  ADAPT.Generics.Collections;
+  ADAPT.Comparers,
+  ADAPT.Collections;
 
 type
   { Generic Collections }

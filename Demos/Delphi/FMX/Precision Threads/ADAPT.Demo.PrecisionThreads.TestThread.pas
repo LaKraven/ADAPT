@@ -8,7 +8,7 @@ uses
   System.Classes, System.SysUtils,
   ADAPT.Common.Intf, ADAPT.Common,
   ADAPT.Threads,
-  ADAPT.Generics.Collections.Intf;
+  ADAPT.Collections.Intf;
 
 type
   TTestPerformanceData = record
@@ -170,7 +170,7 @@ type
 implementation
 
 uses
-  ADAPT.Generics.Collections;
+  ADAPT.Collections;
 
 type
   TTestPerformanceDataCircularList = class(TADCircularList<TTestPerformanceData>);

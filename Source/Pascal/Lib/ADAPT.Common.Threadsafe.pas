@@ -100,6 +100,27 @@ type
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
 
+  TADObjectHolderTS<T: class> = class(TADObjectHolder<T>, IADReadWriteLock)
+  private
+    FLock: TADReadWriteLock;
+    function GetLock: IADReadWriteLock;
+  protected
+    // Getters
+    { IADObjectOwner }
+    function GetOwnership: TADOwnership; override;
+    { IADObjectHolder<T> }
+    function GetObject: T; override;
+
+    // Setters
+    { IADObjectOwner }
+    procedure SetOwnership(const AOwnership: TADOwnership); override;
+  public
+    constructor Create(const AObject: T; const AOwnership: TADOwnership = oOwnsObjects); override;
+    destructor Destroy; override;
+
+    property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
+  end;
+
 function ADReadWriteLock(const Controller: IInterface): TADReadWriteLock;
 
 implementation
@@ -408,6 +429,55 @@ end;
 function TADPersistentTS.GetLock: IADReadWriteLock;
 begin
   Result := FLock;
+end;
+
+{ TADObjectHolderTS<T> }
+
+constructor TADObjectHolderTS<T>.Create(const AObject: T; const AOwnership: TADOwnership);
+begin
+  inherited;
+  FLock := ADReadWriteLock(Self);
+end;
+
+destructor TADObjectHolderTS<T>.Destroy;
+begin
+  FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
+  inherited;
+end;
+
+function TADObjectHolderTS<T>.GetLock: IADReadWriteLock;
+begin
+  Result := FLock;
+end;
+
+function TADObjectHolderTS<T>.GetObject: T;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+function TADObjectHolderTS<T>.GetOwnership: TADOwnership;
+begin
+  FLock.AcquireRead;
+  try
+    Result := inherited;
+  finally
+    FLock.ReleaseRead;
+  end;
+end;
+
+procedure TADObjectHolderTS<T>.SetOwnership(const AOwnership: TADOwnership);
+begin
+  FLock.AcquireWrite;
+  try
+    inherited;
+  finally
+    FLock.ReleaseWrite;
+  end;
 end;
 
 end.
