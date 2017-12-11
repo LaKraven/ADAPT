@@ -30,9 +30,6 @@ object MainForm: TMainForm
       Align = alTop
       TabOrder = 0
       Text = 'Enter a Message Here'
-      ExplicitLeft = 256
-      ExplicitTop = 40
-      ExplicitWidth = 121
     end
     object Button1: TButton
       AlignWithMargins = True
@@ -44,9 +41,6 @@ object MainForm: TMainForm
       Caption = 'Dispatch Test Event'
       TabOrder = 1
       OnClick = Button1Click
-      ExplicitLeft = 280
-      ExplicitTop = 40
-      ExplicitWidth = 75
     end
   end
 end

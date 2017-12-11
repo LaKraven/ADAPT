@@ -36,7 +36,6 @@ type
     FDispatchTargets: TADEventDispatchTargets;
     FDispatchTime: ADFloat;
     FExpiresAfter: ADFloat;
-    FHolder: IADEventHolder;
     FOrigin: TADEventOrigin;
     FProcessedTime: ADFloat;
     FState: TADEventState;
@@ -54,7 +53,6 @@ type
     function GetDispatchTime: ADFloat; override; final;
     function GetExpiresAfter: ADFloat; override; final;
     function GetEventOrigin: TADEventOrigin; override; final;
-    function GetHolder: IADEventHolder; override; final;
     function GetProcessedTime: ADFloat; override; final;
     function GetState: TADEventState; override; final;
     ///  <summary><c>Override if you want to define a default Dispatch Schedule for this Event Type.</c></summary>
@@ -181,7 +179,7 @@ type
     ///  <remarks><c>Default =</c> True</remarks>
     function GetWakeOnEvent: Boolean; virtual;
     ///  <summary><c>You MUST override "ProcessEvent" to define what action is to take place when the Event Stack and Queue are being processed.</c></summary>
-    procedure ProcessEvent(const AEvent: IADEventHolder; const ADelta, AStartTime: ADFloat); virtual; abstract;
+    procedure ProcessEvent(const AEvent: IADEvent; const ADelta, AStartTime: ADFloat); virtual; abstract;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -203,13 +201,13 @@ type
     FListeners: IADEventListenerMap;
     FPauseOnNoEvent: Boolean;
     // Getters
-    { IADEventThread }
-    function GetPauseOnNoEvent: Boolean; override;
 
     // Setters
+  protected
+    { IADEventThread }
+    function GetPauseOnNoEvent: Boolean; override;
     { IADEventThread }
     procedure SetPauseOnNoEvent(const APauseOnNoEvent: Boolean);
-  protected
     ///  <summary><c>Creates an Event Listener for the given Event Type (Parameter "T") with the given Callback Method to invoke.</c></summary>
     ///  <returns><c>A reference to the Event Listener so that you can Unregister it whenever you wish.</c></returns>
     function HookEvent<T: TADEventBase>(const ACallback: TADEventCallback<T>): IADEventListener;
@@ -237,9 +235,8 @@ uses
 
 type
   { Generic Collections }
-  TADEventList = class(TADList<IADEventHolder>);
+  TADEventList = class(TADList<IADEvent>);
   TADEventListenerMap = class(TADMap<TADEventBaseClass, IADEventListener>);
-  TADEventHolder = class(TADObjectHolder<TADEventBase>);
 
   TADEventEngine = class(TADObjectTS, IADEventEngine, IADReadWriteLock)
   private
@@ -299,12 +296,10 @@ begin
   FState := esNotDispatched;
   FDispatchAfter := GetDefaultDispatchAfter;
   FExpiresAfter := GetDefaultExpiresAfter;
-  FHolder := TADEventHolder.Create(Self);
 end;
 
 destructor TADEvent.Destroy;
 begin
-  Holder.Ownership := oNotOwnsObjects;
   inherited;
 end;
 
@@ -401,11 +396,6 @@ begin
   finally
     FLock.ReleaseRead;
   end;
-end;
-
-function TADEvent.GetHolder: IADEventHolder;
-begin
-  Result := FHolder;
 end;
 
 function TADEvent.GetProcessedTime: ADFloat;
@@ -677,7 +667,7 @@ end;
 procedure TADEventContainer.QueueEvent(const AEvent: TADEventBase);
 begin
   WaitOnEventCountIfNecessary;
-  FEventQueue.Add(AEvent.Holder);
+  FEventQueue.Add(AEvent);
   ResetEventCountSignal;
   SmartWake;
 end;
@@ -719,7 +709,7 @@ end;
 procedure TADEventContainer.StackEvent(const AEvent: TADEventBase);
 begin
   WaitOnEventCountIfNecessary;
-  FEventStack.Add(AEvent.Holder);
+  FEventStack.Add(AEvent);
   ResetEventCountSignal;
   SmartWake;
 end;

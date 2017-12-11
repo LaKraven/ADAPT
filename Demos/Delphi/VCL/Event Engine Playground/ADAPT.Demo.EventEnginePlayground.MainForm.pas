@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  ADAPT.EventEngine.Intf;
 
 type
   TMainForm = class(TForm)
@@ -29,8 +30,11 @@ uses
 {$R *.dfm}
 
 procedure TMainForm.Button1Click(Sender: TObject);
+var
+  LEvent: IADEvent;
 begin
-  TTestEvent.Create(Edit1.Text).Queue;
+  LEvent := TTestEvent.Create(Edit1.Text);
+  LEvent.Queue;
 end;
 
 end.
