@@ -84,10 +84,15 @@
     {$DEFINE DELPHIBERLIN_UP}
   {$IFEND}
   {$IF COMPILERVERSION > 31}
-    {$DEFINE DELPHI10.2CITY_UP}
+    {$DEFINE DELPHI10.2TOKYO_UP}
     {$DEFINE DELPHI10.2_UP}
+    {$DEFINE DELPHITOKYO_UP}
+  {$IFEND}
+  {$IF COMPILERVERSION > 32}
+    {$DEFINE DELPHI10.3CITY_UP}
+    {$DEFINE DELPHI10.3_UP}
     {$DEFINE DELPHICITY_UP}
-    {$MESSAGE WARN 'Versions newer than Delphi 10.1 Berlin have not yet been tested. This message will be removed once the version you are using has been officially tested.'}
+    {$MESSAGE WARN 'Versions newer than Delphi 10.2 Tokyo have not yet been tested. This message will be removed once the version you are using has been officially tested.'}
   {$IFEND}
 // Support Definitions
 
@@ -166,4 +171,9 @@
     {$DEFINE SUPPORTS_ANDROID_6}
     {$DEFINE SUPPORTS_ENHANCED_BEACONS}
   {$ENDIF DELPHI10.1_UP}
+
+  {$IFDEF DELPHI10.2_UP}
+    {$DEFINE SUPPORTS_LINUX_SERVER}
+    {$DEFINE ARRAYPOINTER_HARDCAST}
+  {$ENDIF DELPHI10.2_UP}
 {$ENDIF FPC}
