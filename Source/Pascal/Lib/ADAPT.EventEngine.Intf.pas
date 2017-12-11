@@ -50,8 +50,7 @@ type
     EADEventEngineEventThreadException = class(EADEventEngineException);
 
   { Generic Collections }
-  IADEventHolder = IADObjectHolder<TADEventBase>;
-  IADEventList = IADList<IADEventHolder>;
+  IADEventList = IADList<IADEvent>;
   IADEventListenerMap = IADMap<TADEventBaseClass, IADEventListener>;
 
   ///  <summary><c>Fundamental Interface for all Event Types.</c></summary>
@@ -90,12 +89,6 @@ type
     function GetExpiresAfter: ADFloat;
     ///  <returns><c>Where this Event came from.</c></returns>
     function GetEventOrigin: TADEventOrigin;
-    ///  <returns><c>The Interfaced Holder for this Event.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Hold a Reference to this if you want to keep hold of the Event after it has been processed.</c></para>
-    ///    <para><c>If you don't hold a Reference to this, the Event will be destroyed immediately after it has been processed.</c></para>
-    ///  </remarks>
-    function GetHolder: IADEventHolder;
     ///  <returns><c>The Reference Time at which the Event was First Processed.</c></returns>
     function GetProcessedTime: ADFloat;
     ///  <returns><c>Current State of this Event.</c></returns>
@@ -149,12 +142,6 @@ type
     property ExpiresAfter: ADFloat read GetExpiresAfter;
     ///  <returns><c>Where this Event came from.</c></returns>
     property EventOrigin: TADEventOrigin read GetEventOrigin;
-    ///  <returns><c>The Interfaced Holder for this Event.</c></returns>
-    ///  <remarks>
-    ///    <para><c>Hold a Reference to this if you want to keep hold of the Event after it has been processed.</c></para>
-    ///    <para><c>If you don't hold a Reference to this, the Event will be destroyed immediately after it has been processed.</c></para>
-    ///  </remarks>
-    property Holder: IADEventHolder read GetHolder;
     ///  <returns><c>The Reference Time at which the Event was First Processed.</c></returns>
     property ProcessedTime: ADFloat read GetProcessedTime;
     ///  <returns><c>Current State of this Event.</c></returns>
@@ -176,7 +163,6 @@ type
     function GetDispatchTime: ADFloat; virtual; abstract;
     function GetExpiresAfter: ADFloat; virtual; abstract;
     function GetEventOrigin: TADEventOrigin; virtual; abstract;
-    function GetHolder: IADEventHolder; virtual; abstract;
     function GetProcessedTime: ADFloat; virtual; abstract;
     function GetState: TADEventState; virtual; abstract;
   public
@@ -200,7 +186,6 @@ type
     property DispatchTime: ADFloat read GetDispatchTime;
     property ExpiresAfter: ADFloat read GetExpiresAfter;
     property EventOrigin: TADEventOrigin read GetEventOrigin;
-    property Holder: IADEventHolder read GetHolder;
     property ProcessedTime: ADFloat read GetProcessedTime;
     property State: TADEventState read GetState;
   end;
