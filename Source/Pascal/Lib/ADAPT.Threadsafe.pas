@@ -82,7 +82,7 @@ type
     function GetLock: IADReadWriteLock;
   public
     constructor Create; override;
-    destructor Destory; reintroduce;
+    destructor Destroy; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -95,7 +95,7 @@ type
     function GetLock: IADReadWriteLock;
   public
     constructor Create; override;
-    destructor Destory; reintroduce;
+    destructor Destroy; override;
 
     property Lock: IADReadWriteLock read GetLock implements IADReadWriteLock;
   end;
@@ -401,7 +401,7 @@ begin
   FLock := ADReadWriteLock(Self);
 end;
 
-destructor TADObjectTS.Destory;
+destructor TADObjectTS.Destroy;
 begin
   FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
@@ -420,7 +420,7 @@ begin
   FLock := ADReadWriteLock(Self);
 end;
 
-destructor TADPersistentTS.Destory;
+destructor TADPersistentTS.Destroy;
 begin
   FLock.{$IFDEF SUPPORTS_DISPOSEOF}DisposeOf{$ELSE}Free{$ENDIF SUPPORTS_DISPOSEOF};
   inherited;
