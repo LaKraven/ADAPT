@@ -197,6 +197,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Collections.pas"/>
+        <DCCReference Include="ADAPT.UnitTests.Streams.pas"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txaPackage"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck"/>
@@ -268,13 +269,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Generics\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Maths\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Performance\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -286,7 +281,19 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Maths\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Threads\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -304,7 +311,202 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\Delta\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Threadsafe\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Performance\Threadsafe\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Common\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txaPackage" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\default.txaPackage" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Performance\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Streams\Threadsafe\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\Delta\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Performance\Threadsafe\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Generics\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txaPackage" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txaPackage" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Streams\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Hashers\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT_UnitTests_Delphi\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Generics\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\Maths\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Threadsafe\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\SIUnits\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Collections\Intf\default.txaPackage" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -316,7 +518,25 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Threadsafe\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\Delta\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Streamables\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\Averagers\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -357,7 +577,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txaPackage" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\Common\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -369,7 +589,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\Intf\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Collections\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -405,13 +625,19 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Threads\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Performance\Threadsafe\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Math\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txaPackage" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -429,23 +655,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
-                    <Platform Name="iOSSimulator">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Hashers\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
-                    <Platform Name="OSX32">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -457,24 +667,19 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txaPackage" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\default.txaPackage" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
-                    <Platform Name="OSX32">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Common\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\UnitTests\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -505,6 +710,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Common\default.txvpck" Configuration="TestInsight - Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Streams\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
