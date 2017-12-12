@@ -41,7 +41,8 @@ uses
   ADAPT.Math.Averagers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Intf.pas',
   ADAPT.Math.Averagers in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas',
   ADAPT.Collections.Intf in '..\..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas',
-  ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas';
+  ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas',
+  ADAPT.UnitTests.Streams in 'ADAPT.UnitTests.Streams.pas';
 
 var
   runner : ITestRunner;
