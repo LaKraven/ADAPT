@@ -12,6 +12,9 @@
         <Projects Include="Demos\Delphi\VCL\Event Engine Playground\ADAPT_VCL_EventEnginePlayground.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Redux_Temp\ADAPT_Temp_UnitTests.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="ADAPT_VCL_EventEnginePlayground:Make">
         <MSBuild Projects="Demos\Delphi\VCL\Event Engine Playground\ADAPT_VCL_EventEnginePlayground.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ADAPT_Temp_UnitTests">
+        <MSBuild Projects="Redux_Temp\ADAPT_Temp_UnitTests.dproj"/>
+    </Target>
+    <Target Name="ADAPT_Temp_UnitTests:Clean">
+        <MSBuild Projects="Redux_Temp\ADAPT_Temp_UnitTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ADAPT_Temp_UnitTests:Make">
+        <MSBuild Projects="Redux_Temp\ADAPT_Temp_UnitTests.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ADAPT_UnitTests_Delphi;ADAPT_FMX_PrecisionThreads;ADAPT_VCL_EventEnginePlayground"/>
+        <CallTarget Targets="ADAPT_UnitTests_Delphi;ADAPT_FMX_PrecisionThreads;ADAPT_VCL_EventEnginePlayground;ADAPT_Temp_UnitTests"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ADAPT_UnitTests_Delphi:Clean;ADAPT_FMX_PrecisionThreads:Clean;ADAPT_VCL_EventEnginePlayground:Clean"/>
+        <CallTarget Targets="ADAPT_UnitTests_Delphi:Clean;ADAPT_FMX_PrecisionThreads:Clean;ADAPT_VCL_EventEnginePlayground:Clean;ADAPT_Temp_UnitTests:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ADAPT_UnitTests_Delphi:Make;ADAPT_FMX_PrecisionThreads:Make;ADAPT_VCL_EventEnginePlayground:Make"/>
+        <CallTarget Targets="ADAPT_UnitTests_Delphi:Make;ADAPT_FMX_PrecisionThreads:Make;ADAPT_VCL_EventEnginePlayground:Make;ADAPT_Temp_UnitTests:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
