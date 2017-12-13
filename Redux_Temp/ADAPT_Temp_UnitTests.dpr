@@ -11,7 +11,10 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  ADAPT.Temp.UnitTests.Generics in 'ADAPT.Temp.UnitTests.Generics.pas';
+  ADAPT.Temp.UnitTests.Generics in 'ADAPT.Temp.UnitTests.Generics.pas',
+  ADAPT.Collections.Intf in '..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas',
+  ADAPT.Collections in '..\Source\Pascal\Lib\ADAPT.Collections.pas',
+  ADAPT.Collections.Threadsafe in '..\Source\Pascal\Lib\ADAPT.Collections.Threadsafe.pas';
 
 var
   runner : ITestRunner;
