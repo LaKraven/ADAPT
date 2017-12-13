@@ -121,6 +121,13 @@ type
     // Getters
     function GetExpander: IADExpander;
 
+    // Management Methods
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
+
     // Setters
     procedure SetExpander(const AExpander: IADExpander);
 
@@ -143,6 +150,13 @@ type
 
     // Setters
     procedure SetCompactor(const ACompactor: IADCompactor);
+
+    // Management Method
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
 
     // Properties
     property Compactor: IADCompactor read GetCompactor write SetCompactor;
@@ -167,6 +181,54 @@ type
 
     // Setters
     procedure SetSorter(const ASorter: IADListSorter<T>);
+
+    // Management Methods
+    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Item is in the List.</c></para>
+    ///    <para>False<c> if the Item is NOT in the List.</c></para>
+    ///  </returns>
+    function Contains(const AItem: T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ALL Items are in the List.</c></para>
+    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAll(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AItems: Array of T): Boolean;
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADSortableList<T>): Boolean;
+    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the given Item is not in the List.</c></para>
+    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
+    ///  </returns>
+    function IndexOf(const AItem: T): Integer;
+    ///  <summary><c>Deletes the given Item from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
+    procedure Remove(const AItem: T);
+    ///  <summary><c>Deletes the given Items from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
+    procedure RemoveItems(const AItems: Array of T);
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const AComparer: IADComparer<T>);
 
     // Properties
     property Sorter: IADListSorter<T> read GetSorter write SetSorter;
@@ -352,6 +414,10 @@ type
     ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
     function GetReader: IADListReader<T>;
 
+    // Setters
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    procedure SetItem(const AIndex: Integer; const AItem: T);
+
     // Management Methods
     ///  <summary><c>Adds the given Item into the Collection.</c></summary>
     ///  <returns><c>The Index of the Item in the Collection.</c></returns>
@@ -364,7 +430,17 @@ type
     procedure Delete(const AIndex: Integer);
     ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
     procedure DeleteRange(const AFirst, ACount: Integer);
+    ///  <summary><c>Insert the given Item at the specified Index.</c></summary>
+    ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
+    procedure Insert(const AItem: T; const AIndex: Integer);
+    ///  <summary><c>Insert the given Items starting at the specified Index.</c></summary>
+    ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
 
+    // Properties
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
     property Reader: IADListReader<T> read GetReader;
   end;
@@ -475,6 +551,59 @@ type
     property Items[const AKey: TKey]: TValue read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this Map.</c></returns>
     property Reader: IADMapReader<TKey, TValue> read GetReader;
+  end;
+
+  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
+  ///  <remarks>
+  ///    <para><c>Accessible in Read-Only Mode.</c></para>
+  ///  </remarks>
+  IADCircularListReader<T> = interface(IADInterface)
+    // Getters
+    ///  <returns>
+    ///    <para>-1<c> if the Newest Item has subsequently been Deleted (or Invalidated).</c></para>
+    ///    <para>0 or Greater<c> if the Newest Item is still Valid.</c></para>
+    ///  </returns>
+    function GetNewestIndex: Integer;
+    ///  <returns><c>The Newest Item.</c></returns>
+    function GetNewest: T;
+    ///  <returns>
+    ///    <para>-1<c> if the Oldest Item has subsequently been Deleted (or Invalidated).</c></para>
+    ///    <para>0 or Greater<c> if the Oldest Item is still Valid.</c></para>
+    ///  </returns>
+    function GetOldestIndex: Integer;
+    ///  <returns><c>The Oldest Item.</c></returns>
+    function GetOldest: T;
+
+    // Properties
+    ///  <returns>
+    ///    <para>-1<c> if the Newest Item has subsequently been Deleted (or Invalidated).</c></para>
+    ///    <para>0 or Greater<c> if the Newest Item is still Valid.</c></para>
+    ///  </returns>
+    property NewestIndex: Integer read GetNewestIndex;
+    ///  <returns><c>The Newest Item.</c></returns>
+    property Newest: T read GetNewest;
+    ///  <returns>
+    ///    <para>ssSorted<c> if the Collection is Sorted.</c></para>
+    ///    <para>ssUnsorted<c> if the Collection is NOT Sorted.</c></para>
+    ///    <para>ssUnknown<c> if the Sorted State of the Collection is Unknown.</c></para>
+    ///  </returns>
+    property OldestIndex: Integer read GetOldestIndex;
+    ///  <returns><c>The Oldest Item.</c></returns>
+    property Oldest: T read GetOldest;
+  end;
+
+  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
+  ///  <remarks>
+  ///    <para><c>Accessible in Read/Write Mode.</c></para>
+  ///  </remarks>
+  IADCircularList<T> = interface(IADCircularListReader<T>)
+    // Getters
+    ///  <returns><c>Read-Only Interfaced Reference to this Circular List.</c></returns>
+    function GetReader: IADCircularListReader<T>;
+
+    // Properties
+    ///  <returns><c>Read-Only Interfaced Reference to this Circular List.</c></returns>
+    property Reader: IADCircularListReader<T> read GetReader;
   end;
 
 implementation
