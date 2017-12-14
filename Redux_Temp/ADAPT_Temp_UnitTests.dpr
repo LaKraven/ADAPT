@@ -40,7 +40,7 @@ begin
     //Generate an NUnit compatible XML File
     nunitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
     runner.AddLogger(nunitLogger);
-    runner.FailsOnNoAsserts := False; //When true, Assertions must be made during tests;
+    runner.FailsOnNoAsserts := True; //When true, Assertions must be made during tests;
 
     //Run tests
     results := runner.Execute;
