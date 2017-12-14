@@ -37,6 +37,8 @@ type
     procedure SetCapacity(const ACapacity: Integer);
     procedure SetItem(const AIndex: Integer; const AItem: T);
   public
+    constructor Create(const ACapacity: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
     // Management Methods
     { IADArray<T> }
     procedure Clear;
@@ -331,6 +333,17 @@ type
     { IADIterableMap<TKey, TValue> }
   end;
 
+  ///  <summary><c>Generic Map Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Use IADMapReader for Read-Only access.</c></para>
+  ///    <para><c>Use IADMap for Read/Write access.</c></para>
+  ///    <para><c>Use IADIterableMap for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
+  ///  </remarks>
+  TADMap<TKey, TValue> = class(TADMapBase<TKey, TValue>)
+
+  end;
+
   ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
   ///  <remarks>
   ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and Items are subsequently Replaced by new ones.</c></para>
@@ -373,32 +386,64 @@ implementation
 
 procedure TADArray<T>.Clear;
 begin
-
+  SetLength(FArray, FCapacityInitial);
+  if FCapacityInitial > 0 then
+    Finalize(0, FCapacityInitial);
 end;
 
 procedure TADArray<T>.Delete(const AIndex: Integer);
+var
+  I: Integer;
 begin
+  FArray[AIndex] := nil;
+//  System.FillChar(FArray[AIndex], SizeOf(IADValueHolder<T>), 0);
+  if AIndex < Length(FArray) - 1 then
+  begin
+//    System.Move(FArray[AIndex + 1],
+//                FArray[AIndex],
+//                ((Length(FArray) - 1) - AIndex) * SizeOf(IADValueHolder<T>));
+    for I := AIndex to Length(FArray) - 2 do
+      FArray[I] := FArray[I + 1];
+  end;
+end;
 
+constructor TADArray<T>.Create(const ACapacity: Integer);
+begin
+  inherited Create;
+  FCapacityInitial := ACapacity;
+  SetLength(FArray, ACapacity);
 end;
 
 procedure TADArray<T>.Delete(const AFirstIndex, ACount: Integer);
+var
+  I: Integer;
+begin
+  for I := AFirstIndex + (ACount - 1) downto AFirstIndex do
+    Delete(I);
+end;
+
+destructor TADArray<T>.Destroy;
 begin
 
+  inherited;
 end;
 
 procedure TADArray<T>.Finalize(const AIndex, ACount: Integer);
 begin
-
+  System.Finalize(FArray[AIndex], ACount);
+  System.FillChar(FArray[AIndex], ACount * SizeOf(T), 0);
 end;
 
 function TADArray<T>.GetCapacity: Integer;
 begin
-
+  Result := Length(FArray);
 end;
 
 function TADArray<T>.GetItem(const AIndex: Integer): T;
 begin
-
+  if (AIndex < Low(FArray)) or (AIndex > High(FArray)) then
+    raise EADGenericsRangeException.CreateFmt('Index [%d] Out Of Range', [AIndex]);
+  Result := FArray[AIndex].Value;
 end;
 
 function TADArray<T>.GetReader: IADArrayReader<T>;
@@ -408,22 +453,32 @@ end;
 
 procedure TADArray<T>.Insert(const AItem: T; const AIndex: Integer);
 begin
-
+  Move(AIndex, AIndex + 1, (Capacity - AIndex) - 1);
+  Finalize(AIndex, 1);
+  FArray[AIndex] := TADValueHolder<T>.Create(AItem);
 end;
 
 procedure TADArray<T>.Move(const AFromIndex, AToIndex, ACount: Integer);
+var
+  LItem: T;
+  I: Integer;
 begin
-
+  if AFromIndex < AToIndex then
+  begin
+    for I := AFromIndex + ACount downto AFromIndex + 1 do
+      FArray[I] := FArray[I - (AToIndex - AFromIndex)];
+  end else
+    System.Move(FArray[AFromIndex], FArray[AToIndex], ACount * SizeOf(T));
 end;
 
 procedure TADArray<T>.SetCapacity(const ACapacity: Integer);
 begin
-
+  SetLength(FArray, ACapacity);
 end;
 
 procedure TADArray<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
-
+  FArray[AIndex] := TADValueHolder<T>.Create(AItem);
 end;
 
 { TADExpanderGeometric }
