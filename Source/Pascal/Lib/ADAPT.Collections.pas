@@ -382,6 +382,60 @@ type
 
 implementation
 
+uses
+  ADAPT.Comparers;
+
+type
+  ///  <summary><c>The Default Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>By default, the Array will grow by 1 each time it becomes full</c></remarks>
+  TADExpanderDefault = class(TADExpander)
+  public
+    function CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer; override;
+  end;
+
+  ///  <summary><c>The Default Deallocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>By default, the Array will shrink by 1 each time an Item is removed.</c></remarks>
+  TADCompactorDefault = class(TADCompactor)
+  public
+    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer; override;
+  end;
+
+var
+  GCollectionExpanderDefault: IADExpander;
+  GCollectionCompactorDefault: IADCompactor;
+
+function ADCollectionExpanderDefault: IADExpander;
+begin
+  Result := GCollectionExpanderDefault;
+end;
+
+function ADCollectionExpanderGeometric: IADExpanderGeometric;
+begin
+  Result := TADExpanderGeometric.Create;
+end;
+
+function ADCollectionCompactorDefault: IADCompactor;
+begin
+  Result := GCollectionCompactorDefault;
+end;
+
+{ TADExpanderDefault }
+
+function TADExpanderDefault.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
+begin
+  if ACurrentCount + AAdditionalRequired > ACapacity then
+    Result := (ACapacity - ACurrentCount) + AAdditionalRequired
+  else
+    Result := 0;
+end;
+
+{ TADCompactorDefault }
+
+function TADCompactorDefault.CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
+begin
+  Result := AVacating;
+end;
+
 { TADArray<T> }
 
 procedure TADArray<T>.Clear;
@@ -931,5 +985,9 @@ function TADCircularList<T>.GetReader: IADCircularListReader<T>;
 begin
   Result := IADCircularListReader<T>(Self);
 end;
+
+initialization
+  GCollectionExpanderDefault := TADExpanderDefault.Create;
+  GCollectionCompactorDefault := TADCompactorDefault.Create;
 
 end.
