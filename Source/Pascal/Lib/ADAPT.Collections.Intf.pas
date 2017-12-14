@@ -121,13 +121,6 @@ type
     // Getters
     function GetExpander: IADExpander;
 
-    // Management Methods
-    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
-    ///  <remarks>
-    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
-    ///  </remarks>
-    procedure Compact;
-
     // Setters
     procedure SetExpander(const AExpander: IADExpander);
 
@@ -505,7 +498,7 @@ type
   end;
 
   ///  <summary><c>Common Type-Insensitive Read/Write Interface for all Map Collections.</c></summary>.
-  IADMap<TKey, TValue> = interfacE(IADMapReader<TKey, TValue>)
+  IADMap<TKey, TValue> = interface(IADMapReader<TKey, TValue>)
     // Getters
     ///  <returns><c>Read-Only Interfaced Reference to this Map.</c></returns>
     function GetReader: IADMapReader<TKey, TValue>;
