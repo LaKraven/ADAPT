@@ -485,27 +485,34 @@ end;
 
 function TADExpanderGeometric.CheckExpand(const ACapacity, ACurrentCount, AAdditionalRequired: Integer): Integer;
 begin
-
+  if (AAdditionalRequired < FThreshold) then
+  begin
+    if (Round(ACapacity * FMultiplier)) > (FMultiplier + FThreshold) then
+      Result :=  Round(ACapacity * FMultiplier)
+    else
+      Result := ACapacity + AAdditionalRequired + FThreshold; // Expand to ensure everything fits
+  end else
+    Result := 0;
 end;
 
 function TADExpanderGeometric.GetCapacityMultiplier: Single;
 begin
-
+  Result := FMultiplier;
 end;
 
 function TADExpanderGeometric.GetCapacityThreshold: Integer;
 begin
-
+  Result := FThreshold;
 end;
 
 procedure TADExpanderGeometric.SetCapacityMultiplier(const AMultiplier: Single);
 begin
-
+  FMultiplier := AMultiplier;
 end;
 
 procedure TADExpanderGeometric.SetCapacityThreshold(const AThreshold: Integer);
 begin
-
+  FThreshold := AThreshold;
 end;
 
 { TADCollection }
