@@ -116,27 +116,28 @@ type
 
     // Getters
     { IADCollectionReader }
-    function GetCapacity: Integer;
-    function GetCount: Integer;
+    function GetCapacity: Integer; virtual; abstract;
+    function GetCount: Integer; virtual;
     function GetInitialCapacity: Integer;
-    function GetIsCompact: Boolean;
-    function GetIsEmpty: Boolean;
-    function GetSortedState: TADSortedState;
+    function GetIsCompact: Boolean; virtual; abstract;
+    function GetIsEmpty: Boolean; virtual;
+    function GetSortedState: TADSortedState; virtual;
     { IADCollection }
     function GetReader: IADCollectionReader;
 
     // Setters
     { IADCollectionReader }
     { IADCollection }
-    procedure SetCapacity(const ACapacity: Integer);
+    procedure SetCapacity(const ACapacity: Integer); virtual; abstract;
 
     // Overridables
     procedure CreateArray(const AInitialCapacity: Integer); virtual; abstract;
   public
+    constructor Create(const AInitialCapacity: Integer); reintroduce; virtual;
     // Management Methods
     { IADCollectionReader }
     { IADCollection }
-    procedure Clear;
+    procedure Clear; virtual; abstract;
 
     // Properties
     { IADCollectionReader }
@@ -571,29 +572,23 @@ end;
 
 { TADCollection }
 
-procedure TADCollection.Clear;
+constructor TADCollection.Create(const AInitialCapacity: Integer);
 begin
-
-end;
-
-function TADCollection.GetCapacity: Integer;
-begin
-
+  inherited Create;
+  FSortedState := ssUnknown;
+  FCount := 0;
+  FInitialCapacity := AInitialCapacity;
+  CreateArray(AInitialCapacity);
 end;
 
 function TADCollection.GetCount: Integer;
 begin
-
+  Result := FCount;
 end;
 
 function TADCollection.GetInitialCapacity: Integer;
 begin
-
-end;
-
-function TADCollection.GetIsCompact: Boolean;
-begin
-
+  Result := FInitialCapacity;
 end;
 
 function TADCollection.GetIsEmpty: Boolean;
@@ -607,11 +602,6 @@ begin
 end;
 
 function TADCollection.GetSortedState: TADSortedState;
-begin
-
-end;
-
-procedure TADCollection.SetCapacity(const ACapacity: Integer);
 begin
 
 end;
