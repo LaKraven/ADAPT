@@ -43,6 +43,9 @@ type
     TArray<T> = Array of T; // FreePascal doesn't have this defined (yet)
   {$ENDIF FPC}
 
+  // Forward Declarations
+  IADList<T> = interface;
+
   ///  <summary><c>A Simple Generic Array with basic Management Methods (Read-Only Interface).</c></summary>
   IADArrayReader<T> = interface(IADInterface)
     // Getters
@@ -91,159 +94,6 @@ type
     property Reader: IADArrayReader<T> read GetReader;
   end;
 
-  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
-  IADExpander = interface(IADInterface)
-  ['{B4742A80-74A7-408E-92BA-F854515B6D24}']
-    function CheckExpand(const ACapacity, ACurrentcount, AAdditionalRequired: Integer): Integer;
-  end;
-
-  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
-  ///  </remarks>
-  IADExpanderGeometric = interface(IADExpander)
-  ['{CAF4B15C-9BE5-4A66-B31F-804AB752A102}']
-    // Getters
-    function GetCapacityMultiplier: Single;
-    function GetCapacityThreshold: Integer;
-    // Setters
-    procedure SetCapacityMultiplier(const AMultiplier: Single);
-    procedure SetCapacityThreshold(const AThreshold: Integer);
-    // Properties
-    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
-    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
-  end;
-
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Expander Type.</c></summary>
-  IADExpandable = interface(IADInterface)
-  ['{586ED0C9-E067-468F-B929-92F086E43D91}']
-    // Getters
-    function GetExpander: IADExpander;
-
-    // Setters
-    procedure SetExpander(const AExpander: IADExpander);
-
-    // Properties
-    property Expander: IADExpander read GetExpander write SetExpander;
-  end;
-
-  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
-  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
-  IADCompactor = interface(IADInterface)
-  ['{B7D577D4-8425-4C5D-9DDB-5864C3676199}']
-    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
-  end;
-
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Compactor Type.</c></summary>
-  IADCompactable = interface(IADInterface)
-  ['{13208869-7530-4B3A-89D4-AFA2B164536B}']
-    // Getters
-    function GetCompactor: IADCompactor;
-
-    // Setters
-    procedure SetCompactor(const ACompactor: IADCompactor);
-
-    // Management Method
-    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
-    ///  <remarks>
-    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
-    ///  </remarks>
-    procedure Compact;
-
-    // Properties
-    property Compactor: IADCompactor read GetCompactor write SetCompactor;
-  end;
-
-  ///  <summary><c>Common Behaviour for List and Map Sorters.</c></summary>
-  IADSorter = interface(IADInterface)
-  ['{C52DB3EA-FEF4-4BD8-8332-D867907CEACA}']
-
-  end;
-
-  ///  <summary><c>Sorting Alogirthm for Lists.</c></summary>
-  IADListSorter<T> = interface(IADSorter)
-    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload;
-    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload;
-  end;
-
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
-  IADSortableList<T> = interface(IADInterface)
-    // Getters
-    function GetSorter: IADListSorter<T>;
-
-    // Setters
-    procedure SetSorter(const ASorter: IADListSorter<T>);
-
-    // Management Methods
-    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if the Item is in the List.</c></para>
-    ///    <para>False<c> if the Item is NOT in the List.</c></para>
-    ///  </returns>
-    function Contains(const AItem: T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ALL Items are in the List.</c></para>
-    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAll(const AItems: Array of T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
-    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAny(const AItems: Array of T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
-    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
-    function ContainsNone(const AItems: Array of T): Boolean;
-    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
-    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
-    ///  </returns>
-    ///  <remarks>
-    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
-    ///  </remarks>
-    function EqualItems(const AList: IADSortableList<T>): Boolean;
-    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
-    ///  <returns>
-    ///    <para>-1<c> if the given Item is not in the List.</c></para>
-    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
-    ///  </returns>
-    function IndexOf(const AItem: T): Integer;
-    ///  <summary><c>Deletes the given Item from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
-    procedure Remove(const AItem: T);
-    ///  <summary><c>Deletes the given Items from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
-    procedure RemoveItems(const AItems: Array of T);
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const AComparer: IADComparer<T>);
-
-    // Properties
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
-  end;
-
-  ///  <summary><c>Sorting Alogirthm for Maps.</c></summary>
-  IADMapSorter<TKey, TValue> = interface(IADSorter)
-    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey, TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
-    procedure Sort(AArray: Array of IADKeyValuePair<TKey, TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
-  end;
-
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Map Sorter Type.</c></summary>
-  IADSortableMap<TKey, TValue> = interface(IADInterface)
-    // Getters
-    function GetSorter: IADMapSorter<TKey, TValue>;
-
-    // Setters
-    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
-
-    // Properties
-    property Sorter: IADMapSorter<TKey, TValue> read GetSorter write SetSorter;
-  end;
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all Generic Collections.</c></summary>
   ///  <remarks>
@@ -333,12 +183,159 @@ type
     property Reader: IADCollectionReader read GetReader;
   end;
 
-  {
-    NOTE: Do NOT inherit any further Collection Interfaces from IADCollectionReader or IADCollection.
-          These Interface Types are implemented by ALL COLLECTION CLASSES as well as their own respective Interfaces.
-          The idea being you can cast any Collection to IADCollectionReader (for read-only) or IADCollection (for read-write)
-          and these common methods/properties will operate identically on them all.
-  }
+  ///  <summary><c>An Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to grow an Array based on its current Capacity and the number of Items we're looking to Add/Insert.</c></remarks>
+  IADExpander = interface(IADInterface)
+  ['{B4742A80-74A7-408E-92BA-F854515B6D24}']
+    function CheckExpand(const ACapacity, ACurrentcount, AAdditionalRequired: Integer): Integer;
+  end;
+
+  ///  <summary><c>A Geometric Allocation Algorithm for Lists.</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the number of Vacant Slots falls below the Threshold, the number of Vacant Slots increases by the value of the current Capacity multiplied by the Mulitplier.</c></para>
+  ///  </remarks>
+  IADExpanderGeometric = interface(IADExpander)
+  ['{CAF4B15C-9BE5-4A66-B31F-804AB752A102}']
+    // Getters
+    function GetCapacityMultiplier: Single;
+    function GetCapacityThreshold: Integer;
+    // Setters
+    procedure SetCapacityMultiplier(const AMultiplier: Single);
+    procedure SetCapacityThreshold(const AThreshold: Integer);
+    // Properties
+    property CapacityMultiplier: Single read GetCapacityMultiplier write SetCapacityMultiplier;
+    property CapacityThreshold: Integer read GetCapacityThreshold write SetCapacityThreshold;
+  end;
+
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Expander Type.</c></summary>
+  IADExpandable = interface(IADInterface)
+  ['{586ED0C9-E067-468F-B929-92F086E43D91}']
+    // Getters
+    function GetExpander: IADExpander;
+
+    // Setters
+    procedure SetExpander(const AExpander: IADExpander);
+
+    // Properties
+    property Expander: IADExpander read GetExpander write SetExpander;
+  end;
+
+  ///  <summary><c>A Deallocation Algorithm for Lists.</c></summary>
+  ///  <remarks><c>Dictates how to shrink an Array based on its current Capacity and the number of Items we're looking to Delete.</c></remarks>
+  IADCompactor = interface(IADInterface)
+  ['{B7D577D4-8425-4C5D-9DDB-5864C3676199}']
+    function CheckCompact(const ACapacity, ACurrentCount, AVacating: Integer): Integer;
+  end;
+
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Compactor Type.</c></summary>
+  IADCompactable = interface(IADInterface)
+  ['{13208869-7530-4B3A-89D4-AFA2B164536B}']
+    // Getters
+    function GetCompactor: IADCompactor;
+
+    // Setters
+    procedure SetCompactor(const ACompactor: IADCompactor);
+
+    // Management Method
+    ///  <summary><c>Compacts the size of the underlying Array to the minimum required Capacity.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Note that any subsequent addition to the List will need to expand the Capacity and could lead to reallocation.</c></para>
+    ///  </remarks>
+    procedure Compact;
+
+    // Properties
+    property Compactor: IADCompactor read GetCompactor write SetCompactor;
+  end;
+
+  ///  <summary><c>Common Behaviour for List and Map Sorters.</c></summary>
+  IADSorter = interface(IADInterface)
+  ['{C52DB3EA-FEF4-4BD8-8332-D867907CEACA}']
+
+  end;
+
+  ///  <summary><c>Sorting Alogirthm for Lists.</c></summary>
+  IADListSorter<T> = interface(IADSorter)
+    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload;
+    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload;
+  end;
+
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
+  IADSortableList<T> = interface(IADCollection)
+    // Getters
+    function GetSorter: IADListSorter<T>;
+
+    // Setters
+    procedure SetSorter(const ASorter: IADListSorter<T>);
+
+    // Management Methods
+    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Item is in the List.</c></para>
+    ///    <para>False<c> if the Item is NOT in the List.</c></para>
+    ///  </returns>
+    function Contains(const AItem: T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ALL Items are in the List.</c></para>
+    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAll(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AItems: Array of T): Boolean;
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADList<T>): Boolean;
+    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the given Item is not in the List.</c></para>
+    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
+    ///  </returns>
+    function IndexOf(const AItem: T): Integer;
+    ///  <summary><c>Deletes the given Item from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
+    procedure Remove(const AItem: T);
+    ///  <summary><c>Deletes the given Items from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
+    procedure RemoveItems(const AItems: Array of T);
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const AComparer: IADComparer<T>);
+
+    // Properties
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
+  end;
+
+  ///  <summary><c>Sorting Alogirthm for Maps.</c></summary>
+  IADMapSorter<TKey, TValue> = interface(IADSorter)
+    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey, TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
+    procedure Sort(AArray: Array of IADKeyValuePair<TKey, TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
+  end;
+
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Map Sorter Type.</c></summary>
+  IADSortableMap<TKey, TValue> = interface(IADInterface)
+    // Getters
+    function GetSorter: IADMapSorter<TKey, TValue>;
+
+    // Setters
+    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
+
+    // Properties
+    property Sorter: IADMapSorter<TKey, TValue> read GetSorter write SetSorter;
+  end;
 
   ///  <summary><c>Common Iterator Methods for all List-Type Collections.</c></summary>
   ///  <remarks>
@@ -387,7 +384,7 @@ type
   end;
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all List Collections.</c></summary>.
-  IADListReader<T> = interface(IADInterface)
+  IADListReader<T> = interface(IADCollection)
     // Getters
     ///  <returns><c>The Item at the given Index.</c></returns>
     function GetItem(const AIndex: Integer): T;
@@ -439,7 +436,7 @@ type
   end;
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all Map Collections.</c></summary>.
-  IADMapReader<TKey, TValue> = interface(IADInterface)
+  IADMapReader<TKey, TValue> = interface(IADCollection)
     // Getters
     ///  <returns><c>The Item corresponding to the given Key.</c></returns>
     function GetItem(const AKey: TKey): TValue;
