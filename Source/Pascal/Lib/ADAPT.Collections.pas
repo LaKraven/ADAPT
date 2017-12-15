@@ -158,7 +158,7 @@ type
   ///    <para><c>Use IADIterableList for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
   ///  </remarks>
-   TADListBase<T> = class abstract(TADCollection, IADListReader<T>, IADList<T>, IADIterableList<T>)
+  TADListBase<T> = class abstract(TADCollection, IADListReader<T>, IADList<T>, IADIterableList<T>)
   private
     // Getters
     { IADListReader<T> }
@@ -239,22 +239,34 @@ type
   ///  </remarks>
   TADList<T> = class(TADListBase<T>, IADCompactable, IADExpandable, IADSortableList<T>)
   private
+    FCompactor: IADCompactor;
+    FExpander: IADExpander;
+    FSorter: IADListSorter<T>;
+  protected
     // Getters
     { IADCompactable }
-    function GetCompactor: IADCompactor;
+    function GetCompactor: IADCompactor; virtual;
     { IADExpandable }
-    function GetExpander: IADExpander;
+    function GetExpander: IADExpander; virtual;
     { IADSortableList<T> }
-    function GetSorter: IADListSorter<T>;
+    function GetSorter: IADListSorter<T>; virtual;
 
     // Setters
     { IADCompactable }
-    procedure SetCompactor(const ACompactor: IADCompactor);
+    procedure SetCompactor(const ACompactor: IADCompactor); virtual;
     { IADExpandable }
-    procedure SetExpander(const AExpander: IADExpander);
+    procedure SetExpander(const AExpander: IADExpander); virtual;
     { IADSortableList<T> }
-    procedure SetSorter(const ASorter: IADListSorter<T>);
+    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
   public
+    ///  <summary><c>Creates an instance of your Collection using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     // Management Methods
     { IADCompactable }
     procedure Compact;
@@ -395,6 +407,42 @@ type
     { IADCircularList<T> }
     property Reader: IADCircularListReader<T> read GetReader;
   end;
+
+
+  { List Sorters }
+  ///  <summary><c>Abstract Base Class for all List Sorters.</c></summary>
+  TADListSorter<T> = class abstract(TADObject, IADListSorter<T>)
+  public
+    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; virtual; abstract;
+    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; virtual; abstract;
+  end;
+
+  ///  <summary><c>Sorter for Lists using the Quick Sort implementation.</c></summary>
+  TADListSorterQuick<T> = class(TADListSorter<T>)
+  public
+    procedure Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; override;
+    procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload; override;
+  end;
+
+  { Map Sorters }
+  ///  <summary><c>Abstract Base Class for all Map Sorters.</c></summary>
+  TADMapSorter<TKey, TValue> = class abstract(TADObject, IADMapSorter<TKey, TValue>)
+  public
+    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey,TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; virtual; abstract;
+    procedure Sort(AArray: Array of IADKeyValuePair<TKey,TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; virtual; abstract;
+  end;
+
+  ///  <summary><c>Sorter for Maps using the Quick SOrt implementation.</c></summary>
+  TADMapSorterQuick<TKey, TValue> = class(TADMapSorter<TKey, TValue>)
+  public
+    procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey,TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; override;
+    procedure Sort(AArray: Array of IADKeyValuePair<TKey,TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload; override;
+  end;
+
+// Allocators
+function ADCollectionExpanderDefault: IADExpander;
+function ADCollectionExpanderGeometric: IADExpanderGeometric;
+function ADCollectionCompactorDefault: IADCompactor;
 
 implementation
 
@@ -794,6 +842,29 @@ begin
 
 end;
 
+constructor TADList<T>.Create(const AExpander: IADExpander; const AInitialCapacity: Integer);
+begin
+  Create(AExpander, ADCollectionCompactorDefault, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AInitialCapacity: Integer);
+begin
+  Create(ADCollectionExpanderDefault, ADCollectionCompactorDefault, AInitialCapacity);
+end;
+
+constructor TADList<T>.Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
+begin
+  inherited Create(AInitialCapacity);
+  FSorter := TADListSorterQuick<T>.Create;
+  FExpander := AExpander;
+  FCompactor := ACompactor;
+end;
+
+constructor TADList<T>.Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer);
+begin
+  Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
+end;
+
 function TADList<T>.EqualItems(const AList: IADSortableList<T>): Boolean;
 begin
 
@@ -1027,6 +1098,148 @@ end;
 function TADCircularList<T>.GetReader: IADCircularListReader<T>;
 begin
   Result := IADCircularListReader<T>(Self);
+end;
+
+{ TADListSorterQuick<T> }
+
+procedure TADListSorterQuick<T>.Sort(const AArray: IADArray<T>; const AComparer: IADComparer<T>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot, LTemp: T;
+begin
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1];
+    repeat
+
+      while AComparer.ALessThanB(AArray[I], LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J], LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
+end;
+
+procedure TADListSorterQuick<T>.Sort(AArray: array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot, LTemp: T;
+begin
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1];
+    repeat
+
+      while AComparer.ALessThanB(AArray[I], LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J], LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
+end;
+
+{ TMapSorterQuick<TKey, TValue> }
+
+procedure TADMapSorterQuick<TKey, TValue>.Sort(const AArray: IADArray<IADKeyValuePair<TKey, TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot: TKey;
+  LTemp: IADKeyValuePair<TKey, TValue>;
+begin
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1].Key;
+    repeat
+
+      while AComparer.ALessThanB(AArray[I].Key, LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J].Key, LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
+end;
+
+procedure TADMapSorterQuick<TKey, TValue>.Sort(AArray: array of IADKeyValuePair<TKey, TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer);
+var
+  I, J: Integer;
+  LPivot: TKey;
+  LTemp: IADKeyValuePair<TKey, TValue>;
+begin
+  repeat
+    I := AFrom;
+    J := ATo;
+    LPivot := AArray[AFrom + (ATo - AFrom) shr 1].Key;
+    repeat
+
+      while AComparer.ALessThanB(AArray[I].Key, LPivot) do
+        Inc(I);
+      while AComparer.AGreaterThanB(AArray[J].Key, LPivot) do
+        Dec(J);
+
+      if I <= J then
+      begin
+        if I <> J then
+        begin
+          LTemp := AArray[I];
+          AArray[I] := AArray[J];
+          AArray[J] := LTemp;
+        end;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if AFrom < J then
+      Sort(AArray, AComparer, AFrom, J);
+    AFrom := I;
+  until I >= ATo;
 end;
 
 initialization
