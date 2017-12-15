@@ -158,34 +158,49 @@ type
   ///    <para><c>Use IADIterableList for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
   ///  </remarks>
-  TADListBase<T> = class abstract(TADCollection, IADListReader<T>, IADList<T>, IADIterableList<T>)
+   TADListBase<T> = class abstract(TADCollection, IADListReader<T>, IADList<T>, IADIterableList<T>)
   private
     // Getters
     { IADListReader<T> }
-    function GetItem(const AIndex: Integer): T;
     function GetIterator: IADIterableList<T>;
     { IADList<T> }
     function GetReader: IADListReader<T>;
     { IADIterableList<T> }
+  protected
+    FArray: IADArray<T>;
+    // Getters
+    { TADCollection Overrides }
+    function GetCapacity: Integer; override;
+    function GetIsCompact: Boolean; override;
+    { IADListReader<T> }
+    function GetItem(const AIndex: Integer): T; virtual;
 
     // Setters
+    { TADCollection Overrides }
+    procedure SetCapacity(const ACapacity: Integer); override;
     { IADListReader<T> }
     { IADList<T> }
-    procedure SetItem(const AIndex: Integer; const AItem: T);
+    procedure SetItem(const AIndex: Integer; const AItem: T); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
     { IADIterableList<T> }
-  protected
 
+    // Overrides
+    { TADCollection Overrides }
+    procedure CreateArray(const AInitialCapacity: Integer = 0); override;
+
+    // Overrideables
   public
     // Management Methods
+    { TADCollection Overrides }
+    procedure Clear; override;
     { IADListReader<T> }
     { IADList<T> }
-    function Add(const AItem: T): Integer; overload;
-    procedure Add(const AItems: IADListReader<T>); overload;
-    procedure AddItems(const AItems: Array of T);
-    procedure Delete(const AIndex: Integer);
-    procedure DeleteRange(const AFirst, ACount: Integer);
-    procedure Insert(const AItem: T; const AIndex: Integer);
-    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+    function Add(const AItem: T): Integer; overload; virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure Add(const AItems: IADListReader<T>); overload; virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure AddItems(const AItems: Array of T); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure Delete(const AIndex: Integer); virtual;
+    procedure DeleteRange(const AFirst, ACount: Integer); virtual;
+    procedure Insert(const AItem: T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
     { IADIterableList<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
@@ -593,49 +608,61 @@ end;
 
 function TADCollection.GetIsEmpty: Boolean;
 begin
-
+  Result := (FCount = 0);
 end;
 
 function TADCollection.GetReader: IADCollectionReader;
 begin
-
+  Result := IADCollectionReader(Self);
 end;
 
 function TADCollection.GetSortedState: TADSortedState;
 begin
-
+  Result := FSortedState;
 end;
 
 { TADListBase<T> }
 
-function TADListBase<T>.Add(const AItem: T): Integer;
+procedure TADListBase<T>.Clear;
 begin
-
+  FArray.Clear;
+  FCount := 0;
 end;
 
-procedure TADListBase<T>.Add(const AItems: IADListReader<T>);
+procedure TADListBase<T>.CreateArray(const AInitialCapacity: Integer);
 begin
-
-end;
-
-procedure TADListBase<T>.AddItems(const AItems: array of T);
-begin
-
+  FArray := TADArray<T>.Create(AInitialCapacity);
 end;
 
 procedure TADListBase<T>.Delete(const AIndex: Integer);
 begin
-
+  FArray.Delete(AIndex);
+  Dec(FCount);
+  FSortedState := ssUnsorted;
 end;
 
 procedure TADListBase<T>.DeleteRange(const AFirst, ACount: Integer);
 begin
+  FArray.Finalize(AFirst, ACount);
+  if AFirst + FCount < FCount - 1 then
+    FArray.Move(AFirst + FCount + 1, AFirst, ACount); // Shift all subsequent items left
+  Dec(FCount, ACount);
+  FSortedState := ssUnsorted;
+end;
 
+function TADListBase<T>.GetCapacity: Integer;
+begin
+  Result := FArray.Capacity;
+end;
+
+function TADListBase<T>.GetIsCompact: Boolean;
+begin
+  Result := (FArray.Capacity = FCount);
 end;
 
 function TADListBase<T>.GetItem(const AIndex: Integer): T;
 begin
-
+  Result := FArray[AIndex];
 end;
 
 function TADListBase<T>.GetIterator: IADIterableList<T>;
@@ -648,70 +675,96 @@ begin
   Result := IADListReader<T>(Self);
 end;
 
-procedure TADListBase<T>.Insert(const AItem: T; const AIndex: Integer);
-begin
-
-end;
-
-procedure TADListBase<T>.InsertItems(const AItems: Array of T; const AIndex: Integer);
-begin
-
-end;
-
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADListBase<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight);
   begin
-
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADListBase<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
 begin
-
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
 end;
 
 procedure TADListBase<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
 begin
-
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADListBase<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    I: Integer;
   begin
-
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADListBase<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
-begin
-
+  var
+    I: Integer;
+  begin
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I]);
 end;
 
 procedure TADListBase<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
-begin
-
+  var
+    I: Integer;
+  begin
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I]);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
 procedure TADListBase<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
-begin
-
+  var
+    I: Integer;
+  begin
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I]);
 end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADListBase<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
-begin
-
+  var
+    I: Integer;
+  begin
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I]);
 end;
 
 procedure TADListBase<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
-begin
-
+  var
+    I: Integer;
+  begin
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I]);
 end;
 
-procedure TADListBase<T>.SetItem(const AIndex: Integer; const AItem: T);
+procedure TADListBase<T>.SetCapacity(const ACapacity: Integer);
 begin
-
+  if ACapacity < FCount then
+    raise EADGenericsCapacityLessThanCount.CreateFmt('Given Capacity of %d insufficient for a Collection containing %d Items.', [ACapacity, FCount])
+  else
+    FArray.Capacity := ACapacity;
 end;
 
 { TADList<T> }
