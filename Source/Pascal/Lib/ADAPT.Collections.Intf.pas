@@ -334,7 +334,7 @@ type
   end;
 
   {
-    NOTE: Do NOT inherit any further Collection Interfaces from IADCollectionReader, IADCollection.
+    NOTE: Do NOT inherit any further Collection Interfaces from IADCollectionReader or IADCollection.
           These Interface Types are implemented by ALL COLLECTION CLASSES as well as their own respective Interfaces.
           The idea being you can cast any Collection to IADCollectionReader (for read-only) or IADCollection (for read-write)
           and these common methods/properties will operate identically on them all.
