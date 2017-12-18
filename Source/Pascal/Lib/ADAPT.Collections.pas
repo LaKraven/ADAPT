@@ -238,20 +238,17 @@ type
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
   ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADListBase<T>, IADCompactable, IADExpandable, IADSortableList<T>, IADComparable<T>)
+  TADList<T> = class(TADListBase<T>, IADCompactable, IADExpandable, IADComparable<T>)
   private
     FCompactor: IADCompactor;
     FComparer: IADComparer<T>;
     FExpander: IADExpander;
-    FSorter: IADListSorter<T>;
   protected
     // Getters
     { IADCompactable }
     function GetCompactor: IADCompactor; virtual;
     { IADExpandable }
     function GetExpander: IADExpander; virtual;
-    { IADSortableList<T> }
-    function GetSorter: IADListSorter<T>; virtual;
     { IADComparable<T> }
     function GetComparer: IADComparer<T>; virtual;
 
@@ -260,8 +257,6 @@ type
     procedure SetCompactor(const ACompactor: IADCompactor); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADExpander); virtual;
-    { IADSortableList<T> }
-    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
     { IADComparable<T> }
     procedure SetComparer(const AComparer: IADComparer<T>); virtual;
 
@@ -282,31 +277,44 @@ type
     { IADCompactable }
     procedure Compact;
     { IADExpandable }
-    { IADSortableList<T> }
-    function Contains(const AItem: T): Boolean;
-    function ContainsAll(const AItems: Array of T): Boolean;
-    function ContainsAny(const AItems: Array of T): Boolean;
-    function ContainsNone(const AItems: Array of T): Boolean;
-    function EqualItems(const AList: IADList<T>): Boolean;
-    function IndexOf(const AItem: T): Integer; virtual; // BEWARE... This List is not NECESSARILY Sorted, nor do we handle Duplicates!
-    procedure Remove(const AItem: T);
-    procedure RemoveItems(const AItems: Array of T);
-    procedure Sort(const AComparer: IADComparer<T>);
 
     // Properties
     { IADCompactable }
     property Compactor: IADCompactor read GetCompactor write SetCompactor;
     { IADExpandable }
     property Expander: IADExpander read GetExpander write SetExpander;
-    { IADSortableList<T> }
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
   end;
 
-  TADSortedList<T> = class(TADList<T>)
+  TADSortedList<T> = class(TADList<T>, IADSortableList<T>)
+  private
+    { IADSortableList<T> }
+    FSorter: IADListSorter<T>;
+  protected
+    // Getters
+    { IADSortableList<T> }
+    function GetSorter: IADListSorter<T>; virtual;
+
+    // Setters
+    { IADComparable<T> }
+    procedure SetComparer(const AComparer: IADComparer<T>); override;
+    { IADSortableList<T> }
+    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
   public
-    // Overrides
-    { TADList<T> }
-    function IndexOf(const AItem: T): Integer; override;
+    // Management Methods
+    { IADSortableList<T> }
+    function Contains(const AItem: T): Boolean;
+    function ContainsAll(const AItems: Array of T): Boolean;
+    function ContainsAny(const AItems: Array of T): Boolean;
+    function ContainsNone(const AItems: Array of T): Boolean;
+    function EqualItems(const AList: IADList<T>): Boolean;
+    function IndexOf(const AItem: T): Integer;
+    procedure Remove(const AItem: T);
+    procedure RemoveItems(const AItems: Array of T);
+    procedure Sort(const AComparer: IADComparer<T>);
+
+    // Properties
+    { IADSortableList<T> }
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
   end;
 
   ///  <summary><c>Abstract Base Type for all Generic Map Collection Types.</c></summary>
@@ -869,45 +877,6 @@ begin
   FArray.Capacity := FCount;
 end;
 
-function TADList<T>.Contains(const AItem: T): Boolean;
-var
-  LIndex: Integer;
-begin
-  LIndex := IndexOf(AItem);
-  Result := (LIndex > -1);
-end;
-
-function TADList<T>.ContainsAll(const AItems: array of T): Boolean;
-var
-  I: Integer;
-begin
-  Result := True; // Optimistic
-  for I := Low(AItems) to High(AItems) do
-    if (not Contains(AItems[I])) then
-    begin
-      Result := False;
-      Break;
-    end;
-end;
-
-function TADList<T>.ContainsAny(const AItems: array of T): Boolean;
-var
-  I: Integer;
-begin
-  Result := False; // Pessimistic
-  for I := Low(AItems) to High(AItems) do
-    if Contains(AItems[I]) then
-    begin
-      Result := True;
-      Break;
-    end;
-end;
-
-function TADList<T>.ContainsNone(const AItems: array of T): Boolean;
-begin
-  Result := (not ContainsAny(AItems));
-end;
-
 constructor TADList<T>.Create(const AExpander: IADExpander; const AInitialCapacity: Integer);
 begin
   Create(AExpander, ADCollectionCompactorDefault, AInitialCapacity);
@@ -921,7 +890,6 @@ end;
 constructor TADList<T>.Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
   inherited Create(AInitialCapacity);
-  FSorter := TADListSorterQuick<T>.Create;
   FExpander := AExpander;
   FCompactor := ACompactor;
 end;
@@ -929,20 +897,6 @@ end;
 constructor TADList<T>.Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
-end;
-
-function TADList<T>.EqualItems(const AList: IADList<T>): Boolean;
-var
-  I: Integer;
-begin
-  Result := AList.Count = FCount;
-  if Result then
-    for I := 0 to AList.Count - 1 do
-      if (not FComparer.AEqualToB(AList[I], FArray[I])) then
-      begin
-        Result := False;
-        Break;
-      end;
 end;
 
 function TADList<T>.GetCompactor: IADCompactor;
@@ -960,34 +914,6 @@ begin
   Result := FExpander;
 end;
 
-function TADList<T>.GetSorter: IADListSorter<T>;
-begin
-  Result := FSorter;
-end;
-
-function TADList<T>.IndexOf(const AItem: T): Integer;
-var
-  I: Integer;
-begin
-  Result := -1; // Pessimistic
-  for I := 0 to FCount - 1 do
-    if FComparer.AEqualToB(FArray[I], AItem) then
-    begin
-      Result := I;
-      Break;
-    end;
-end;
-
-procedure TADList<T>.Remove(const AItem: T);
-begin
-
-end;
-
-procedure TADList<T>.RemoveItems(const AItems: array of T);
-begin
-
-end;
-
 procedure TADList<T>.SetCompactor(const ACompactor: IADCompactor);
 begin
 
@@ -996,7 +922,6 @@ end;
 procedure TADList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
   FComparer := AComparer;
-  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
 end;
 
 procedure TADList<T>.SetExpander(const AExpander: IADExpander);
@@ -1009,17 +934,95 @@ begin
   FArray[AIndex] := AItem;
 end;
 
-procedure TADList<T>.SetSorter(const ASorter: IADListSorter<T>);
-begin
-
-end;
-
-procedure TADList<T>.Sort(const AComparer: IADComparer<T>);
-begin
-
-end;
-
 { TADSortedList<T> }
+
+function TADSortedList<T>.Contains(const AItem: T): Boolean;
+var
+  LIndex: Integer;
+begin
+  LIndex := IndexOf(AItem);
+  Result := (LIndex > -1);
+end;
+
+function TADSortedList<T>.ContainsAll(const AItems: array of T): Boolean;
+var
+  I: Integer;
+begin
+  Result := True; // Optimistic
+  for I := Low(AItems) to High(AItems) do
+    if (not Contains(AItems[I])) then
+    begin
+      Result := False;
+      Break;
+    end;
+end;
+
+function TADSortedList<T>.ContainsAny(const AItems: array of T): Boolean;
+var
+  I: Integer;
+begin
+  Result := False; // Pessimistic
+  for I := Low(AItems) to High(AItems) do
+    if Contains(AItems[I]) then
+    begin
+      Result := True;
+      Break;
+    end;
+end;
+
+function TADSortedList<T>.ContainsNone(const AItems: array of T): Boolean;
+begin
+  Result := (not ContainsAny(AItems));
+end;
+
+function TADSortedList<T>.EqualItems(const AList: IADList<T>): Boolean;
+var
+  I: Integer;
+begin
+  Result := AList.Count = FCount;
+  if Result then
+    for I := 0 to AList.Count - 1 do
+      if (not FComparer.AEqualToB(AList[I], FArray[I])) then
+      begin
+        Result := False;
+        Break;
+      end;
+end;
+
+function TADSortedList<T>.GetSorter: IADListSorter<T>;
+begin
+  Result := FSorter;
+end;
+
+procedure TADSortedList<T>.Remove(const AItem: T);
+begin
+
+end;
+
+procedure TADSortedList<T>.RemoveItems(const AItems: array of T);
+var
+  I: Integer;
+begin
+  for I := Low(AItems) to High(AItems) do
+    Remove(AItems[I]);
+end;
+
+procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
+begin
+  inherited;
+  Sort(AComparer); // We need to re-sort the list because we've changed the Sorter
+end;
+
+procedure TADSortedList<T>.SetSorter(const ASorter: IADListSorter<T>);
+begin
+  FSorter := ASorter; // Since the Sorter only defines the algorithm for sorting and NOT the sort-order, we don't need to re-sort.
+end;
+
+procedure TADSortedList<T>.Sort(const AComparer: IADComparer<T>);
+begin
+  FComparer := AComparer; // If we're going to sort against a different Comparer, we need to keep hold of the Comparer!
+  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
+end;
 
 function TADSortedList<T>.IndexOf(const AItem: T): Integer;
 var
