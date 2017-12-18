@@ -236,7 +236,6 @@ type
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
   ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
-  ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
   ///  </remarks>
   TADList<T> = class(TADListBase<T>, IADCompactable, IADExpandable, IADComparable<T>)
   private
@@ -285,6 +284,16 @@ type
     property Expander: IADExpander read GetExpander write SetExpander;
   end;
 
+  ///  <summary><c>Generic Sorted List Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Use IADListReader for Read-Only access.</c></para>
+  ///    <para><c>Use IADList for Read/Write access.</c></para>
+  ///    <para><c>Use IADIterableList for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
+  ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
+  ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
+  ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
+  ///  </remarks>
   TADSortedList<T> = class(TADList<T>, IADSortableList<T>)
   private
     { IADSortableList<T> }
@@ -299,6 +308,24 @@ type
     procedure SetComparer(const AComparer: IADComparer<T>); override;
     { IADSortableList<T> }
     procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
+
+    // Overrides
+    { TADCollection Overrides }
+    function GetSortedState: TADSortedState; override;
+    { TADListBase  Overrides }
+    ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the Item CANNOT be added.</c></para>
+    ///    <para>0 OR GREATER<c> if the Item has be added, where the Value represents the Index of the Item.</c></para>
+    ///  </returns>
+    function AddActual(const AItem: T): Integer; override;
+
+    // Overridables
+    ///  <summary><c>Determines the Index at which an Item would need to be Inserted for the List to remain in-order.</c></summary>
+    ///  <remarks>
+    ///    <para><c>This is basically a Binary Sort implementation.<c></para>
+    ///  </remarks>
+    function GetSortedPosition(const AItem: T): Integer; virtual;
   public
     // Management Methods
     { IADSortableList<T> }
@@ -936,6 +963,17 @@ end;
 
 { TADSortedList<T> }
 
+function TADSortedList<T>.AddActual(const AItem: T): Integer;
+begin
+  Result := GetSortedPosition(AItem);
+  if Result = FCount then
+    FArray[FCount] := AItem
+  else
+    FArray.Insert(AItem, Result);
+
+  Inc(FCount);
+end;
+
 function TADSortedList<T>.Contains(const AItem: T): Boolean;
 var
   LIndex: Integer;
@@ -989,14 +1027,51 @@ begin
       end;
 end;
 
+function TADSortedList<T>.GetSortedPosition(const AItem: T): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+begin
+  Result := 0;
+  LLow := 0;
+  LHigh := FCount - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if FComparer.ALessThanOrEqualToB(AItem, FArray[LIndex]) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if FComparer.ALessThanB(FArray[LHigh], AItem) then
+    Result := LHigh + 1
+  else if FComparer.ALessThanB(FArray[LLow], AItem) then
+    Result := LLow + 1
+  else
+    Result := LLow;
+end;
+
+function TADSortedList<T>.GetSortedState: TADSortedState;
+begin
+  Result := TADSortedState.ssSorted;
+end;
+
 function TADSortedList<T>.GetSorter: IADListSorter<T>;
 begin
   Result := FSorter;
 end;
 
 procedure TADSortedList<T>.Remove(const AItem: T);
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AItem);
+  if LIndex > -1 then
+    Delete(LIndex);
 end;
 
 procedure TADSortedList<T>.RemoveItems(const AItems: array of T);
