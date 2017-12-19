@@ -329,6 +329,9 @@ type
     ///    <para>0 OR GREATER<c> if the Item has be added, where the Value represents the Index of the Item.</c></para>
     ///  </returns>
     function AddActual(const AItem: T): Integer; override;
+    procedure DeleteActual(const AIndex: Integer); override;
+    procedure InsertActual(const AItem: T; const AIndex: Integer); override; // This effectively passes the call along to AddAcutal as we cannot Insert with explicit Indexes on a Sorted List.
+    procedure SetItem(const AIndex: Integer; const AItem: T); override; // This effectively deletes the item at AIndex, then calls AddActual to add AItem at its Sorted Index. We cannot explicitly set Items on a Sorted List.
 
     // Overridables
     ///  <summary><c>Determines the Index at which an Item would need to be Inserted for the List to remain in-order.</c></summary>
@@ -337,6 +340,14 @@ type
     ///  </remarks>
     function GetSortedPosition(const AItem: T): Integer; virtual;
   public
+    ///  <summary><c>Creates an instance of your Collection using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const AComparer: IADComparer<T>; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     // Management Methods
     { IADSortableList<T> }
     function Contains(const AItem: T): Boolean;
@@ -1019,6 +1030,7 @@ end;
 
 function TADSortedList<T>.AddActual(const AItem: T): Integer;
 begin
+  CheckExpand(1);
   Result := GetSortedPosition(AItem);
   if Result = FCount then
     FArray[FCount] := AItem
@@ -1065,6 +1077,37 @@ end;
 function TADSortedList<T>.ContainsNone(const AItems: array of T): Boolean;
 begin
   Result := (not ContainsAny(AItems));
+end;
+
+constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const AInitialCapacity: Integer);
+begin
+  inherited Create(AExpander, AInitialCapacity);
+  FComparer := AComparer;
+end;
+
+constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
+begin
+  inherited Create(AInitialCapacity);
+  FComparer := AComparer;
+end;
+
+constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
+begin
+  inherited Create(AExpander, ACompactor, AInitialCapacity);
+  FComparer := AComparer;
+end;
+
+constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
+begin
+  inherited Create(ACompactor, AInitialCapacity);
+  FComparer := AComparer;
+end;
+
+procedure TADSortedList<T>.DeleteActual(const AIndex: Integer);
+begin
+  FArray.Delete(AIndex);
+  Dec(FCount);
+  CheckCompact(1);
 end;
 
 function TADSortedList<T>.EqualItems(const AList: IADList<T>): Boolean;
@@ -1142,6 +1185,12 @@ begin
   Sort(AComparer); // We need to re-sort the list because we've changed the Sorter
 end;
 
+procedure TADSortedList<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  DeleteActual(AIndex);
+  AddActual(AItem);
+end;
+
 procedure TADSortedList<T>.SetSorter(const ASorter: IADListSorter<T>);
 begin
   FSorter := ASorter; // Since the Sorter only defines the algorithm for sorting and NOT the sort-order, we don't need to re-sort.
@@ -1172,6 +1221,11 @@ begin
     else
       LLow := LMid + 1;
   until LHigh < LLow;
+end;
+
+procedure TADSortedList<T>.InsertActual(const AItem: T; const AIndex: Integer);
+begin
+  AddActual(AItem);
 end;
 
 { TADMapBase<TKey, TValue> }
