@@ -1,3 +1,10 @@
+{
+  AD.A.P.T. Library
+  Copyright (C) 2014-2018, Simon J Stuart, All Rights Reserved
+
+  Original Source Location: https://github.com/LaKraven/ADAPT
+  Subject to original License: https://github.com/LaKraven/ADAPT/blob/master/LICENSE.md
+}
 unit ADAPT.Collections;
 
 {$I ADAPT.inc}
