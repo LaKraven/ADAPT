@@ -91,7 +91,12 @@ type
 
   [TestFixture]
   TADUTCollectionsCircularList = class(TObject)
-
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure ReaderIntegrity;
+    [Test]
+    procedure CircularIntegrity;
   end;
 
 implementation
@@ -105,10 +110,13 @@ type
   IADStringArrayReader = IADArrayReader<String>;
   IADStringList = IADList<String>;
   IADStringListReader = IADListReader<String>;
+  IADStringCircularList = IADCircularList<String>;
+  IADStringCircularListReader = IADCircularListReader<String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
   TADStringSortedList = TADSortedList<String>;
+  TADStringCircularList = TADCircularList<String>;
 
 const
   BASIC_ITEMS: Array[0..9] of String = (
@@ -512,6 +520,53 @@ begin
     Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LReader[I]]));
     Assert.IsTrue(LReader[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LReader[I]]));
   end;
+end;
+
+{ TADUTCollectionsCircularList }
+
+procedure TADUTCollectionsCircularList.BasicIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringCircularList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsCircularList.CircularIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringCircularList.Create(5);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match the SECOND HALF of the BASIC_ITEMS Array!
+  for I := 0 to LList.Count - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I+5], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I+5], LList[I]]));
+end;
+
+procedure TADUTCollectionsCircularList.ReaderIntegrity;
+var
+  LList: IADStringList;
+  LReader: IADStringCircularListReader;
+  I: Integer;
+begin
+  LList := TADStringCircularList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Get our Reader interface
+  LReader := IADStringCircularListReader(LList.Reader);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LReader[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LReader[I]]));
 end;
 
 end.

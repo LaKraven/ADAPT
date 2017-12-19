@@ -477,17 +477,27 @@ type
   TADCircularList<T> = class(TADListBase<T>, IADCircularListReader<T>, IADCircularList<T>)
   private
     // Getters
+  protected
+    // Getters
     { IADCircularListReader<T> }
-    function GetNewestIndex: Integer;
-    function GetNewest: T;
-    function GetOldestIndex: Integer;
-    function GetOldest: T;
+    function GetNewestIndex: Integer; virtual;
+    function GetNewest: T; virtual;
+    function GetOldestIndex: Integer; virtual;
+    function GetOldest: T; virtual;
     { IADCircularList<T> }
     function GetReader: IADCircularListReader<T>;
 
     // Setters
+    { TADListBase<T> Overrides }
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
     { IADCircularListReader<T> }
     { IADCircularList<T> }
+
+    // Overrides
+    { TADListBase<T> }
+    function AddActual(const AItem: T): Integer; override;
+    procedure DeleteActual(const AIndex: Integer); override;
+    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
   public
     // Properties
     { IADCircularListReader<T> }
@@ -1396,29 +1406,61 @@ end;
 
 { TADCircularList<T> }
 
+function TADCircularList<T>.AddActual(const AItem: T): Integer;
+begin
+  if FCount < FArray.Capacity then
+    Inc(FCount)
+  else
+    FArray.Delete(0);
+
+  Result := FCount - 1;
+
+  FArray[Result] := AItem; // Assign the Item to the Array at the Index.
+end;
+
+procedure TADCircularList<T>.DeleteActual(const AIndex: Integer);
+begin
+  FArray.Delete(AIndex);
+end;
+
 function TADCircularList<T>.GetNewest: T;
 begin
-
+  if FCount > 0 then
+    Result := FArray[FCount - 1];
 end;
 
 function TADCircularList<T>.GetNewestIndex: Integer;
 begin
-
+  Result := FCount - 1;
 end;
 
 function TADCircularList<T>.GetOldest: T;
 begin
-
+  if FCount > 0 then
+    Result := FArray[0];
 end;
 
 function TADCircularList<T>.GetOldestIndex: Integer;
 begin
-
+  if FCount = 0 then
+    Result := -1
+  else
+    Result := 0;
 end;
 
 function TADCircularList<T>.GetReader: IADCircularListReader<T>;
 begin
   Result := IADCircularListReader<T>(Self);
+end;
+
+procedure TADCircularList<T>.InsertActual(const AItem: T; const AIndex: Integer);
+begin
+
+end;
+
+procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+
 end;
 
 { TADListSorterQuick<T> }
