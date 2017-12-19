@@ -77,6 +77,14 @@ type
   end;
 
   [TestFixture]
+  TADUTCollectionsSortedList = class(TObject)
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure ReaderIntegrity;
+  end;
+
+  [TestFixture]
   TADUTCollectionsMap = class(TObject)
 
   end;
@@ -89,7 +97,7 @@ type
 implementation
 
 uses
-  ADAPT, ADAPT.Collections;
+  ADAPT, ADAPT.Collections, ADAPT.Comparers;
 
 type
   // Specialized Interfaces
@@ -100,6 +108,7 @@ type
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
+  TADStringSortedList = TADSortedList<String>;
 
 const
   BASIC_ITEMS: Array[0..9] of String = (
@@ -114,6 +123,19 @@ const
                                          'Marie',
                                          'Ninette'
                                        );
+
+  BASIC_ITEMS_SORTED: Array[0..9] of String = (
+                                                'Andy',
+                                                'Bob',
+                                                'Ellen',
+                                                'Hugh',
+                                                'Jack',
+                                                'Marie',
+                                                'Ninette',
+                                                'Rick',
+                                                'Sarah',
+                                                'Terry'
+                                              );
 
 { TADUTCollectionsArray }
 
@@ -451,6 +473,45 @@ begin
   LList.Items[5] := 'Googar';
   // Test Capacity has been increased to 15
   Assert.IsTrue(LList[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LList[5]]));
+end;
+
+{ TADUTCollectionsSortedList }
+
+procedure TADUTCollectionsSortedList.BasicIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match their PRE-SORTED COUNTERPARTS!
+  for I := 0 to LList.Count - 1 do
+  begin
+    Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LList[I]]));
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LList[I]]));
+  end;
+end;
+
+procedure TADUTCollectionsSortedList.ReaderIntegrity;
+var
+  LList: IADStringList;
+  LReader: IADStringListReader;
+  I: Integer;
+begin
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Grab our Reader Interface
+  LReader := LList.Reader;
+  // Make sure they match their PRE-SORTED COUNTERPARTS!
+  for I := 0 to LReader.Count - 1 do
+  begin
+    Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LReader[I]]));
+    Assert.IsTrue(LReader[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LReader[I]]));
+  end;
 end;
 
 end.
