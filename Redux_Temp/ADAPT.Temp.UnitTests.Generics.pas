@@ -56,7 +56,24 @@ type
 
   [TestFixture]
   TADUTCollectionsList = class(TObject)
-
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure ReaderIntegrity;
+    [Test]
+    procedure SetItem;
+    [Test]
+    procedure Clear;
+    [Test]
+    procedure DeleteOne;
+    [Test]
+    procedure DeleteRange;
+    [Test]
+    procedure InsertMiddle;
+    [Test]
+    procedure InsertFirst;
+    [Test]
+    procedure InsertLast;
   end;
 
   [TestFixture]
@@ -78,8 +95,11 @@ type
   // Specialized Interfaces
   IADStringArray = IADArray<String>;
   IADStringArrayReader = IADArrayReader<String>;
+  IADStringList = IADList<String>;
+  IADStringListReader = IADListReader<String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
+  TADStringList = TADList<String>;
 
 const
   BASIC_ITEMS: Array[0..9] of String = (
@@ -99,10 +119,10 @@ const
 
 procedure TADUTCollectionsArray.BasicIntegrity;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Test Capacity has been Initialized
   Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
   // Add our Basic Test Items
@@ -115,10 +135,10 @@ end;
 
 procedure TADUTCollectionsArray.Clear;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
@@ -134,10 +154,10 @@ end;
 
 procedure TADUTCollectionsArray.DeleteOne;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Test Capacity has been Initialized
   Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
   // Add our Basic Test Items
@@ -151,10 +171,10 @@ end;
 
 procedure TADUTCollectionsArray.DeleteRange;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Test Capacity has been Initialized
   Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
   // Add our Basic Test Items
@@ -168,10 +188,10 @@ end;
 
 procedure TADUTCollectionsArray.InsertFirst;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
@@ -188,10 +208,10 @@ end;
 
 procedure TADUTCollectionsArray.InsertLast;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
@@ -208,10 +228,10 @@ end;
 
 procedure TADUTCollectionsArray.InsertMiddle;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
@@ -248,10 +268,10 @@ end;
 
 procedure TADUTCollectionsArray.SetCapacity;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Test Capacity has been Initialized
   Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
   // Add our Basic Test Items
@@ -265,10 +285,10 @@ end;
 
 procedure TADUTCollectionsArray.SetItem;
 var
-  LArray: IADArray<String>;
+  LArray: IADStringArray;
   I: Integer;
 begin
-  LArray := TADArray<String>.Create(10);
+  LArray := TADStringArray.Create(10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
     LArray.Items[I] := BASIC_ITEMS[I];
@@ -276,6 +296,161 @@ begin
   LArray.Items[5] := 'Googar';
   // Test Capacity has been increased to 15
   Assert.IsTrue(LArray[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LArray[5]]));
+end;
+
+{ TADUTCollectionsList }
+
+procedure TADUTCollectionsList.BasicIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.Clear;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+  begin
+    LList.Add(BASIC_ITEMS[I]);
+    Assert.IsTrue(LList.Count = I + 1, Format('Count should be %d, instead got %d', [I + 1, LList.Count]));
+  end;
+  // Clear the List
+  LList.Clear;
+  // The Count should now be 0
+  Assert.IsTrue(LList.Count = 0, Format('Count should be 0, instead got %d', [LList.Count]));
+  // There should be no items in the Array, so attempting to reference any should result in an Access Violation Exception.
+  Assert.WillRaiseAny(procedure begin LList[0]; end, 'Item 0 request should have raised an Exception, it did not! List must not be empty!');
+end;
+
+procedure TADUTCollectionsList.DeleteOne;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Remove Item 5
+  LList.Delete(5);
+  // Item 5 should now equal Item 6 in the BASIC_ITEMS List.
+  Assert.IsTrue(LList[5] = BASIC_ITEMS[6], Format('List Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[6], LList[5]]));
+end;
+
+procedure TADUTCollectionsList.DeleteRange;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Remove Items 5 through 7
+  LList.DeleteRange(5, 2);
+  // Item 5 should now equal Item 7 in the BASIC_ITEMS List.
+  Assert.IsTrue(LList[5] = BASIC_ITEMS[7], Format('List Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[7], LList[5]]));
+end;
+
+procedure TADUTCollectionsList.InsertFirst;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 0
+  LList.Insert('Googar', 0);
+  // Index 0 should be "Googar"
+    Assert.IsTrue(LList[0] = 'Googar', Format('Index 0 should be "Googar" but instead got "%s"', [LList[0]]));
+  // Index 1 through 10 should equal BASIC_ITEMS 0 through 9
+  for I := 1 to 10 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.InsertLast;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 10
+  LList.Insert('Googar', 10);
+  // Index 10 should be "Googar"
+    Assert.IsTrue(LList[10] = 'Googar', Format('Index 10 should be "Googar" but instead got "%s"', [LList[10]]));
+  // Index 0 through 9 should equal BASIC_ITEMS 0 through 9
+  for I := 0 to 9 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.InsertMiddle;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 5
+  LList.Insert('Googar', 5);
+  // Index 0 through 4 should match...
+  for I := 0 to 4 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+  // Index 5 should be "Googar"
+    Assert.IsTrue(LList[5] = 'Googar', Format('Index 5 should be "Googar" but instead got "%s"', [LList[5]]));
+  // Index 6 through 10 should equal BASIC_ITEMS 5 through 9
+  for I := 6 to 10 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.ReaderIntegrity;
+var
+  LList: IADStringList;
+  LListReader: IADStringListReader;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Obtain the Reader Interface
+  LListReader := LList.Reader;
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LListReader[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LListReader[I]]));
+end;
+
+procedure TADUTCollectionsList.SetItem;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Modify Item 5
+  LList.Items[5] := 'Googar';
+  // Test Capacity has been increased to 15
+  Assert.IsTrue(LList[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LList[5]]));
 end;
 
 end.
