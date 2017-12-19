@@ -44,7 +44,27 @@ type
   {$ENDIF FPC}
 
   // Forward Declarations
+  IADArrayReader<T> = interface;
+  IADArray<T> = interface;
+  IADCollectionReader = interface;
+  IADCollection = interface;
+  IADExpander = interface;
+  IADExpandable = interface;
+  IADCompactor = interface;
+  IADCompactable = interface;
+  IADSorter = interface;
+  IADListSorter<T> = interface;
+  IADSortableList<T> = interface;
+  IADMapSorter<TKey, TValue> = interface;
+  IADSortableMap<TKey, TValue> = interface;
+  IADIterableList<T> = interface;
+  IADIterableMap<TKey, TValue> = interface;
+  IADListReader<T> = interface;
   IADList<T> = interface;
+  IADMapReader<TKey, TValue> = interface;
+  IADMap<TKey, TValue> = interface;
+  IADCircularListReader<T> = interface;
+  IADCircularList<T> = interface;
 
   ///  <summary><c>A Simple Generic Array with basic Management Methods (Read-Only Interface).</c></summary>
   IADArrayReader<T> = interface(IADInterface)
@@ -93,7 +113,6 @@ type
     ///  <returns><c>Read-Only Interfaced Reference to this Array.</c></returns>
     property Reader: IADArrayReader<T> read GetReader;
   end;
-
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all Generic Collections.</c></summary>
   ///  <remarks>

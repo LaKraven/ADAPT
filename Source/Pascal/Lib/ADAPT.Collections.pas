@@ -204,6 +204,7 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+
     { IADIterableList<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
@@ -230,43 +231,30 @@ type
     property Reader: IADListReader<T> read GetReader;
   end;
 
-  ///  <summary><c>Generic List Collection.</c></summary>
+  ///  <summary><c>Abstract Base Type for all Expandable/Compactable Generic List Collection Types.</c></summary>
   ///  <remarks>
   ///    <para><c>Use IADListReader for Read-Only access.</c></para>
   ///    <para><c>Use IADList for Read/Write access.</c></para>
   ///    <para><c>Use IADIterableList for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
-  ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
-  ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
+  ///    <para><c>Use IADCompactable to Get/Set Compactor.</c></para>
+  ///    <para><c>Use IADExpandable to Get/Set Expander.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADListBase<T>, IADCompactable, IADExpandable, IADComparable<T>)
-  private
-    FCompactor: IADCompactor;
-    FComparer: IADComparer<T>;
-    FExpander: IADExpander;
+  TADListExpandableBase<T> = class abstract(TADListBase<T>, IADCompactable, IADExpandable)
   protected
+    FCompactor: IADCompactor;
+    FExpander: IADExpander;
     // Getters
     { IADCompactable }
     function GetCompactor: IADCompactor; virtual;
     { IADExpandable }
     function GetExpander: IADExpander; virtual;
-    { IADComparable<T> }
-    function GetComparer: IADComparer<T>; virtual;
 
     // Setters
     { IADCompactable }
     procedure SetCompactor(const ACompactor: IADCompactor); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADExpander); virtual;
-    { IADComparable<T> }
-    procedure SetComparer(const AComparer: IADComparer<T>); virtual;
-
-    // Overrides
-    { TADListBase Overrides }
-    function AddActual(const AItem: T): Integer; override;
-    procedure DeleteActual(const AIndex: Integer); override;
-    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
-    procedure SetItem(const AIndex: Integer; const AItem: T); override;
 
     { Overridables }
     ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
@@ -274,14 +262,6 @@ type
     ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
     procedure CheckExpand(const AAmount: Integer); virtual;
   public
-    ///  <summary><c>Creates an instance of your Collection using the Default Expander and Compactor Types.</c></summary>
-    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Collection using a Custom Expander Instance, and the default Compactor Type.</c></summary>
-    constructor Create(const AExpander: IADExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Collection using the default Expander Type, and a Custom Compactor Instance.</c></summary>
-    constructor Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
-    ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
-    constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     // Management Methods
     { IADCompactable }
     procedure Compact;
@@ -294,6 +274,34 @@ type
     property Expander: IADExpander read GetExpander write SetExpander;
   end;
 
+  ///  <summary><c>Generic List Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Use IADListReader for Read-Only access.</c></para>
+  ///    <para><c>Use IADList for Read/Write access.</c></para>
+  ///    <para><c>Use IADIterableList for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
+  ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
+  ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
+  ///  </remarks>
+  TADList<T> = class(TADListExpandableBase<T>, IADCompactable, IADExpandable)
+  protected
+    // Overrides
+    { TADListBase Overrides }
+    function AddActual(const AItem: T): Integer; override;
+    procedure DeleteActual(const AIndex: Integer); override;
+    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
+  public
+    ///  <summary><c>Creates an instance of your Collection using the Default Expander and Compactor Types.</c></summary>
+    constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander Instance, and the default Compactor Type.</c></summary>
+    constructor Create(const AExpander: IADExpander; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using the default Expander Type, and a Custom Compactor Instance.</c></summary>
+    constructor Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
+    ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
+    constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+  end;
+
   ///  <summary><c>Generic Sorted List Collection.</c></summary>
   ///  <remarks>
   ///    <para><c>Use IADListReader for Read-Only access.</c></para>
@@ -304,20 +312,22 @@ type
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
   ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
   ///  </remarks>
-  TADSortedList<T> = class(TADList<T>, IADSortableList<T>)
+  TADSortedList<T> = class(TADListExpandableBase<T>, IADSortableList<T>, IADComparable<T>)
   private
-    { IADSortableList<T> }
     FSorter: IADListSorter<T>;
+    FComparer: IADComparer<T>;
   protected
     // Getters
     { IADSortableList<T> }
     function GetSorter: IADListSorter<T>; virtual;
+    { IADComparable<T> }
+    function GetComparer: IADComparer<T>; virtual;
 
     // Setters
-    { IADComparable<T> }
-    procedure SetComparer(const AComparer: IADComparer<T>); override;
     { IADSortableList<T> }
     procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
+    { IADComparable<T> }
+    procedure SetComparer(const AComparer: IADComparer<T>); virtual;
 
     // Overrides
     { TADCollection Overrides }
@@ -358,7 +368,7 @@ type
     function IndexOf(const AItem: T): Integer;
     procedure Remove(const AItem: T);
     procedure RemoveItems(const AItems: Array of T);
-    procedure Sort(const AComparer: IADComparer<T>);
+    procedure Sort(const AComparer: IADComparer<T>); virtual;
 
     // Properties
     { IADSortableList<T> }
@@ -920,6 +930,51 @@ begin
     FArray.Capacity := ACapacity;
 end;
 
+{ TADListExpandableBase<T> }
+
+procedure TADListExpandableBase<T>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := Compactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADListExpandableBase<T>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := Expander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
+end;
+
+procedure TADListExpandableBase<T>.Compact;
+begin
+  FArray.Capacity := FCount;
+end;
+
+function TADListExpandableBase<T>.GetCompactor: IADCompactor;
+begin
+  Result := FCompactor;
+end;
+
+function TADListExpandableBase<T>.GetExpander: IADExpander;
+begin
+  Result := FExpander;
+end;
+
+procedure TADListExpandableBase<T>.SetCompactor(const ACompactor: IADCompactor);
+begin
+  FCompactor := ACompactor;
+end;
+
+procedure TADListExpandableBase<T>.SetExpander(const AExpander: IADExpander);
+begin
+  FExpander := AExpander;
+end;
+
 { TADList<T> }
 
 function TADList<T>.AddActual(const AItem: T): Integer;
@@ -929,29 +984,6 @@ begin
   Result := FCount;
   Inc(FCount);
   FSortedState := ssUnsorted;
-end;
-
-procedure TADList<T>.CheckCompact(const AAmount: Integer);
-var
-  LShrinkBy: Integer;
-begin
-  LShrinkBy := Compactor.CheckCompact(FArray.Capacity, FCount, AAmount);
-  if LShrinkBy > 0 then
-    FArray.Capacity := FArray.Capacity - LShrinkBy;
-end;
-
-procedure TADList<T>.CheckExpand(const AAmount: Integer);
-var
-  LNewCapacity: Integer;
-begin
-  LNewCapacity := Expander.CheckExpand(FArray.Capacity, FCount, AAmount);
-  if LNewCapacity > 0 then
-    FArray.Capacity := FArray.Capacity + LNewCapacity;
-end;
-
-procedure TADList<T>.Compact;
-begin
-  FArray.Capacity := FCount;
 end;
 
 constructor TADList<T>.Create(const AExpander: IADExpander; const AInitialCapacity: Integer);
@@ -971,31 +1003,16 @@ begin
   FCompactor := ACompactor;
 end;
 
-procedure TADList<T>.DeleteActual(const AIndex: Integer);
-begin
-  FArray.Delete(AIndex);
-  Dec(FCount);
-  CheckCompact(1);
-end;
-
 constructor TADList<T>.Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
 end;
 
-function TADList<T>.GetCompactor: IADCompactor;
+procedure TADList<T>.DeleteActual(const AIndex: Integer);
 begin
-  Result := FCompactor;
-end;
-
-function TADList<T>.GetComparer: IADComparer<T>;
-begin
-  Result := FComparer;
-end;
-
-function TADList<T>.GetExpander: IADExpander;
-begin
-  Result := FExpander;
+  FArray.Delete(AIndex);
+  Dec(FCount);
+  CheckCompact(1);
 end;
 
 procedure TADList<T>.InsertActual(const AItem: T; const AIndex: Integer);
@@ -1004,21 +1021,6 @@ begin
   FArray.Insert(AItem, AIndex);
   Inc(FCount);
   FSortedState := ssUnsorted;
-end;
-
-procedure TADList<T>.SetCompactor(const ACompactor: IADCompactor);
-begin
-
-end;
-
-procedure TADList<T>.SetComparer(const AComparer: IADComparer<T>);
-begin
-  FComparer := AComparer;
-end;
-
-procedure TADList<T>.SetExpander(const AExpander: IADExpander);
-begin
-
 end;
 
 procedure TADList<T>.SetItem(const AIndex: Integer; const AItem: T);
@@ -1081,26 +1083,25 @@ end;
 
 constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const AInitialCapacity: Integer);
 begin
-  inherited Create(AExpander, AInitialCapacity);
-  FComparer := AComparer;
+  Create(AComparer, AExpander, ADCollectionCompactorDefault, AInitialCapacity);
 end;
 
 constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AInitialCapacity: Integer);
 begin
-  inherited Create(AInitialCapacity);
-  FComparer := AComparer;
+  Create(AComparer, ADCollectionExpanderDefault, ADCollectionCompactorDefault, AInitialCapacity);
 end;
 
 constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
-  inherited Create(AExpander, ACompactor, AInitialCapacity);
+  inherited Create(AInitialCapacity);
   FComparer := AComparer;
+  FExpander := AExpander;
+  FCompactor := ACompactor;
 end;
 
 constructor TADSortedList<T>.Create(const AComparer: IADComparer<T>; const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
-  inherited Create(ACompactor, AInitialCapacity);
-  FComparer := AComparer;
+  Create(AComparer, ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
 end;
 
 procedure TADSortedList<T>.DeleteActual(const AIndex: Integer);
@@ -1122,6 +1123,11 @@ begin
         Result := False;
         Break;
       end;
+end;
+
+function TADSortedList<T>.GetComparer: IADComparer<T>;
+begin
+  Result := FComparer;
 end;
 
 function TADSortedList<T>.GetSortedPosition(const AItem: T): Integer;
@@ -1181,7 +1187,7 @@ end;
 
 procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
-  inherited;
+  FComparer := AComparer;
   Sort(AComparer); // We need to re-sort the list because we've changed the Sorter
 end;
 
