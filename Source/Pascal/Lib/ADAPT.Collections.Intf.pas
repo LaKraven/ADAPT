@@ -566,7 +566,7 @@ type
   ///  <remarks>
   ///    <para><c>Accessible in Read-Only Mode.</c></para>
   ///  </remarks>
-  IADCircularListReader<T> = interface(IADInterface)
+  IADCircularListReader<T> = interface(IADListReader<T>)
     // Getters
     ///  <returns>
     ///    <para>-1<c> if the Newest Item has subsequently been Deleted (or Invalidated).</c></para>
