@@ -189,6 +189,8 @@ type
 
     // Overrideables
     function AddActual(const AItem: T): Integer; virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure DeleteActual(const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure InsertActual(const AItem: T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
   public
     // Management Methods
     { TADCollection Overrides }
@@ -200,8 +202,8 @@ type
     procedure AddItems(const AItems: Array of T); virtual;
     procedure Delete(const AIndex: Integer); virtual;
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
-    procedure Insert(const AItem: T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
-    procedure InsertItems(const AItems: Array of T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
+    procedure Insert(const AItem: T; const AIndex: Integer);
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     { IADIterableList<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
@@ -262,7 +264,15 @@ type
     // Overrides
     { TADListBase Overrides }
     function AddActual(const AItem: T): Integer; override;
+    procedure DeleteActual(const AIndex: Integer); override;
+    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
     procedure SetItem(const AIndex: Integer; const AItem: T); override;
+
+    { Overridables }
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); virtual;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); virtual;
   public
     ///  <summary><c>Creates an instance of your Collection using the Default Expander and Compactor Types.</c></summary>
     constructor Create(const AInitialCapacity: Integer = 0); reintroduce; overload;
@@ -758,18 +768,15 @@ end;
 
 procedure TADListBase<T>.Delete(const AIndex: Integer);
 begin
-  FArray.Delete(AIndex);
-  Dec(FCount);
-  FSortedState := ssUnsorted;
+  DeleteActual(AIndex);
 end;
 
 procedure TADListBase<T>.DeleteRange(const AFirst, ACount: Integer);
+var
+  I: Integer;
 begin
-  FArray.Finalize(AFirst, ACount);
-  if AFirst + FCount < FCount - 1 then
-    FArray.Move(AFirst + FCount + 1, AFirst, ACount); // Shift all subsequent items left
-  Dec(FCount, ACount);
-  FSortedState := ssUnsorted;
+  for I := AFirst + (ACount - 1) downto AFirst do
+    DeleteActual(I);
 end;
 
 function TADListBase<T>.GetCapacity: Integer;
@@ -817,6 +824,19 @@ begin
       else
         raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
     end;
+end;
+
+procedure TADListBase<T>.Insert(const AItem: T; const AIndex: Integer);
+begin
+  InsertActual(AItem, AIndex);
+end;
+
+procedure TADListBase<T>.InsertItems(const AItems: array of T; const AIndex: Integer);
+var
+  I: Integer;
+begin
+  for I := High(AItems) downto Low(AItems) do
+    Insert(AItems[I], AIndex);
 end;
 
 procedure TADListBase<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
@@ -893,10 +913,29 @@ end;
 
 function TADList<T>.AddActual(const AItem: T): Integer;
 begin
+  CheckExpand(1);
   FArray[FCount] := AItem;
   Result := FCount;
   Inc(FCount);
   FSortedState := ssUnsorted;
+end;
+
+procedure TADList<T>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := Compactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADList<T>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := Expander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
 procedure TADList<T>.Compact;
@@ -921,6 +960,13 @@ begin
   FCompactor := ACompactor;
 end;
 
+procedure TADList<T>.DeleteActual(const AIndex: Integer);
+begin
+  FArray.Delete(AIndex);
+  Dec(FCount);
+  CheckCompact(1);
+end;
+
 constructor TADList<T>.Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer);
 begin
   Create(ADCollectionExpanderDefault, ACompactor, AInitialCapacity);
@@ -939,6 +985,14 @@ end;
 function TADList<T>.GetExpander: IADExpander;
 begin
   Result := FExpander;
+end;
+
+procedure TADList<T>.InsertActual(const AItem: T; const AIndex: Integer);
+begin
+  CheckExpand(1);
+  FArray.Insert(AItem, AIndex);
+  Inc(FCount);
+  FSortedState := ssUnsorted;
 end;
 
 procedure TADList<T>.SetCompactor(const ACompactor: IADCompactor);
