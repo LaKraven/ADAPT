@@ -434,22 +434,36 @@ type
   ///    <para><c>Use IADIterableMap for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
   ///  </remarks>
-  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>)
+  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>, IADCompactable, IADExpandable)
   private
+    FCompactor: IADCompactor;
+    FExpander: IADExpander;
+    FSorter: IADMapSorter<TKey, TValue>;
+  protected
     // Getters
     { IADMapReader<TKey, TValue> }
     function GetItem(const AKey: TKey): TValue;
     function GetIterator: IADIterableMap<TKey, TValue>;
     function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
+    function GetSorter: IADMapSorter<TKey, TValue>; virtual;
     { IADMap<TKey, TValue> }
     function GetReader: IADMapReader<TKey, TValue>;
     { IADIterableMap<TKey, TValue> }
+    { IADCompactable }
+    function GetCompactor: IADCompactor; virtual;
+    { IADExpandable }
+    function GetExpander: IADExpander; virtual;
 
     // Setters
     { IADMapReader<TKey, TValue> }
     { IADMap<TKey, TValue> }
     procedure SetItem(const AKey: TKey; const AValue: TValue);
+    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADIterableMap<TKey, TValue> }
+    { IADCompactable }
+    procedure SetCompactor(const ACompactor: IADCompactor); virtual;
+    { IADExpandable }
+    procedure SetExpander(const AExpander: IADExpander); virtual;
   public
     // Management Methods
     { IADMapReader<TKey, TValue> }
@@ -469,6 +483,7 @@ type
     procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
     procedure Remove(const AKey: TKey);
     procedure RemoveItems(const AKeys: Array of TKey);
+
     { IADIterableMap<TKey, TValue> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       procedure Iterate(const ACallback: TADListMapCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight); overload;
@@ -495,6 +510,10 @@ type
     property Items[const AKey: TKey]: TValue read GetItem write SetItem; default;
     property Reader: IADMapReader<TKey, TValue> read GetReader;
     { IADIterableMap<TKey, TValue> }
+    { IADCompactable }
+    property Compactor: IADCompactor read GetCompactor write SetCompactor;
+    { IADExpandable }
+    property Expander: IADExpander read GetExpander write SetExpander;
   end;
 
   ///  <summary><c>Generic Map Collection.</c></summary>
@@ -622,6 +641,7 @@ begin
     for I := AIndex to Length(FArray) - 2 do
       FArray[I] := FArray[I + 1];
   end;
+  //TODO -oSJS -cGeneric Collections: Figure out why block Finalize/Move/Reallocation isn't working properly.
 end;
 
 constructor TADArray<T>.Create(const ACapacity: Integer);
@@ -1084,11 +1104,8 @@ begin
 end;
 
 function TADSortedList<T>.Contains(const AItem: T): Boolean;
-var
-  LIndex: Integer;
 begin
-  LIndex := IndexOf(AItem);
-  Result := (LIndex > -1);
+  Result := (IndexOf(AItem) > -1);
 end;
 
 function TADSortedList<T>.ContainsAll(const AItems: array of T): Boolean;
@@ -1392,6 +1409,16 @@ begin
 
 end;
 
+function TADMapBase<TKey, TValue>.GetCompactor: IADCompactor;
+begin
+  Result := FCompactor;
+end;
+
+function TADMapBase<TKey, TValue>.GetExpander: IADExpander;
+begin
+  Result := FExpander;
+end;
+
 function TADMapBase<TKey, TValue>.GetItem(const AKey: TKey): TValue;
 begin
 
@@ -1410,6 +1437,11 @@ end;
 function TADMapBase<TKey, TValue>.GetReader: IADMapReader<TKey, TValue>;
 begin
   Result := IADMapReader<TKey, TValue>(Self);
+end;
+
+function TADMapBase<TKey, TValue>.GetSorter: IADMapSorter<TKey, TValue>;
+begin
+  Result := FSorter;
 end;
 
 function TADMapBase<TKey, TValue>.IndexOf(const AKey: TKey): Integer;
@@ -1478,9 +1510,24 @@ begin
 
 end;
 
+procedure TADMapBase<TKey, TValue>.SetCompactor(const ACompactor: IADCompactor);
+begin
+  FCompactor := ACompactor;
+end;
+
+procedure TADMapBase<TKey, TValue>.SetExpander(const AExpander: IADExpander);
+begin
+  FExpander := AExpander;
+end;
+
 procedure TADMapBase<TKey, TValue>.SetItem(const AKey: TKey; const AValue: TValue);
 begin
 
+end;
+
+procedure TADMapBase<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
+begin
+  FSorter := ASorter;
 end;
 
 { TADListSorterQuick<T> }
