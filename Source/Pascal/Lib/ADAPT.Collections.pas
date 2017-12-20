@@ -319,7 +319,7 @@ type
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
   ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
   ///  </remarks>
-  TADSortedList<T> = class(TADListExpandableBase<T>, IADSortableList<T>, IADComparable<T>)
+  TADSortedList<T> = class(TADListExpandableBase<T>, IADSortedListReader<T>, IADSortedList<T>, IADSortableList<T>, IADComparable<T>)
   private
     FSorter: IADListSorter<T>;
     FComparer: IADComparer<T>;
@@ -329,6 +329,8 @@ type
     function GetSorter: IADListSorter<T>; virtual;
     { IADComparable<T> }
     function GetComparer: IADComparer<T>; virtual;
+    { IADSortedList<T> }
+    function GetReader: IADSortedListReader<T>;
 
     // Setters
     { IADSortableList<T> }
@@ -366,16 +368,18 @@ type
     ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AComparer: IADComparer<T>; const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
     // Management Methods
-    { IADSortableList<T> }
+    { IADSortedListReader<T> }
     function Contains(const AItem: T): Boolean;
     function ContainsAll(const AItems: Array of T): Boolean;
     function ContainsAny(const AItems: Array of T): Boolean;
     function ContainsNone(const AItems: Array of T): Boolean;
     function EqualItems(const AList: IADList<T>): Boolean;
     function IndexOf(const AItem: T): Integer;
+    { IADSortedList<T> }
     procedure Remove(const AItem: T);
     procedure RemoveItems(const AItems: Array of T);
-    procedure Sort(const AComparer: IADComparer<T>); virtual;
+    procedure Sort; overload; virtual;
+    procedure Sort(const AComparer: IADComparer<T>); overload;
 
     // Properties
     { IADSortableList<T> }
@@ -1147,6 +1151,11 @@ begin
   Result := FComparer;
 end;
 
+function TADSortedList<T>.GetReader: IADSortedListReader<T>;
+begin
+  Result := Self as IADSortedListReader<T>;
+end;
+
 function TADSortedList<T>.GetSortedPosition(const AItem: T): Integer;
 var
   LIndex, LLow, LHigh: Integer;
@@ -1219,10 +1228,15 @@ begin
   FSorter := ASorter; // Since the Sorter only defines the algorithm for sorting and NOT the sort-order, we don't need to re-sort.
 end;
 
+procedure TADSortedList<T>.Sort;
+begin
+  FSorter.Sort(FArray, FComparer, 0, FCount - 1);
+end;
+
 procedure TADSortedList<T>.Sort(const AComparer: IADComparer<T>);
 begin
   FComparer := AComparer; // If we're going to sort against a different Comparer, we need to keep hold of the Comparer!
-  FSorter.Sort(FArray, AComparer, 0, FCount - 1);
+  Sort;
 end;
 
 function TADSortedList<T>.IndexOf(const AItem: T): Integer;
