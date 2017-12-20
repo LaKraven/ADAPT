@@ -27,10 +27,10 @@ uses
 type
   TADAverager<T> = class abstract(TADObject, IADAverager<T>)
   protected
-    procedure CheckSorted(const ASeries: IADCollectionList<T>); overload;
+    procedure CheckSorted(const ASeries: IADListReader<T>); overload;
     procedure CheckSorted(const ASortedState: TADSortedState); overload;
   public
-    function CalculateAverage(const ASeries: IADCollectionList<T>): T; overload; virtual; abstract;
+    function CalculateAverage(const ASeries: IADListReader<T>): T; overload; virtual; abstract;
     function CalculateAverage(const ASeries: Array of T; const ASortedState: TADSortedState): T; overload; virtual; abstract;
   end;
 
@@ -73,65 +73,65 @@ implementation
 type
   { Float Averagers }
   TADAveragerFloatMean = class(TADAveragerFloat)
-    function CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat; overload; override;
     function CalculateAverage(const ASeries: Array of ADFloat; const ASortedState: TADSortedState): ADFloat; overload; override;
   end;
 
   TADAveragerFloatMedian = class(TADAveragerFloat)
-    function CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat; overload; override;
     function CalculateAverage(const ASeries: Array of ADFloat; const ASortedState: TADSortedState): ADFloat; overload; override;
   end;
 
   TADAveragerFloatRange = class(TADAveragerFloat)
-    function CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat; overload; override;
     function CalculateAverage(const ASeries: Array of ADFloat; const ASortedState: TADSortedState): ADFloat; overload; override;
   end;
 
   { Integer Averagers}
   TADAveragerIntegerMean = class(TADAveragerInteger)
-    function CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Integer>): Integer; overload; override;
     function CalculateAverage(const ASeries: Array of Integer; const ASortedState: TADSortedState): Integer; overload; override;
   end;
 
   TADAveragerIntegerMedian = class(TADAveragerInteger)
-    function CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Integer>): Integer; overload; override;
     function CalculateAverage(const ASeries: Array of Integer; const ASortedState: TADSortedState): Integer; overload; override;
   end;
 
   TADAveragerIntegerRange = class(TADAveragerInteger)
-    function CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Integer>): Integer; overload; override;
     function CalculateAverage(const ASeries: Array of Integer; const ASortedState: TADSortedState): Integer; overload; override;
   end;
 
   { Int64 Averagers }
   TADAveragerInt64Mean = class(TADAveragerInt64)
-    function CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Int64>): Int64; overload; override;
     function CalculateAverage(const ASeries: Array of Int64; const ASortedState: TADSortedState): Int64; overload; override;
   end;
 
   TADAveragerInt64Median = class(TADAveragerInt64)
-    function CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Int64>): Int64; overload; override;
     function CalculateAverage(const ASeries: Array of Int64; const ASortedState: TADSortedState): Int64; overload; override;
   end;
 
   TADAveragerInt64Range = class(TADAveragerInt64)
-    function CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Int64>): Int64; overload; override;
     function CalculateAverage(const ASeries: Array of Int64; const ASortedState: TADSortedState): Int64; overload; override;
   end;
 
   { Cardinal Averagers }
   TADAveragerCardinalMean = class(TADAveragerCardinal)
-    function CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal; overload; override;
     function CalculateAverage(const ASeries: Array of Cardinal; const ASortedState: TADSortedState): Cardinal; overload; override;
   end;
 
   TADAveragerCardinalMedian = class(TADAveragerCardinal)
-    function CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal; overload; override;
     function CalculateAverage(const ASeries: Array of Cardinal; const ASortedState: TADSortedState): Cardinal; overload; override;
   end;
 
   TADAveragerCardinalRange = class(TADAveragerCardinal)
-    function CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal; overload; override;
+    function CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal; overload; override;
     function CalculateAverage(const ASeries: Array of Cardinal; const ASortedState: TADSortedState): Cardinal; overload; override;
   end;
 
@@ -223,7 +223,7 @@ end;
 
 { TADAverager<T> }
 
-procedure TADAverager<T>.CheckSorted(const ASeries: IADCollectionList<T>);
+procedure TADAverager<T>.CheckSorted(const ASeries: IADListReader<T>);
 begin
   CheckSorted(ASeries.SortedState);
 end;
@@ -236,7 +236,7 @@ end;
 
 { TADAveragerFloatMean }
 
-function TADAveragerFloatMean.CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat;
+function TADAveragerFloatMean.CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat;
 var
   I: Integer;
 begin
@@ -260,7 +260,7 @@ end;
 
 { TADAveragerFloatMedian }
 
-function TADAveragerFloatMedian.CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat;
+function TADAveragerFloatMedian.CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat;
 begin
   CheckSorted(ASeries);
   Result := ASeries[(ASeries.Count div 2) - 1];
@@ -274,7 +274,7 @@ end;
 
 { TADAveragerFloatRange }
 
-function TADAveragerFloatRange.CalculateAverage(const ASeries: IADCollectionList<ADFloat>): ADFloat;
+function TADAveragerFloatRange.CalculateAverage(const ASeries: IADListReader<ADFloat>): ADFloat;
 begin
   CheckSorted(ASeries);
   Result := ASeries[ASeries.Count - 1] - ASeries[0];
@@ -288,7 +288,7 @@ end;
 
 { TADAveragerIntegerMean }
 
-function TADAveragerIntegerMean.CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer;
+function TADAveragerIntegerMean.CalculateAverage(const ASeries: IADListReader<Integer>): Integer;
 var
   I: Integer;
 begin
@@ -312,7 +312,7 @@ end;
 
 { TADAveragerIntegerMedian }
 
-function TADAveragerIntegerMedian.CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer;
+function TADAveragerIntegerMedian.CalculateAverage(const ASeries: IADListReader<Integer>): Integer;
 begin
   CheckSorted(ASeries);
   Result := ASeries[(ASeries.Count div 2) - 1];
@@ -326,7 +326,7 @@ end;
 
 { TADAveragerIntegerRange }
 
-function TADAveragerIntegerRange.CalculateAverage(const ASeries: IADCollectionList<Integer>): Integer;
+function TADAveragerIntegerRange.CalculateAverage(const ASeries: IADListReader<Integer>): Integer;
 begin
   CheckSorted(ASeries);
   Result := ASeries[ASeries.Count - 1] - ASeries[0];
@@ -340,7 +340,7 @@ end;
 
 { TADAveragerInt64Mean }
 
-function TADAveragerInt64Mean.CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64;
+function TADAveragerInt64Mean.CalculateAverage(const ASeries: IADListReader<Int64>): Int64;
 var
   I: Integer;
 begin
@@ -364,7 +364,7 @@ end;
 
 { TADAveragerInt64Median }
 
-function TADAveragerInt64Median.CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64;
+function TADAveragerInt64Median.CalculateAverage(const ASeries: IADListReader<Int64>): Int64;
 begin
   CheckSorted(ASeries);
   Result := ASeries[(ASeries.Count div 2) - 1];
@@ -378,7 +378,7 @@ end;
 
 { TADAveragerInt64Range }
 
-function TADAveragerInt64Range.CalculateAverage(const ASeries: IADCollectionList<Int64>): Int64;
+function TADAveragerInt64Range.CalculateAverage(const ASeries: IADListReader<Int64>): Int64;
 begin
   CheckSorted(ASeries);
   Result := ASeries[ASeries.Count - 1] - ASeries[0];
@@ -392,7 +392,7 @@ end;
 
 { TADAveragerCardinalMean }
 
-function TADAveragerCardinalMean.CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal;
+function TADAveragerCardinalMean.CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal;
 var
   I: Integer;
 begin
@@ -416,7 +416,7 @@ end;
 
 { TADAveragerCardinalMedian }
 
-function TADAveragerCardinalMedian.CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal;
+function TADAveragerCardinalMedian.CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal;
 begin
   CheckSorted(ASeries);
   Result := ASeries[(ASeries.Count div 2) - 1];
@@ -430,7 +430,7 @@ end;
 
 { TADAveragerCardinalRange }
 
-function TADAveragerCardinalRange.CalculateAverage(const ASeries: IADCollectionList<Cardinal>): Cardinal;
+function TADAveragerCardinalRange.CalculateAverage(const ASeries: IADListReader<Cardinal>): Cardinal;
 begin
   CheckSorted(ASeries);
   Result := ASeries[ASeries.Count - 1] - ASeries[0];

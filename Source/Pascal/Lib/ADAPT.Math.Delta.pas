@@ -62,6 +62,7 @@ function ADDeltaCardinal: IADDeltaValue<Cardinal>;
 implementation
 
 uses
+  ADAPT.Comparers,
   ADAPT.Collections;
 
 var
@@ -103,7 +104,7 @@ end;
 constructor TADDeltaValue<T>.Create;
 begin
   inherited Create;
-  FValues := TADMap<ADFloat, T>.Create;
+  FValues := TADMap<ADFloat, T>.Create(ADFloatComparer);
 end;
 
 constructor TADDeltaValue<T>.Create(const AValueNow: T);

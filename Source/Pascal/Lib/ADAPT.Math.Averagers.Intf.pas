@@ -27,7 +27,7 @@ type
   IADAverager<T> = interface(IADInterface)
     // Management Methods
     ///  <returns><c>The Calculated Average for the given Series.</c></returns>
-    function CalculateAverage(const ASeries: IADCollectionList<T>): T; overload;
+    function CalculateAverage(const ASeries: IADListReader<T>): T; overload;
     ///  <returns><c>The Calculated Average for the given Series.</c></returns>
     function CalculateAverage(const ASeries: Array of T; const ASortedState: TADSortedState): T; overload;
   end;
