@@ -55,7 +55,6 @@ type
   IADSorter = interface;
   IADListSorter<T> = interface;
   IADMapSorter<TKey, TValue> = interface;
-  IADSortableMap<TKey, TValue> = interface;
   IADIterableList<T> = interface;
   IADIterableMap<TKey, TValue> = interface;
   IADListReader<T> = interface;
@@ -283,18 +282,6 @@ type
     procedure Sort(AArray: Array of IADKeyValuePair<TKey, TValue>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
   end;
 
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a Map Sorter Type.</c></summary>
-  IADSortableMap<TKey, TValue> = interface(IADInterface)
-    // Getters
-    function GetSorter: IADMapSorter<TKey, TValue>;
-
-    // Setters
-    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
-
-    // Properties
-    property Sorter: IADMapSorter<TKey, TValue> read GetSorter write SetSorter;
-  end;
-
   ///  <summary><c>Common Iterator Methods for all List-Type Collections.</c></summary>
   ///  <remarks>
   ///    <para><c>All List-Type Collection Classes should implement this Interface AS WELL AS their Context-Specific Interface(s).</c></para>
@@ -497,6 +484,8 @@ type
     function GetIterator: IADIterableMap<TKey, TValue>;
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
     function GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
+    ///  <returns><c>The Sorting Algorithm for the Map.</c></returns>
+    function GetSorter: IADMapSorter<TKey, TValue>;
 
     // Management Methods
     ///  <summary><c>Performs a Lookup to determine whether the given Item is in the Map.</c></summary>
@@ -545,6 +534,8 @@ type
     property Iterator: IADIterableMap<TKey, TValue> read GetIterator;
     ///  <returns><c>The Key-Value Pair at the given Index.</c></returns>
     property Pairs[const AIndex: Integer]: IADKeyValuePair<TKey, TValue> read GetPair;
+    ///  <returns><c>The Sorting Algorithm for the Map.</c></returns>
+    property Sorter: IADMapSorter<TKey, TValue> read GetSorter;
   end;
 
   ///  <summary><c>Common Type-Insensitive Read/Write Interface for all Map Collections.</c></summary>.
@@ -556,6 +547,8 @@ type
     // Setters
     ///  <summary><c>Assigns the given Value to the given Key (replacing any existing Value.)</c></summary>
     procedure SetItem(const AKey: TKey; const AValue: TValue);
+    ///  <summary><c>Defines the Sorting Algorithm for the Map.</c></summary>
+    procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
 
     // Management Methods
     ///  <summary><c>Adds the given Key-Value Pair into the Map.</c></summary>
@@ -594,6 +587,9 @@ type
     property Items[const AKey: TKey]: TValue read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this Map.</c></returns>
     property Reader: IADMapReader<TKey, TValue> read GetReader;
+    ///  <summary><c>Defines the Sorting Algorithm for the Map.</c></summary>
+    ///  <returns><c>The Sorting Algorithm for the Map.</c></returns>
+    property Sorter: IADMapSorter<TKey, TValue> read GetSorter write SetSorter;
   end;
 
   ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
