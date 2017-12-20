@@ -402,6 +402,12 @@ type
     // Setters
     procedure SetSorter(const ASorter: IADListSorter<T>);
 
+    // Properties
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
+  end;
+
+  ///  <summary><c>Read-Only Interface for all Sorted List Types.</c></summary>
+  IADSortedListReader<T> = interface(IADListReader<T>)
     // Management Methods
     ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
     ///  <returns>
@@ -441,6 +447,36 @@ type
     ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
     ///  </returns>
     function IndexOf(const AItem: T): Integer;
+  end;
+
+  ///  <summary><c>Read/Write Interface for all Sorted List Types.</c></summary>
+  IADSortedList<T> = interface(IADSortedListReader<T>)
+    // Getters
+    ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
+    function GetReader: IADSortedListReader<T>;
+
+    // Setters
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    procedure SetItem(const AIndex: Integer; const AItem: T);
+
+    // Management Methods
+    ///  <summary><c>Adds the given Item into the Collection.</c></summary>
+    ///  <returns><c>The Index of the Item in the Collection.</c></returns>
+    function Add(const AItem: T): Integer; overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
+    procedure Add(const AItems: IADListReader<T>); overload;
+    ///  <summary><c>Adds multiple Items into the Collection.</c></summary>
+    procedure AddItems(const AItems: Array of T);
+    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
+    procedure Delete(const AIndex: Integer);
+    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
+    procedure DeleteRange(const AFirst, ACount: Integer);
+    ///  <summary><c>Insert the given Item at the specified Index.</c></summary>
+    ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
+    procedure Insert(const AItem: T; const AIndex: Integer);
+    ///  <summary><c>Insert the given Items starting at the specified Index.</c></summary>
+    ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
+    procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
     ///  <summary><c>Deletes the given Item from the List.</c></summary>
     ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
     procedure Remove(const AItem: T);
@@ -448,14 +484,16 @@ type
     ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
     procedure RemoveItems(const AItems: Array of T);
     ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const AComparer: IADComparer<T>);
+    procedure Sort; overload;
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const AComparer: IADComparer<T>); overload;
 
     // Properties
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
-  end;
-
-  IADSortedList<T> = interface(IADSortableList<T>)
-
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
+    ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
+    property Reader: IADSortedListReader<T> read GetReader;
   end;
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all Map Collections.</c></summary>.
@@ -614,7 +652,27 @@ type
     ///  <returns><c>Read-Only Interfaced Reference to this Circular List.</c></returns>
     function GetReader: IADCircularListReader<T>;
 
+    // Setters
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    procedure SetItem(const AIndex: Integer; const AItem: T);
+
+    // Management Methods
+    ///  <summary><c>Adds the given Item into the Collection.</c></summary>
+    ///  <returns><c>The Index of the Item in the Collection.</c></returns>
+    function Add(const AItem: T): Integer; overload;
+    ///  <summary><c>Adds Items from the given List into this List.</c></summary>
+    procedure Add(const AItems: IADListReader<T>); overload;
+    ///  <summary><c>Adds multiple Items into the Collection.</c></summary>
+    procedure AddItems(const AItems: Array of T);
+    ///  <summary><c>Deletes the Item at the given Index.</c></summary>
+    procedure Delete(const AIndex: Integer);
+    ///  <summary><c>Deletes the Items from the Start Index to Start Index + Count.</c></summary>
+    procedure DeleteRange(const AFirst, ACount: Integer);
+
     // Properties
+    ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
+    ///  <returns><c>The Item at the given Index.</c></returns>
+    property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this Circular List.</c></returns>
     property Reader: IADCircularListReader<T> read GetReader;
   end;

@@ -114,7 +114,7 @@ type
   IADStringListReader = IADListReader<String>;
   IADStringCircularList = IADCircularList<String>;
   IADStringCircularListReader = IADCircularListReader<String>;
-  IADStringSortableList = IADSortableList<String>;
+  IADStringSortedList = IADSortedList<String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
@@ -507,18 +507,17 @@ end;
 
 procedure TADUTCollectionsSortedList.Contains;
 var
-  LList: IADStringSortableList;
+  LSortedList: IADStringSortedList;
   I: Integer;
 begin
-  LList := TADStringSortedList.Create(ADStringComparer, 10);
-
+  LSortedList := TADStringSortedList.Create(ADStringComparer, 10);
   // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(BASIC_ITEMS[I]);
+    LSortedList.Add(BASIC_ITEMS[I]);
   // Should NOT contain "Googar"
-  Assert.IsFalse(LList.Contains('Googar'), 'List should NOT contain "Googar" but does.');
+  Assert.IsFalse(LSortedList.Contains('Googar'), 'List should NOT contain "Googar" but does.');
   // Should contain "Bob"
-  Assert.IsTrue(LList.Contains('Bob'), 'List SHOULD contain "Bob" but does not.');
+  Assert.IsTrue(LSortedList.Contains('Bob'), 'List SHOULD contain "Bob" but does not.');
 end;
 
 procedure TADUTCollectionsSortedList.ReaderIntegrity;
