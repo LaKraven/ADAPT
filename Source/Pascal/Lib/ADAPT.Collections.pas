@@ -175,6 +175,7 @@ type
     { IADIterableList<T> }
   protected
     FArray: IADArray<T>;
+    FSorter: IADListSorter<T>;
     // Getters
     { TADCollection Overrides }
     function GetCapacity: Integer; override;
@@ -199,6 +200,8 @@ type
     procedure DeleteActual(const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
     procedure InsertActual(const AItem: T; const AIndex: Integer); virtual; abstract; // Each List Type performs a specific process, so we Override this for each List Type
   public
+    constructor Create(const AInitialCapacity: Integer); override;
+
     // Management Methods
     { TADCollection Overrides }
     procedure Clear; override;
@@ -211,8 +214,10 @@ type
     procedure DeleteRange(const AFirst, ACount: Integer); virtual;
     procedure Insert(const AItem: T; const AIndex: Integer);
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
-    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>); virtual;
-    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); virtual;
+    procedure Sort(const AComparer: IADComparer<T>); overload; virtual;
+    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>); overload; virtual;
+    procedure SortRange(const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); overload; virtual;
+    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); overload; virtual;
 
     { IADIterableList<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -793,6 +798,12 @@ begin
   FCount := 0;
 end;
 
+constructor TADListBase<T>.Create(const AInitialCapacity: Integer);
+begin
+  inherited;
+  FSorter := TADListSorterQuick<T>.Create; // Use the Quick Sorter by default.
+end;
+
 procedure TADListBase<T>.CreateArray(const AInitialCapacity: Integer);
 begin
   FArray := TADArray<T>.Create(AInitialCapacity);
@@ -944,6 +955,16 @@ end;
 procedure TADListBase<T>.Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
 begin
   SortRange(ASorter, AComparer, 0, FCount - 1);
+end;
+
+procedure TADListBase<T>.SortRange(const AComparer: IADComparer<T>; const AFromIndex, AToIndex: Integer);
+begin
+  SortRange(FSorter, AComparer, AFromIndex, AToIndex);
+end;
+
+procedure TADListBase<T>.Sort(const AComparer: IADComparer<T>);
+begin
+  SortRange(FSorter, AComparer, 0, FCount - 1);
 end;
 
 procedure TADListBase<T>.SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex, AToIndex: Integer);
