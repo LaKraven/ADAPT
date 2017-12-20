@@ -289,8 +289,9 @@ type
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
   ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
+  ///    <para><c>Cast to IADSortableList to Sort the List.</c></para>
   ///  </remarks>
-  TADList<T> = class(TADListExpandableBase<T>, IADCompactable, IADExpandable)
+  TADList<T> = class(TADListExpandableBase<T>, IADSortableList<T>)
   protected
     // Overrides
     { TADListBase Overrides }
@@ -307,6 +308,11 @@ type
     constructor Create(const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your Collection using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+
+    // Management Methods
+    { IADSortableList<T> }
+    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>); virtual;
+    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); virtual;
   end;
 
   ///  <summary><c>Generic Sorted List Collection.</c></summary>
@@ -317,24 +323,18 @@ type
   ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
   ///    <para><c>Cast to IADCompactable to define a Compactor Type.</c></para>
   ///    <para><c>Cast to IADExpandable to define an Expander Type.</c></para>
-  ///    <para><c>Use IADSortableList to define a Sorter and perform Lookups.</c></para>
   ///  </remarks>
-  TADSortedList<T> = class(TADListExpandableBase<T>, IADSortedListReader<T>, IADSortedList<T>, IADSortableList<T>, IADComparable<T>)
+  TADSortedList<T> = class(TADListExpandableBase<T>, IADSortedListReader<T>, IADSortedList<T>, IADComparable<T>)
   private
-    FSorter: IADListSorter<T>;
     FComparer: IADComparer<T>;
   protected
     // Getters
-    { IADSortableList<T> }
-    function GetSorter: IADListSorter<T>; virtual;
     { IADComparable<T> }
     function GetComparer: IADComparer<T>; virtual;
     { IADSortedList<T> }
     function GetReader: IADSortedListReader<T>;
 
     // Setters
-    { IADSortableList<T> }
-    procedure SetSorter(const ASorter: IADListSorter<T>); virtual;
     { IADComparable<T> }
     procedure SetComparer(const AComparer: IADComparer<T>); virtual;
 
@@ -378,12 +378,6 @@ type
     { IADSortedList<T> }
     procedure Remove(const AItem: T);
     procedure RemoveItems(const AItems: Array of T);
-    procedure Sort; overload; virtual;
-    procedure Sort(const AComparer: IADComparer<T>); overload;
-
-    // Properties
-    { IADSortableList<T> }
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
   end;
 
   ///  <summary><c>Abstract Base Type for all Generic Map Collection Types.</c></summary>
@@ -1049,6 +1043,16 @@ begin
   FArray[AIndex] := AItem;
 end;
 
+procedure TADList<T>.Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
+begin
+  SortRange(ASorter, AComparer, 0, FCount - 1);
+end;
+
+procedure TADList<T>.SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex, AToIndex: Integer);
+begin
+  ASorter.Sort(FArray, AComparer, AFromIndex, AToIndex);
+end;
+
 { TADSortedList<T> }
 
 function TADSortedList<T>.AddActual(const AItem: T): Integer;
@@ -1189,11 +1193,6 @@ begin
   Result := TADSortedState.ssSorted;
 end;
 
-function TADSortedList<T>.GetSorter: IADListSorter<T>;
-begin
-  Result := FSorter;
-end;
-
 procedure TADSortedList<T>.Remove(const AItem: T);
 var
   LIndex: Integer;
@@ -1214,29 +1213,12 @@ end;
 procedure TADSortedList<T>.SetComparer(const AComparer: IADComparer<T>);
 begin
   FComparer := AComparer;
-  Sort(AComparer); // We need to re-sort the list because we've changed the Sorter
 end;
 
 procedure TADSortedList<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
   DeleteActual(AIndex);
   AddActual(AItem);
-end;
-
-procedure TADSortedList<T>.SetSorter(const ASorter: IADListSorter<T>);
-begin
-  FSorter := ASorter; // Since the Sorter only defines the algorithm for sorting and NOT the sort-order, we don't need to re-sort.
-end;
-
-procedure TADSortedList<T>.Sort;
-begin
-  FSorter.Sort(FArray, FComparer, 0, FCount - 1);
-end;
-
-procedure TADSortedList<T>.Sort(const AComparer: IADComparer<T>);
-begin
-  FComparer := AComparer; // If we're going to sort against a different Comparer, we need to keep hold of the Comparer!
-  Sort;
 end;
 
 function TADSortedList<T>.IndexOf(const AItem: T): Integer;
