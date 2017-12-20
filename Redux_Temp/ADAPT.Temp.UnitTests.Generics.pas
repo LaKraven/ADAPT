@@ -74,6 +74,8 @@ type
     procedure InsertFirst;
     [Test]
     procedure InsertLast;
+    [Test]
+    procedure Sort;
   end;
 
   [TestFixture]
@@ -484,6 +486,24 @@ begin
   LList.Items[5] := 'Googar';
   // Test Capacity has been increased to 15
   Assert.IsTrue(LList[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LList[5]]));
+end;
+
+procedure TADUTCollectionsList.Sort;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  // Sort the List
+  LList.Sort(TADListSorterQuick<String>.Create, ADStringComparer);
+
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LList[I]]));
 end;
 
 { TADUTCollectionsSortedList }
