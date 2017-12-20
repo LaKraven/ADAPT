@@ -54,7 +54,6 @@ type
   IADCompactable = interface;
   IADSorter = interface;
   IADListSorter<T> = interface;
-  IADSortableList<T> = interface;
   IADMapSorter<TKey, TValue> = interface;
   IADSortableMap<TKey, TValue> = interface;
   IADIterableList<T> = interface;
@@ -385,6 +384,10 @@ type
     ///  <summary><c>Insert the given Items starting at the specified Index.</c></summary>
     ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
+    ///  <summary><c>Sort the List between a given Range.</c></summary>
+    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer);
 
     // Properties
     ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
@@ -392,13 +395,6 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
     property Reader: IADListReader<T> read GetReader;
-  end;
-
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
-  IADSortableList<T> = interface(IADList<T>)
-    // Management Methods
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
   end;
 
   ///  <summary><c>Read-Only Interface for all Sorted List Types.</c></summary>
