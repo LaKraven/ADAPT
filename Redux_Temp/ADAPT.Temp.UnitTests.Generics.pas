@@ -88,6 +88,10 @@ type
     procedure ReaderIntegrity;
     [Test]
     procedure Contains;
+    [Test]
+    procedure IndexOf;
+    [Test]
+    procedure Remove;
   end;
 
   [TestFixture]
@@ -573,6 +577,21 @@ begin
   Assert.IsTrue(LSortedList.Contains('Bob'), 'List SHOULD contain "Bob" but does not.');
 end;
 
+procedure TADUTCollectionsSortedList.IndexOf;
+var
+  LSortedList: IADStringSortedList;
+  I: Integer;
+begin
+  LSortedList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LSortedList.Add(BASIC_ITEMS[I]);
+  // Should NOT contain "Googar"
+  Assert.IsTrue(LSortedList.IndexOf('Googar') = -1, 'List should NOT contain "Googar" but does.');
+  // Should contain "Bob"
+  Assert.IsTrue(LSortedList.IndexOf('Bob') = 1, 'List SHOULD contain "Bob" but does not.');
+end;
+
 procedure TADUTCollectionsSortedList.ReaderIntegrity;
 var
   LList: IADStringList;
@@ -591,6 +610,26 @@ begin
     Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LReader[I]]));
     Assert.IsTrue(LReader[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LReader[I]]));
   end;
+end;
+
+procedure TADUTCollectionsSortedList.Remove;
+var
+  LList: IADStringSortedList;
+  I: Integer;
+begin
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  // Remove "Bob"
+  LList.Remove('Bob'); // We know "Bob" sits at Index 1
+
+  // Ensure Item 0 matches
+  Assert.IsTrue(LList[0] = BASIC_ITEMS_SORTED[0], 'Item 0 should match but does not.');
+  // Make sure the rest match their PRE-SORTED COUNTERPARTS!
+  for I := 1 to Length(BASIC_ITEMS_SORTED) - 2 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I+1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I+1], LList[I]]));
 end;
 
 { TADUTCollectionsCircularList }
