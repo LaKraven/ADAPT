@@ -519,7 +519,7 @@ type
     ///  <remarks>
     ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
     ///  </remarks>
-    function EqualItems(const AList: IADMapReader<TKey, TValue>): Boolean;
+    function EqualItems(const AMap: IADMapReader<TKey, TValue>): Boolean;
     ///  <summary><c>Retreives the Index of the given Item within the Map.</c></summary>
     ///  <returns>
     ///    <para>-1<c> if the given Item is not in the Map.</c></para>
