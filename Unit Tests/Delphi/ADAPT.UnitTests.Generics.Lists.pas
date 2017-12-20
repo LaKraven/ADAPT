@@ -10,774 +10,730 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  DUnitX.TestFramework;
+  DUnitX.TestFramework,
+  ADAPT.Intf, ADAPT.Collections.Intf;
 
 type
   [TestFixture]
-  TAdaptUnitTestGenericsList = class(TObject)
+  TADUTCollectionsArray = class(TObject)
   public
     [Test]
     procedure BasicIntegrity;
     [Test]
-    procedure BasicIntegrityStatic;
+    procedure ReaderIntegrity;
     [Test]
-    procedure BasicIteratorBackwardIntegrity;
+    procedure SetCapacity;
     [Test]
-    procedure BasicIteratorForwardIntegrity;
+    procedure SetItem;
     [Test]
-    [TestCase('In Range at 1', '1,True')]
-    [TestCase('Out Of Range at 11', '11,False')]
-    [TestCase('In Range at 2', '2,True')]
-    [TestCase('Out Of Range at 1337', '1337,False')]
-    [TestCase('In Range at 9', '9,True')]
-    [TestCase('Out Of Range at 10', '10,False')]
-    procedure TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
+    procedure Clear;
     [Test]
-    procedure TestDummyObjectIntegrity;
+    procedure DeleteOne;
+    [Test]
+    procedure DeleteRange;
+    [Test]
+    procedure InsertMiddle;
+    [Test]
+    procedure InsertFirst;
+    [Test]
+    procedure InsertLast;
   end;
 
   [TestFixture]
-  TAdaptUnitTestGenericsCircularList = class(TObject)
-  public
+  TADUTCollectionsExpander = class(TObject)
+
+  end;
+
+  [TestFixture]
+  TADUTCollectionsExpanderGeometric = class(TObject)
+
+  end;
+
+  [TestFixture]
+  TADUTCollectionsCompactor = class(TObject)
+
+  end;
+
+  [TestFixture]
+  TADUTCollectionsList = class(TObject)
     [Test]
     procedure BasicIntegrity;
     [Test]
-    procedure BasicIteratorIntegrityNewestToOldest;
+    procedure ReaderIntegrity;
     [Test]
-    procedure BasicIteratorIntegrityOldestToNewest;
+    procedure SetItem;
+    [Test]
+    procedure Clear;
+    [Test]
+    procedure DeleteOne;
+    [Test]
+    procedure DeleteRange;
+    [Test]
+    procedure InsertMiddle;
+    [Test]
+    procedure InsertFirst;
+    [Test]
+    procedure InsertLast;
+    [Test]
+    procedure Sort;
+    [Test]
+    procedure SortRange;
+  end;
+
+  [TestFixture]
+  TADUTCollectionsSortedList = class(TObject)
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure ReaderIntegrity;
+    [Test]
+    procedure Contains;
+    [Test]
+    procedure IndexOf;
+    [Test]
+    procedure Remove;
+  end;
+
+  [TestFixture]
+  TADUTCollectionsCircularList = class(TObject)
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure ReaderIntegrity;
     [Test]
     procedure CircularIntegrity;
-    [Test]
-    procedure CircularIntegrityStatic;
-    [Test]
-    procedure CircularIteratorIntegrityNewestToOldest;
-    [Test]
-    procedure CircularIteratorIntegrityOldestToNewest;
-    [Test]
-    procedure VerifyNewestItemAfterCycle;
-    [Test]
-    procedure VeryifyNewestItemEnd;
-    [Test]
-    procedure VerifyNewestItemIncompleteList;
-    [Test]
-    procedure VerifyNewestItemOnly;
-    [Test]
-    procedure VerifyOldestItemAfterCycle;
-    [Test]
-    procedure VeryifyOldestItemEnd;
-    [Test]
-    procedure VerifyOldestItemIncompleteList;
-    [Test]
-    procedure VerifyOldestItemOnly;
   end;
 
   [TestFixture]
-  TAdaptUnitTestGenericsSortedList_String = class(TObject)
+  TADUTCollectionsMap = class(TObject)
   public
     [Test]
-    procedure Add;
-    [Test]
-    procedure AddItems_FromArray;
-    [Test]
-    procedure AddItems_FromSortedList;
-    [Test]
-    procedure Compact;
-    [Test]
-    procedure Contains;
-    [Test]
-    procedure ContainsAll;
-    [Test]
-    procedure ContainsAny;
-    [Test]
-    procedure ContainsNone;
-    [Test]
-    procedure Delete;
-    [Test]
-    procedure IndexOf_PreOrdered;
-    [Test]
-    procedure IndexOf_Unordered;
-  end;
-
-  [TestFixture]
-  TAdaptUnitTestGenericsSortedList_Integer = class(TObject)
-  public
-    [Test]
-    procedure Add;
-    [Test]
-    procedure AddItems_FromArray;
-    [Test]
-    procedure AddItems_FromSortedList;
-    [Test]
-    procedure Compact;
-    [Test]
-    procedure Contains;
-    [Test]
-    procedure ContainsAll;
-    [Test]
-    procedure ContainsAny;
-    [Test]
-    procedure ContainsNone;
-    [Test]
-    procedure Delete;
-    [Test]
-    procedure IndexOf_PreOrdered;
-    [Test]
-    procedure IndexOf_Unordered;
+    procedure BasicIntegrity;
   end;
 
 implementation
 
 uses
-  ADAPT, ADAPT.Intf,
-  ADAPT.Comparers,
-  ADAPT.Collections, ADAPT.Collections.Intf,
-  ADAPT.UnitTests.Generics.Common;
+  ADAPT, ADAPT.Collections, ADAPT.Comparers;
 
 type
-  IStringList = IADList<String>;
-  TStringList = class(TADList<String>);
-  IDummyList = IADList<TDummyObject>;
-  TDummyList = class(TADObjectList<TDummyObject>);
+  // Specialized Interfaces
+  IADStringArray = IADArray<String>;
+  IADStringArrayReader = IADArrayReader<String>;
+  IADStringList = IADList<String>;
+  IADStringListReader = IADListReader<String>;
+  IADStringCircularList = IADCircularList<String>;
+  IADStringCircularListReader = IADCircularListReader<String>;
+  IADStringSortedList = IADSortedList<String>;
+  IADStringStringMap = IADMap<String, String>;
+  // Specialized Classes
+  TADStringArray = TADArray<String>;
+  TADStringList = TADList<String>;
+  TADStringSortedList = TADSortedList<String>;
+  TADStringCircularList = TADCircularList<String>;
+  TADStringStringMap = TADMap<String, String>;
 
-  ICircularStringList = IADCircularList<String>;
-  TCircularStringList = TADCircularList<String>;
+  TMapTestItem = record
+    Key: String;
+    Value: String;
+  end;
 
-  IIntegerSortedList = IADSortedList<Integer>;
-  IStringSortedList = IADSortedList<String>;
-  TIntegerSortedList = TADSortedList<Integer>;
-  TStringSortedList = class(TADSortedList<String>);
+const
+  BASIC_ITEMS: Array[0..9] of String = (
+                                         'Bob',
+                                         'Terry',
+                                         'Andy',
+                                         'Rick',
+                                         'Sarah',
+                                         'Ellen',
+                                         'Hugh',
+                                         'Jack',
+                                         'Marie',
+                                         'Ninette'
+                                       );
 
-{ TAdaptUnitTestGenericsList }
+  BASIC_ITEMS_SORTED: Array[0..9] of String = (
+                                                'Andy',
+                                                'Bob',
+                                                'Ellen',
+                                                'Hugh',
+                                                'Jack',
+                                                'Marie',
+                                                'Ninette',
+                                                'Rick',
+                                                'Sarah',
+                                                'Terry'
+                                              );
 
-procedure TAdaptUnitTestGenericsList.BasicIntegrity;
+  BASIC_ITEMS_HALF_SORTED: Array[0..9] of String = (
+                                                     'Andy',
+                                                     'Bob',
+                                                     'Rick',
+                                                     'Sarah',
+                                                     'Terry',
+                                                     'Ellen',
+                                                     'Hugh',
+                                                     'Jack',
+                                                     'Marie',
+                                                     'Ninette'
+                                                   );
+
+  MAP_ITEMS: Array[0..9] of TMapTestItem = (
+                                             (Key: 'Foo'; Value: 'Bar'),
+                                             (Key: 'Donald'; Value: 'Duck'),
+                                             (Key: 'Mickey'; Value: 'Mouse'),
+                                             (Key: 'Winnie'; Value: 'Pooh'),
+                                             (Key: 'Goof'; Value: 'Troop'),
+                                             (Key: 'Tale'; Value: 'Spin'),
+                                             (Key: 'Captain'; Value: 'Kangaroo'),
+                                             (Key: 'Major'; Value: 'Tom'),
+                                             (Key: 'Gummie'; Value: 'Bears'),
+                                             (Key: 'Whacky'; Value: 'Races')
+                                           );
+
+  MAP_ITEMS_SORTED: Array[0..9] of TMapTestItem = (
+                                                    (Key: 'Captain'; Value: 'Kangaroo'),
+                                                    (Key: 'Donald'; Value: 'Duck'),
+                                                    (Key: 'Foo'; Value: 'Bar'),
+                                                    (Key: 'Goof'; Value: 'Troop'),
+                                                    (Key: 'Gummie'; Value: 'Bears'),
+                                                    (Key: 'Major'; Value: 'Tom'),
+                                                    (Key: 'Mickey'; Value: 'Mouse'),
+                                                    (Key: 'Tale'; Value: 'Spin'),
+                                                    (Key: 'Whacky'; Value: 'Races'),
+                                                    (Key: 'Winnie'; Value: 'Pooh')
+                                                  );
+
+{ TADUTCollectionsArray }
+
+procedure TADUTCollectionsArray.BasicIntegrity;
 var
+  LArray: IADStringArray;
   I: Integer;
-  LList: IStringList;
 begin
-  LList := TStringList.Create(0);
-  LList.AddItems(BASIC_ITEMS);
-
-  for I := 0 to LList.Count - 1 do
-    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I]]));
-end;
-
-procedure TAdaptUnitTestGenericsList.BasicIntegrityStatic;
-var
-  LList: IStringList;
-begin
-  LList := TStringList.Create(0);
-  LList.AddItems(ALPHABET);
-
-  Assert.IsTrue(LList.Items[0] = 'A', Format('Item 0 should be "A" but has come up as "%s"', [LList.Items[0]]));
-  Assert.IsTrue(LList.Items[1] = 'B', Format('Item 1 should be "B" but has come up as "%s"', [LList.Items[1]]));
-  Assert.IsTrue(LList.Items[2] = 'C', Format('Item 2 should be "C" but has come up as "%s"', [LList.Items[2]]));
-  Assert.IsTrue(LList.Items[3] = 'D', Format('Item 3 should be "D" but has come up as "%s"', [LList.Items[3]]));
-  Assert.IsTrue(LList.Items[4] = 'E', Format('Item 4 should be "E" but has come up as "%s"', [LList.Items[4]]));
-  Assert.IsTrue(LList.Items[5] = 'F', Format('Item 5 should be "F" but has come up as "%s"', [LList.Items[5]]));
-  Assert.IsTrue(LList.Items[6] = 'G', Format('Item 6 should be "G" but has come up as "%s"', [LList.Items[6]]));
-  Assert.IsTrue(LList.Items[7] = 'H', Format('Item 7 should be "H" but has come up as "%s"', [LList.Items[7]]));
-  Assert.IsTrue(LList.Items[8] = 'I', Format('Item 8 should be "I" but has come up as "%s"', [LList.Items[8]]));
-  Assert.IsTrue(LList.Items[9] = 'J', Format('Item 9 should be "J" but has come up as "%s"', [LList.Items[9]]));
-end;
-
-procedure TAdaptUnitTestGenericsList.BasicIteratorBackwardIntegrity;
-var
-  I: Integer;
-  LList: IStringList;
-begin
-  LList := TStringList.Create(0);
-  LList.AddItems(BASIC_ITEMS);
-
-  I := High(BASIC_ITEMS);
-
-  LList.IterateBackward(procedure(const AItem: String)
-                        begin
-                          Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
-                          Dec(I);
-                        end);
-
-  Assert.IsTrue(I = -1, Format('Iterator should have Index of -1 but instead shows Index of %d', [I]));
-end;
-
-procedure TAdaptUnitTestGenericsList.BasicIteratorForwardIntegrity;
-var
-  I: Integer;
-  LList: IStringList;
-begin
-  LList := TStringList.Create(0);
-  LList.AddItems(BASIC_ITEMS);
-
-  I := 0;
-
-  LList.IterateForward(procedure(const AItem: String)
-                       begin
-                         Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
-                         Inc(I);
-                       end);
-
-  Assert.IsTrue(I = Length(BASIC_ITEMS), Format('Iterator should have Index of %d but instead shows Index of %d', [Length(BASIC_ITEMS), I]));
-end;
-
-procedure TAdaptUnitTestGenericsList.TestDummyObjectIntegrity;
-var
-  I: Integer;
-  LList: IDummyList;
-begin
-  LList := TDummyList.Create;
+  LArray := TADStringArray.Create(10);
+  // Test Capacity has been Initialized
+  Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
+  // Add our Basic Test Items
   for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
-    LList.Add(TDummyObject.Create(BASIC_ITEMS[I]));
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Make sure they match!
+  for I := 0 to LArray.Capacity - 1 do
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
+end;
+
+procedure TADUTCollectionsArray.Clear;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Increase Capacity
+  LArray.Capacity := 15;
+  // Clear the Array
+  LArray.Clear;
+  // Capacity should return to 10
+  Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
+  // There should be no items in the Array, so attempting to reference any should result in an Access Violation Exception.
+  Assert.WillRaiseAny(procedure begin LArray[0]; end, 'Item 0 request should have raised an Exception, it did not! List must not be empty!');
+end;
+
+procedure TADUTCollectionsArray.DeleteOne;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Test Capacity has been Initialized
+  Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Remove Item 5
+  LArray.Delete(5);
+  // Item 5 should now equal Item 6 in the BASIC_ITEMS Array.
+  Assert.IsTrue(LArray[5] = BASIC_ITEMS[6], Format('Array Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[6], LArray[5]]));
+end;
+
+procedure TADUTCollectionsArray.DeleteRange;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Test Capacity has been Initialized
+  Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Remove Items 5 through 7
+  LArray.Delete(5, 2);
+  // Item 5 should now equal Item 7 in the BASIC_ITEMS Array.
+  Assert.IsTrue(LArray[5] = BASIC_ITEMS[7], Format('Array Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[7], LArray[5]]));
+end;
+
+procedure TADUTCollectionsArray.InsertFirst;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Increase capacity to hold one more item
+  LArray.Capacity := 11;
+  // Insert a new Item at Index 0
+  LArray.Insert('Googar', 0);
+  // Index 0 should be "Googar"
+    Assert.IsTrue(LArray[0] = 'Googar', Format('Index 0 should be "Googar" but instead got "%s"', [LArray[0]]));
+  // Index 1 through 10 should equal BASIC_ITEMS 0 through 9
+  for I := 1 to 10 do
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LArray.Items[I]]));
+end;
+
+procedure TADUTCollectionsArray.InsertLast;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Increase capacity to hold one more item
+  LArray.Capacity := 11;
+  // Insert a new Item at Index 10
+  LArray.Insert('Googar', 10);
+  // Index 10 should be "Googar"
+    Assert.IsTrue(LArray[10] = 'Googar', Format('Index 10 should be "Googar" but instead got "%s"', [LArray[10]]));
+  // Index 0 through 9 should equal BASIC_ITEMS 0 through 9
+  for I := 0 to 9 do
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
+end;
+
+procedure TADUTCollectionsArray.InsertMiddle;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Increase capacity to hold one more item
+  LArray.Capacity := 11;
+  // Insert a new Item at Index 5
+  LArray.Insert('Googar', 5);
+  // Index 0 through 4 should match...
+  for I := 0 to 4 do
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArray.Items[I]]));
+  // Index 5 should be "Googar"
+    Assert.IsTrue(LArray[5] = 'Googar', Format('Index 5 should be "Googar" but instead got "%s"', [LArray[5]]));
+  // Index 6 through 10 should equal BASIC_ITEMS 5 through 9
+  for I := 6 to 10 do
+    Assert.IsTrue(LArray.Items[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LArray.Items[I]]));
+end;
+
+procedure TADUTCollectionsArray.ReaderIntegrity;
+var
+  LArray: IADStringArray;
+  LArrayReader: IADStringArrayReader;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Obtain the Read-Only Interface Reference
+  LArrayReader := LArray.Reader;
+  // Make sure the items match
+  for I := 0 to LArrayReader.Capacity - 1 do
+    Assert.IsTrue(LArrayReader.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LArrayReader.Items[I]]));
+end;
+
+procedure TADUTCollectionsArray.SetCapacity;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Test Capacity has been Initialized
+  Assert.IsTrue(LArray.Capacity = 10, Format('Capacity Expected 10, got %d', [LArray.Capacity]));
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Modify our Capacity
+  LArray.Capacity := 15;
+  // Test Capacity has been increased to 15
+  Assert.IsTrue(LArray.Capacity = 15, Format('Capacity Expected 15, got %d', [LArray.Capacity]));
+end;
+
+procedure TADUTCollectionsArray.SetItem;
+var
+  LArray: IADStringArray;
+  I: Integer;
+begin
+  LArray := TADStringArray.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LArray.Items[I] := BASIC_ITEMS[I];
+  // Modify Item 5
+  LArray.Items[5] := 'Googar';
+  // Test Capacity has been increased to 15
+  Assert.IsTrue(LArray[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LArray[5]]));
+end;
+
+{ TADUTCollectionsList }
+
+procedure TADUTCollectionsList.BasicIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.Clear;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+  begin
+    LList.Add(BASIC_ITEMS[I]);
+    Assert.IsTrue(LList.Count = I + 1, Format('Count should be %d, instead got %d', [I + 1, LList.Count]));
+  end;
+  // Clear the List
+  LList.Clear;
+  // The Count should now be 0
+  Assert.IsTrue(LList.Count = 0, Format('Count should be 0, instead got %d', [LList.Count]));
+  // There should be no items in the Array, so attempting to reference any should result in an Access Violation Exception.
+  Assert.WillRaiseAny(procedure begin LList[0]; end, 'Item 0 request should have raised an Exception, it did not! List must not be empty!');
+end;
+
+procedure TADUTCollectionsList.DeleteOne;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Remove Item 5
+  LList.Delete(5);
+  // Item 5 should now equal Item 6 in the BASIC_ITEMS List.
+  Assert.IsTrue(LList[5] = BASIC_ITEMS[6], Format('List Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[6], LList[5]]));
+end;
+
+procedure TADUTCollectionsList.DeleteRange;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Remove Items 5 through 7
+  LList.DeleteRange(5, 2);
+  // Item 5 should now equal Item 7 in the BASIC_ITEMS List.
+  Assert.IsTrue(LList[5] = BASIC_ITEMS[7], Format('List Item 5 should be "%s" but instead got "%s".', [BASIC_ITEMS[7], LList[5]]));
+end;
+
+procedure TADUTCollectionsList.InsertFirst;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 0
+  LList.Insert('Googar', 0);
+  // Index 0 should be "Googar"
+    Assert.IsTrue(LList[0] = 'Googar', Format('Index 0 should be "Googar" but instead got "%s"', [LList[0]]));
+  // Index 1 through 10 should equal BASIC_ITEMS 0 through 9
+  for I := 1 to 10 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.InsertLast;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 10
+  LList.Insert('Googar', 10);
+  // Index 10 should be "Googar"
+    Assert.IsTrue(LList[10] = 'Googar', Format('Index 10 should be "Googar" but instead got "%s"', [LList[10]]));
+  // Index 0 through 9 should equal BASIC_ITEMS 0 through 9
+  for I := 0 to 9 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.InsertMiddle;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Insert a new Item at Index 5
+  LList.Insert('Googar', 5);
+  // Index 0 through 4 should match...
+  for I := 0 to 4 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+  // Index 5 should be "Googar"
+    Assert.IsTrue(LList[5] = 'Googar', Format('Index 5 should be "Googar" but instead got "%s"', [LList[5]]));
+  // Index 6 through 10 should equal BASIC_ITEMS 5 through 9
+  for I := 6 to 10 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I-1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I-1], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.ReaderIntegrity;
+var
+  LList: IADStringList;
+  LListReader: IADStringListReader;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Obtain the Reader Interface
+  LListReader := LList.Reader;
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LListReader[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LListReader[I]]));
+end;
+
+procedure TADUTCollectionsList.SetItem;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Modify Item 5
+  LList.Items[5] := 'Googar';
+  // Test Capacity has been increased to 15
+  Assert.IsTrue(LList[5] = 'Googar', Format('Item 5 should be "Googar", got "%s"', [LList[5]]));
+end;
+
+procedure TADUTCollectionsList.Sort;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  // Sort the List
+  LList.Sort(ADStringComparer);
+
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsList.SortRange;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  // Sort the List from Index 0 to Index 4 (half the list)
+  LList.SortRange(ADStringComparer, 0, 4);
+
+  // Make sure they match!
   for I := 0 to LList.Count - 1 do
-    Assert.IsTrue(LList.Items[I].Foo = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I].Foo]));
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_HALF_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_HALF_SORTED[I], LList[I]]));
 end;
 
-procedure TAdaptUnitTestGenericsList.TestItemInRange(const AIndex: Integer; const AExpectInRange: Boolean);
+{ TADUTCollectionsSortedList }
+
+procedure TADUTCollectionsSortedList.BasicIntegrity;
 var
+  LList: IADStringList;
   I: Integer;
-  LList: IStringList;
 begin
-  LList := TStringList.Create(0);
-  for I := Low(LETTERS) to High(LETTERS) do
-    LList.Add(LETTERS[I]);
-
-  if not (AExpectInRange) then
-    Assert.WillRaise(procedure
-                     begin
-                       LList.Items[AIndex]
-                     end,
-                     EADGenericsRangeException,
-                     Format('Item %d SHOULD be out of range!', [AIndex]))
-  else
-    Assert.IsTrue(LList.Items[AIndex] = LETTERS[AIndex], Format('Item %d did not match. Expected "%s" but got "%s"', [AIndex, LETTERS[AIndex], LList.Items[AIndex]]))
-end;
-
-{ TAdaptUnitTestGenericsCircularList }
-
-procedure TAdaptUnitTestGenericsCircularList.BasicIntegrity;
-var
-  I: Integer;
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  LList.AddItems(BASIC_ITEMS);
-
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match their PRE-SORTED COUNTERPARTS!
   for I := 0 to LList.Count - 1 do
-    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList.Items[I]]));
+  begin
+    Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LList[I]]));
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LList[I]]));
+  end;
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.BasicIteratorIntegrityNewestToOldest;
+procedure TADUTCollectionsSortedList.Contains;
 var
+  LSortedList: IADStringSortedList;
   I: Integer;
-  LList: ICircularStringList;
 begin
-  LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  LList.AddItems(BASIC_ITEMS);
-
-  I := High(BASIC_ITEMS);
-
-  LList.IterateBackward(procedure(const AItem: String)
-                              begin
-                                Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
-                                Dec(I);
-                              end);
-
-  Assert.IsTrue(I = -1, Format('Iterator should have Index of -1 but instead shows Index of %d', [I]));
+  LSortedList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LSortedList.Add(BASIC_ITEMS[I]);
+  // Should NOT contain "Googar"
+  Assert.IsFalse(LSortedList.Contains('Googar'), 'List should NOT contain "Googar" but does.');
+  // Should contain "Bob"
+  Assert.IsTrue(LSortedList.Contains('Bob'), 'List SHOULD contain "Bob" but does not.');
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.BasicIteratorIntegrityOldestToNewest;
+procedure TADUTCollectionsSortedList.IndexOf;
 var
+  LSortedList: IADStringSortedList;
   I: Integer;
-  LList: ICircularStringList;
 begin
-  LList := TCircularStringList.Create(Length(BASIC_ITEMS));
-  LList.AddItems(BASIC_ITEMS);
-
-  I := 0;
-
-  LList.IterateForward(procedure(const AItem: String)
-                       begin
-                         Assert.IsTrue(AItem = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], AItem]));
-                         Inc(I);
-                       end);
-
-  Assert.IsTrue(I = Length(BASIC_ITEMS), Format('Iterator should have Index of %d but instead shows Index of %d', [Length(BASIC_ITEMS), I]));
+  LSortedList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LSortedList.Add(BASIC_ITEMS[I]);
+  // Should NOT contain "Googar"
+  Assert.IsTrue(LSortedList.IndexOf('Googar') = -1, 'List should NOT contain "Googar" but does.');
+  // Should contain "Bob"
+  Assert.IsTrue(LSortedList.IndexOf('Bob') = 1, 'List SHOULD contain "Bob" but does not.');
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.CircularIntegrity;
-const
-  MAX_CAPACITY: Integer = Length(BASIC_ITEMS) div 2;
+procedure TADUTCollectionsSortedList.ReaderIntegrity;
 var
+  LList: IADStringList;
+  LReader: IADStringListReader;
   I: Integer;
-  LList: ICircularStringList;
 begin
-  LList := TCircularStringList.Create(MAX_CAPACITY);
-  LList.AddItems(BASIC_ITEMS);
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Grab our Reader Interface
+  LReader := LList.Reader;
+  // Make sure they match their PRE-SORTED COUNTERPARTS!
+  for I := 0 to LReader.Count - 1 do
+  begin
+    Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LReader[I]]));
+    Assert.IsTrue(LReader[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LReader[I]]));
+  end;
+end;
 
+procedure TADUTCollectionsSortedList.Remove;
+var
+  LList: IADStringSortedList;
+  I: Integer;
+begin
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+
+  // Remove "Bob"
+  LList.Remove('Bob'); // We know "Bob" sits at Index 1
+
+  // Ensure Item 0 matches
+  Assert.IsTrue(LList[0] = BASIC_ITEMS_SORTED[0], 'Item 0 should match but does not.');
+  // Make sure the rest match their PRE-SORTED COUNTERPARTS!
+  for I := 1 to Length(BASIC_ITEMS_SORTED) - 2 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I+1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I+1], LList[I]]));
+end;
+
+{ TADUTCollectionsCircularList }
+
+procedure TADUTCollectionsCircularList.BasicIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringCircularList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LList[I]]));
+end;
+
+procedure TADUTCollectionsCircularList.CircularIntegrity;
+var
+  LList: IADStringList;
+  I: Integer;
+begin
+  LList := TADStringCircularList.Create(5);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Make sure they match the SECOND HALF of the BASIC_ITEMS Array!
   for I := 0 to LList.Count - 1 do
-    Assert.IsTrue(LList.Items[I] = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], LList.Items[I]]));
+    Assert.IsTrue(LList[I] = BASIC_ITEMS[I+5], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I+5], LList[I]]));
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.CircularIntegrityStatic;
+procedure TADUTCollectionsCircularList.ReaderIntegrity;
 var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(10);
-  LList.AddItems(ALPHABET);
-
-  Assert.IsTrue(LList.Items[0] = 'Q', Format('Item 0 should be "Q" but has come up as "%s"', [LList.Items[0]]));
-  Assert.IsTrue(LList.Items[1] = 'R', Format('Item 1 should be "R" but has come up as "%s"', [LList.Items[1]]));
-  Assert.IsTrue(LList.Items[2] = 'S', Format('Item 2 should be "S" but has come up as "%s"', [LList.Items[2]]));
-  Assert.IsTrue(LList.Items[3] = 'T', Format('Item 3 should be "T" but has come up as "%s"', [LList.Items[3]]));
-  Assert.IsTrue(LList.Items[4] = 'U', Format('Item 4 should be "U" but has come up as "%s"', [LList.Items[4]]));
-  Assert.IsTrue(LList.Items[5] = 'V', Format('Item 5 should be "V" but has come up as "%s"', [LList.Items[5]]));
-  Assert.IsTrue(LList.Items[6] = 'W', Format('Item 6 should be "W" but has come up as "%s"', [LList.Items[6]]));
-  Assert.IsTrue(LList.Items[7] = 'X', Format('Item 7 should be "X" but has come up as "%s"', [LList.Items[7]]));
-  Assert.IsTrue(LList.Items[8] = 'Y', Format('Item 8 should be "Y" but has come up as "%s"', [LList.Items[8]]));
-  Assert.IsTrue(LList.Items[9] = 'Z', Format('Item 9 should be "Z" but has come up as "%s"', [LList.Items[9]]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.CircularIteratorIntegrityNewestToOldest;
-const
-  MAX_CAPACITY: Integer = Length(BASIC_ITEMS) div 2;
-var
+  LList: IADStringList;
+  LReader: IADStringCircularListReader;
   I: Integer;
-  LList: ICircularStringList;
 begin
-  LList := TCircularStringList.Create(MAX_CAPACITY);
-  LList.AddItems(BASIC_ITEMS);
-
-  I := MAX_CAPACITY;
-
-  LList.IterateBackward(procedure(const AItem: String)
-                        begin
-                          Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY - 1], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY - 1], AItem]));
-                          Dec(I);
-                        end);
-
-  Assert.IsTrue(I = 0, Format('Iterator should have Index of 0 but instead shows Index of %d', [I]));
+  LList := TADStringCircularList.Create(10);
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Get our Reader interface
+  LReader := IADStringCircularListReader(LList.Reader);
+  // Make sure they match!
+  for I := 0 to Length(BASIC_ITEMS) - 1 do
+    Assert.IsTrue(LReader[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LReader[I]]));
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.CircularIteratorIntegrityOldestToNewest;
-const
-  MAX_CAPACITY: Integer = Length(BASIC_ITEMS) div 2;
+{ TADUTCollectionsMap }
+
+procedure TADUTCollectionsMap.BasicIntegrity;
 var
+  LMap: IADStringStringMap;
+  LItem: IADKeyValuePair<String, String>;
   I: Integer;
-  LList: ICircularStringList;
 begin
-  LList := TCircularStringList.Create(MAX_CAPACITY);
-  LList.AddItems(BASIC_ITEMS);
+  LMap := TADStringStringMap.Create(ADStringComparer);
 
-  I := 0;
+  // Add the Test Items
+  for I := Low(MAP_ITEMS) to High(MAP_ITEMS) do
+    LMap.Add(MAP_ITEMS[I].Key, MAP_ITEMS[I].Value);
 
-  LList.IterateForward(procedure(const AItem: String)
-                       begin
-                         Assert.IsTrue(AItem = BASIC_ITEMS[I + MAX_CAPACITY], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I + MAX_CAPACITY], AItem]));
-                         Inc(I);
-                       end);
-
-  Assert.IsTrue(I = MAX_CAPACITY, Format('Iterator should have Index of %d but instead shows Index of %d', [MAX_CAPACITY, I]));
+  // Verify they exist
+  for I := 0 to LMap.Count - 1 do
+  begin
+    LItem := LMap.Pairs[I];
+    Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I].Key) and (LItem.Value = MAP_ITEMS_SORTED[I].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I].Key, MAP_ITEMS_SORTED[I].Value, LItem.Key, LItem.Value]));
+  end;
 end;
 
-procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemAfterCycle;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(5);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
-  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
-  Assert.IsTrue(LList.Newest = 'H', Format('Newest Item should be "H" but instead got "%s"', [LList.Newest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VeryifyNewestItemEnd;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(5);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
-  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
-  Assert.IsTrue(LList.Newest = 'E', Format('Newest Item should be "E" but instead got "%s"', [LList.Newest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemIncompleteList;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(10);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
-  Assert.IsTrue(LList.NewestIndex = 4, Format('Newest Item Index should be 4 but instead got %d', [LList.NewestIndex]));
-  Assert.IsTrue(LList.Newest = 'E', Format('Newest Item should be "E" but instead got "%s"', [LList.Newest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VerifyNewestItemOnly;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(10);
-  LList.Add('Foo');
-  Assert.IsTrue(LList.NewestIndex = 0, Format('Newest Item Index should be 0 but instead got %d', [LList.NewestIndex]));
-  Assert.IsTrue(LList.Newest = 'Foo', Format('Newest Item should be "Foo" but instead got "%s"', [LList.Newest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemAfterCycle;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(5);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
-  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
-  Assert.IsTrue(LList.Oldest = 'D', Format('Oldest Item should be "D" but instead got "%s"', [LList.Oldest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VeryifyOldestItemEnd;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(5);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']);
-  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
-  Assert.IsTrue(LList.Oldest = 'E', Format('Oldest Item should be "E" but instead got "%s"', [LList.Oldest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemIncompleteList;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(10);
-  LList.AddItems(['A', 'B', 'C', 'D', 'E']);
-  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
-  Assert.IsTrue(LList.Oldest = 'A', Format('Oldest Item should be "A" but instead got "%s"', [LList.Oldest]));
-end;
-
-procedure TAdaptUnitTestGenericsCircularList.VerifyOldestItemOnly;
-var
-  LList: ICircularStringList;
-begin
-  LList := TCircularStringList.Create(10);
-  LList.Add('Foo');
-  Assert.IsTrue(LList.OldestIndex = 0, Format('Oldest Item Index should be 0 but instead got %d', [LList.OldestIndex]));
-  Assert.IsTrue(LList.Oldest = 'Foo', Format('Oldest Item should be "Foo" but instead got "%s"', [LList.Oldest]));
-end;
-
-{ TAdaptUnitTestGenericsSortedList }
-
-procedure TAdaptUnitTestGenericsSortedList_String.Add;
-var
-  LList: IStringSortedList;
-  LIndex: Integer;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 1);
-  LIndex := LList.Add('Foo');
-  Assert.IsTrue(LIndex = 0, Format('Item SHOULD have been Added at Index 0, instead was added at Index %d.', [LIndex]));
-  Assert.IsTrue(LList.Count = 1, Format('List SHOULD contain 1 Item, instead contains %d.', [LList.Count]));
-  Assert.IsTrue(LList[0] = 'Foo', Format('List Item 0 should be "Foo", is instead "%s".', [LList[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.AddItems_FromArray;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(BASIC_ITEMS);
-
-  Assert.IsTrue(LList.Count = Length(BASIC_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_ITEMS), LList.Count]));
-  Assert.IsTrue(LList[0] = 'Andy', Format('List Item 0 should be "Andy", is instead "%s".', [LList[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.AddItems_FromSortedList;
-var
-  LListOrigin, LListDestination: IStringSortedList;
-begin
-  LListOrigin := TStringSortedList.Create(ADStringComparer, 10);
-  LListOrigin.AddItems(BASIC_ITEMS);
-
-  LListDestination := TStringSortedList.Create(ADStringComparer, LListOrigin.Count);
-  LListDestination.Add(LListOrigin);
-
-  Assert.IsTrue(LListDestination.Count = Length(BASIC_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_ITEMS), LListDestination.Count]));
-  Assert.IsTrue(LListDestination[0] = 'Andy', Format('List Item 0 should be "Andy", is instead "%s".', [LListDestination[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.Compact;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 1000);
-  Assert.IsFalse(LList.IsCompact, 'List should NOT be Compact yet!');
-  LList.AddItems(BASIC_ITEMS);
-  Assert.IsFalse(LList.IsCompact, 'List should NOT be Compact yet!');
-  LList.Compact;
-  Assert.IsTrue(LList.Count = Length(BASIC_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_ITEMS), LList.Count]));
-  Assert.IsTrue(LList.IsCompact, 'List SHOULD be Compact, but is not!');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.Contains;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(BASIC_ITEMS);
-
-  Assert.IsTrue(LList.Contains(BASIC_ITEMS[0]), Format('List does not contain Item "%s".', [BASIC_ITEMS[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.ContainsAll;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(BASIC_ITEMS);
-
-  Assert.IsTrue(LList.ContainsAll(BASIC_ITEMS), 'List does not contain ALL source Items.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.ContainsAny;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(BASIC_ITEMS);
-
-  Assert.IsTrue(LList.ContainsAny(['A', 'B', 'C', 'D', 'Bob']), 'List DOES NOT contain ANY source Items.');
-  Assert.IsFalse(LList.ContainsAny(['A', 'B', 'C', 'D', 'E']), 'List SHOULD NOT contain ANY source Items, but does.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.ContainsNone;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(BASIC_ITEMS);
-  Assert.IsTrue(LList.ContainsNone(['A', 'B', 'C', 'D', 'E', 'F']), 'List SHOULD NOT contain ANY source Items, but does.');
-  Assert.IsFalse(LList.ContainsNone(['A', 'B', 'C', 'D', 'Bob']), 'List contains at least one source Item, but claims not to.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.Delete;
-var
-  LList: IStringSortedList;
-begin
-  LList := TStringSortedList.Create(ADStringComparer, 10);
-  LList.AddItems(NAMES_IN_ORDER);
-
-  Assert.IsTrue(SizeOf(String) = 4, Format('Size of String is %d', [SizeOf(String)]));
-
-  LList.Delete(3);
-
-  // Verify Count
-  Assert.IsTrue(LList.Count = Length(NAMES_IN_ORDER) - 1, Format('List SHOULD contain %d Items, instead contains %d.', [Length(NAMES_IN_ORDER) - 1, LList.Count]));
-  // Verify "Hugh" no longer in List.
-  Assert.IsFalse(LList.Contains('Hugh'), 'List should NOT contain Item "Hugh", but does!');
-  // Verify Integrity of remaining Items...
-  Assert.IsTrue(LList[0] = 'Andy', Format('List Item 0 should be "Andy", is instead "%s".', [LList[0]]));
-  Assert.IsTrue(LList[1] = 'Bob', Format('List Item 1 should be "Bob", is instead "%s".', [LList[1]]));
-  Assert.IsTrue(LList[2] = 'Ellen', Format('List Item 2 should be "Ellen", is instead "%s".', [LList[2]]));
-  Assert.IsTrue(LList[3] = 'Jack', Format('List Item 3 should be "Jack", is instead "%s".', [LList[3]]));
-  Assert.IsTrue(LList[4] = 'Marie', Format('List Item 4 should be "Marie", is instead "%s".', [LList[4]]));
-  Assert.IsTrue(LList[5] = 'Ninette', Format('List Item 5 should be "Ninette", is instead "%s".', [LList[5]]));
-  Assert.IsTrue(LList[6] = 'Rick', Format('List Item 6 should be "Rick", is instead "%s".', [LList[6]]));
-  Assert.IsTrue(LList[7] = 'Sarah', Format('List Item 7 should be "Sarah", is instead "%s".', [LList[7]]));
-  Assert.IsTrue(LList[8] = 'Terry', Format('List Item 8 should be "Terry", is instead "%s".', [LList[8]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.IndexOf_PreOrdered;
-var
-  LSortedList: IStringSortedList;
-begin
-  LSortedList := TStringSortedList.Create(ADStringComparer, 10);
-  LSortedList.AddItems(NAMES_IN_ORDER);
-  Assert.IsTrue(LSortedList.IndexOf('Andy') = 0, Format('Index 0 should be "Andy", got instead "%s"', [LSortedList[0]]));
-  Assert.IsTrue(LSortedList.IndexOf('Bob') = 1, Format('Index 1 should be "Bob", got instead "%s"', [LSortedList[1]]));
-  Assert.IsTrue(LSortedList.IndexOf('Ellen') = 2, Format('Index 2 should be "Ellen", got instead "%s"', [LSortedList[2]]));
-  Assert.IsTrue(LSortedList.IndexOf('Hugh') = 3, Format('Index 3 should be "Hugh", got instead "%s"', [LSortedList[3]]));
-  Assert.IsTrue(LSortedList.IndexOf('Jack') = 4, Format('Index 4 should be "Jack", got instead "%s"', [LSortedList[4]]));
-  Assert.IsTrue(LSortedList.IndexOf('Marie') = 5, Format('Index 5 should be "Marie", got instead "%s"', [LSortedList[5]]));
-  Assert.IsTrue(LSortedList.IndexOf('Ninette') = 6, Format('Index 6 should be "Ninette", got instead "%s"', [LSortedList[6]]));
-  Assert.IsTrue(LSortedList.IndexOf('Rick') = 7, Format('Index 7 should be "Rick", got instead "%s"', [LSortedList[7]]));
-  Assert.IsTrue(LSortedList.IndexOf('Sarah') = 8, Format('Index 8 should be "Sarah", got instead "%s"', [LSortedList[8]]));
-  Assert.IsTrue(LSortedList.IndexOf('Terry') = 9, Format('Index 9 should be "Terry", got instead "%s"', [LSortedList[9]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_String.IndexOf_Unordered;
-const
-  NAMES_OUT_OF_ORDER: Array[0..9] of String = ('Hugh', 'Andy', 'Ellen', 'Jack', 'Marie', 'Bob', 'Ninette', 'Rick', 'Terry', 'Sarah');
-var
-  LSortedList: IStringSortedList;
-begin
-  LSortedList := TStringSortedList.Create(ADStringComparer, 10);
-  LSortedList.AddItems(NAMES_OUT_OF_ORDER);
-  Assert.IsTrue(LSortedList.IndexOf('Andy') = 0, Format('Index of "Andy" should be 0, got instead "%d"', [LSortedList.IndexOf('Andy')]));
-  Assert.IsTrue(LSortedList.IndexOf('Bob') = 1, Format('Index of "Bob" should be 1, got instead "%d"', [LSortedList.IndexOf('Bob')]));
-  Assert.IsTrue(LSortedList.IndexOf('Ellen') = 2, Format('Index of "Ellen" should be 2, got instead "%d"', [LSortedList.IndexOf('Ellen')]));
-  Assert.IsTrue(LSortedList.IndexOf('Hugh') = 3, Format('Index of "Hugh" should be 3, got instead "%d"', [LSortedList.IndexOf('Hugh')]));
-  Assert.IsTrue(LSortedList.IndexOf('Jack') = 4, Format('Index of "Jack" should be 4, got instead "%d"', [LSortedList.IndexOf('Jack')]));
-  Assert.IsTrue(LSortedList.IndexOf('Marie') = 5, Format('Index of "Marie" should be 5, got instead "%d"', [LSortedList.IndexOf('Marie')]));
-  Assert.IsTrue(LSortedList.IndexOf('Ninette') = 6, Format('Index of "Ninette" should be 6, got instead "%d"', [LSortedList.IndexOf('Ninette')]));
-  Assert.IsTrue(LSortedList.IndexOf('Rick') = 7, Format('Index of "Rick" should be 7, got instead "%d"', [LSortedList.IndexOf('Rick')]));
-  Assert.IsTrue(LSortedList.IndexOf('Sarah') = 8, Format('Index of "Sarah" should be 8, got instead "%d"', [LSortedList.IndexOf('Sarah')]));
-  Assert.IsTrue(LSortedList.IndexOf('Terry') = 9, Format('Index of "Terry" should be 9, got instead "%d"', [LSortedList.IndexOf('Terry')]));
-end;
-
-{ TAdaptUnitTestGenericsSortedList_Integer }
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.Add;
-var
-  LList: IIntegerSortedList;
-  LIndex: Integer;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 1);
-  LIndex := LList.Add(1337);
-  Assert.IsTrue(LIndex = 0, Format('Item SHOULD have been Added at Index 0, instead was added at Index %d.', [LIndex]));
-  Assert.IsTrue(LList.Count = 1, Format('List SHOULD contain 1 Item, instead contains %d.', [LList.Count]));
-  Assert.IsTrue(LList[0] = 1337, Format('List Item 0 should be "1337", is instead "%d".', [LList[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.AddItems_FromArray;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-
-  Assert.IsTrue(LList.Count = Length(BASIC_INTEGER_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_INTEGER_ITEMS), LList.Count]));
-  Assert.IsTrue(LList[0] = 1, Format('List Item 0 should be "1", is instead "%d".', [LList[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.AddItems_FromSortedList;
-var
-  LListOrigin, LListDestination: IIntegerSortedList;
-begin
-  LListOrigin := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LListOrigin.AddItems(BASIC_INTEGER_ITEMS);
-
-  LListDestination := TIntegerSortedList.Create(ADIntegerComparer, LListOrigin.Count);
-  LListDestination.Add(LListOrigin);
-
-  Assert.IsTrue(LListDestination.Count = Length(BASIC_INTEGER_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_INTEGER_ITEMS), LListDestination.Count]));
-  Assert.IsTrue(LListDestination[0] = 1, Format('List Item 0 should be "1", is instead "%d.', [LListDestination[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.Compact;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 1000);
-  Assert.IsFalse(LList.IsCompact, 'List should NOT be Compact yet!');
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-  Assert.IsFalse(LList.IsCompact, 'List should NOT be Compact yet!');
-  LList.Compact;
-  Assert.IsTrue(LList.Count = Length(BASIC_INTEGER_ITEMS), Format('List SHOULD contain %d Item, instead contains %d.', [Length(BASIC_INTEGER_ITEMS), LList.Count]));
-  Assert.IsTrue(LList.IsCompact, 'List SHOULD be Compact, but is not!');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.Contains;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-
-  Assert.IsTrue(LList.Contains(BASIC_INTEGER_ITEMS[0]), Format('List does not contain Item "%d".', [BASIC_INTEGER_ITEMS[0]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.ContainsAll;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-
-  Assert.IsTrue(LList.ContainsAll(BASIC_INTEGER_ITEMS), 'List does not contain ALL source Items.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.ContainsAny;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-
-  Assert.IsTrue(LList.ContainsAny([98, 86, 411, 1, 17]), 'List DOES NOT contain ANY source Items.');
-  Assert.IsFalse(LList.ContainsAny([66, 77, 88, 99, 101]), 'List SHOULD NOT contain ANY source Items, but does.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.ContainsNone;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(BASIC_INTEGER_ITEMS);
-  Assert.IsTrue(LList.ContainsNone([66, 77, 88, 99, 101]), 'List SHOULD NOT contain ANY source Items, but does.');
-  Assert.IsFalse(LList.ContainsNone([98, 86, 411, 1, 17]), 'List contains at least one source Item, but claims not to.');
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.Delete;
-var
-  LList: IIntegerSortedList;
-begin
-  LList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LList.AddItems(NUMBERS_IN_ORDER);
-
-  LList.Delete(3);
-
-  // Verify Count
-  Assert.IsTrue(LList.Count = Length(NUMBERS_IN_ORDER) - 1, Format('List SHOULD contain %d Items, instead contains %d.', [Length(NUMBERS_IN_ORDER) - 1, LList.Count]));
-  // Verify "Hugh" no longer in List.
-  Assert.IsFalse(LList.Contains(20), 'List should NOT contain Item 20, but does!');
-  // Verify Integrity of remaining Items...
-
-{
-1, 2, 10, 21, 30, 55, 666, 1337, 9001
-}
-  Assert.IsTrue(LList[0] = 1, Format('List Item 0 should be "1", is instead "%d".', [LList[0]]));
-  Assert.IsTrue(LList[1] = 2, Format('List Item 1 should be "2", is instead "%d".', [LList[1]]));
-  Assert.IsTrue(LList[2] = 10, Format('List Item 2 should be "10", is instead "%d".', [LList[2]]));
-  Assert.IsTrue(LList[3] = 21, Format('List Item 3 should be "21", is instead "%d".', [LList[3]]));
-  Assert.IsTrue(LList[4] = 30, Format('List Item 4 should be "30", is instead "%d".', [LList[4]]));
-  Assert.IsTrue(LList[5] = 55, Format('List Item 5 should be "55", is instead "%d".', [LList[5]]));
-  Assert.IsTrue(LList[6] = 666, Format('List Item 6 should be "666", is instead "%d".', [LList[6]]));
-  Assert.IsTrue(LList[7] = 1337, Format('List Item 7 should be "1337", is instead "%d".', [LList[7]]));
-  Assert.IsTrue(LList[8] = 9001, Format('List Item 8 should be "9001", is instead "%d".', [LList[8]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.IndexOf_PreOrdered;
-var
-  LSortedList: IIntegerSortedList;
-begin
-  LSortedList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LSortedList.AddItems(NUMBERS_IN_ORDER);
-  Assert.IsTrue(LSortedList.IndexOf(1) = 0, Format('Index 0 should be "1", got instead "%d"', [LSortedList[0]]));
-  Assert.IsTrue(LSortedList.IndexOf(2) = 1, Format('Index 1 should be "2", got instead "%d"', [LSortedList[1]]));
-  Assert.IsTrue(LSortedList.IndexOf(10) = 2, Format('Index 2 should be "10", got instead "%d"', [LSortedList[2]]));
-  Assert.IsTrue(LSortedList.IndexOf(20) = 3, Format('Index 3 should be "20", got instead "%d"', [LSortedList[3]]));
-  Assert.IsTrue(LSortedList.IndexOf(21) = 4, Format('Index 4 should be "21", got instead "%d"', [LSortedList[4]]));
-  Assert.IsTrue(LSortedList.IndexOf(30) = 5, Format('Index 5 should be "30", got instead "%d"', [LSortedList[5]]));
-  Assert.IsTrue(LSortedList.IndexOf(55) = 6, Format('Index 6 should be "55", got instead "%d"', [LSortedList[6]]));
-  Assert.IsTrue(LSortedList.IndexOf(666) = 7, Format('Index 7 should be "666", got instead "%d"', [LSortedList[7]]));
-  Assert.IsTrue(LSortedList.IndexOf(1337) = 8, Format('Index 8 should be "1337", got instead "%d"', [LSortedList[8]]));
-  Assert.IsTrue(LSortedList.IndexOf(9001) = 9, Format('Index 9 should be "9001", got instead "%d"', [LSortedList[9]]));
-end;
-
-procedure TAdaptUnitTestGenericsSortedList_Integer.IndexOf_Unordered;
-const
-  NUMBERS_OUT_OF_ORDER: Array[0..9] of Integer = (1337, 9001, 10, 1, 20, 2, 21, 30, 55, 666);
-var
-  LSortedList: IIntegerSortedList;
-begin
-  LSortedList := TIntegerSortedList.Create(ADIntegerComparer, 10);
-  LSortedList.AddItems(NUMBERS_OUT_OF_ORDER);
-  Assert.IsTrue(LSortedList.IndexOf(1) = 0, Format('Index 0 should be "1", got instead "%d"', [LSortedList[0]]));
-  Assert.IsTrue(LSortedList.IndexOf(2) = 1, Format('Index 1 should be "2", got instead "%d"', [LSortedList[1]]));
-  Assert.IsTrue(LSortedList.IndexOf(10) = 2, Format('Index 2 should be "10", got instead "%d"', [LSortedList[2]]));
-  Assert.IsTrue(LSortedList.IndexOf(20) = 3, Format('Index 3 should be "20", got instead "%d"', [LSortedList[3]]));
-  Assert.IsTrue(LSortedList.IndexOf(21) = 4, Format('Index 4 should be "21", got instead "%d"', [LSortedList[4]]));
-  Assert.IsTrue(LSortedList.IndexOf(30) = 5, Format('Index 5 should be "30", got instead "%d"', [LSortedList[5]]));
-  Assert.IsTrue(LSortedList.IndexOf(55) = 6, Format('Index 6 should be "55", got instead "%d"', [LSortedList[6]]));
-  Assert.IsTrue(LSortedList.IndexOf(666) = 7, Format('Index 7 should be "666", got instead "%d"', [LSortedList[7]]));
-  Assert.IsTrue(LSortedList.IndexOf(1337) = 8, Format('Index 8 should be "1337", got instead "%d"', [LSortedList[8]]));
-  Assert.IsTrue(LSortedList.IndexOf(9001) = 9, Format('Index 9 should be "9001", got instead "%d"', [LSortedList[9]]));
-end;
-
-initialization
-  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsList);
-  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsCircularList);
-  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsSortedList_String);
-  TDUnitX.RegisterTestFixture(TAdaptUnitTestGenericsSortedList_Integer);
 end.

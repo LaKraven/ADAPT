@@ -178,14 +178,12 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threads.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Hashers.Intf.pas"/>
-        <DCCReference Include="ADAPT.UnitTests.Generics.Arrays.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Common.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Collections.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Performance.Threadsafe.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Threadsafe.pas"/>
-        <DCCReference Include="ADAPT.UnitTests.Generics.Maps.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Comparers.pas"/>
         <DCCReference Include="ADAPT.UnitTests.Generics.Comparers.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Common.Intf.pas"/>
@@ -464,7 +462,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -488,7 +486,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
