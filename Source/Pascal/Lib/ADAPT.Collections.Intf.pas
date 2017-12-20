@@ -396,14 +396,9 @@ type
 
   ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
   IADSortableList<T> = interface(IADList<T>)
-    // Getters
-    function GetSorter: IADListSorter<T>;
-
-    // Setters
-    procedure SetSorter(const ASorter: IADListSorter<T>);
-
-    // Properties
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
+    // Management Methods
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
   end;
 
   ///  <summary><c>Read-Only Interface for all Sorted List Types.</c></summary>
@@ -483,10 +478,6 @@ type
     ///  <summary><c>Deletes the given Items from the List.</c></summary>
     ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
     procedure RemoveItems(const AItems: Array of T);
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort; overload;
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const AComparer: IADComparer<T>); overload;
 
     // Properties
     ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
