@@ -278,66 +278,6 @@ type
     procedure Sort(AArray: Array of T; const AComparer: IADComparer<T>; AFrom, ATo: Integer); overload;
   end;
 
-  ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
-  IADSortableList<T> = interface(IADCollection)
-    // Getters
-    function GetSorter: IADListSorter<T>;
-
-    // Setters
-    procedure SetSorter(const ASorter: IADListSorter<T>);
-
-    // Management Methods
-    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if the Item is in the List.</c></para>
-    ///    <para>False<c> if the Item is NOT in the List.</c></para>
-    ///  </returns>
-    function Contains(const AItem: T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ALL Items are in the List.</c></para>
-    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAll(const AItems: Array of T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
-    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
-    ///  </returns>
-    function ContainsAny(const AItems: Array of T): Boolean;
-    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
-    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
-    function ContainsNone(const AItems: Array of T): Boolean;
-    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
-    ///  <returns>
-    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
-    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
-    ///  </returns>
-    ///  <remarks>
-    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
-    ///  </remarks>
-    function EqualItems(const AList: IADList<T>): Boolean;
-    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
-    ///  <returns>
-    ///    <para>-1<c> if the given Item is not in the List.</c></para>
-    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
-    ///  </returns>
-    function IndexOf(const AItem: T): Integer;
-    ///  <summary><c>Deletes the given Item from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
-    procedure Remove(const AItem: T);
-    ///  <summary><c>Deletes the given Items from the List.</c></summary>
-    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
-    procedure RemoveItems(const AItems: Array of T);
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const AComparer: IADComparer<T>);
-
-    // Properties
-    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
-  end;
-
   ///  <summary><c>Sorting Alogirthm for Maps.</c></summary>
   IADMapSorter<TKey, TValue> = interface(IADSorter)
     procedure Sort(const AArray: IADArray<IADKeyValuePair<TKey, TValue>>; const AComparer: IADComparer<TKey>; AFrom, ATo: Integer); overload;
@@ -452,6 +392,70 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this List.</c></returns>
     property Reader: IADListReader<T> read GetReader;
+  end;
+
+  ///  <summary><c>Provides Getter and Setter for any Type utilizing a List Sorter Type.</c></summary>
+  IADSortableList<T> = interface(IADList<T>)
+    // Getters
+    function GetSorter: IADListSorter<T>;
+
+    // Setters
+    procedure SetSorter(const ASorter: IADListSorter<T>);
+
+    // Management Methods
+    ///  <summary><c>Performs a Lookup to determine whether the given Item is in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if the Item is in the List.</c></para>
+    ///    <para>False<c> if the Item is NOT in the List.</c></para>
+    ///  </returns>
+    function Contains(const AItem: T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether the given Items are ALL in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ALL Items are in the List.</c></para>
+    ///    <para>False<c> if NOT ALL Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAll(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if ANY of the Items are in the List.</c></para>
+    ///    <para>False<c> if NONE of the Items are in the List.</c></para>
+    ///  </returns>
+    function ContainsAny(const AItems: Array of T): Boolean;
+    ///  <summary><c>Performs Lookups to determine whether ANY of the given Items are in the List.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> if NONE of the Items are in the List.</c></para>
+    ///    <para>False<c> if ANY of the Items are in the List.</c></para>
+    function ContainsNone(const AItems: Array of T): Boolean;
+    ///  <summary><c>Compares each Item in this List against those in the Candidate List to determine Equality.</c></summary>
+    ///  <returns>
+    ///    <para>True<c> ONLY if the Candidate List contains ALL Items from this List, and NO additional Items.</c></para>
+    ///    <para>False<c> if not all Items are present or if any ADDITIONAL Items are present.</c></para>
+    ///  </returns>
+    ///  <remarks>
+    ///    <para><c>This ONLY compares Items, and does not include ANY other considerations.</c></para>
+    ///  </remarks>
+    function EqualItems(const AList: IADList<T>): Boolean;
+    ///  <summary><c>Retreives the Index of the given Item within the List.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the given Item is not in the List.</c></para>
+    ///    <para>0 or Greater<c> if the given Item IS in the List.</c></para>
+    ///  </returns>
+    function IndexOf(const AItem: T): Integer;
+    ///  <summary><c>Deletes the given Item from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup to divine the given Item's Index.</c></remarks>
+    procedure Remove(const AItem: T);
+    ///  <summary><c>Deletes the given Items from the List.</c></summary>
+    ///  <remarks><c>Performs a Lookup for each Item to divine their respective Indexes.</c></remarks>
+    procedure RemoveItems(const AItems: Array of T);
+    ///  <summary><c>Sort the List.</c></summary>
+    procedure Sort(const AComparer: IADComparer<T>);
+
+    // Properties
+    property Sorter: IADListSorter<T> read GetSorter write SetSorter;
+  end;
+
+  IADSortedList<T> = interface(IADSortableList<T>)
+
   end;
 
   ///  <summary><c>Common Type-Insensitive Read-Only Interface for all Map Collections.</c></summary>.

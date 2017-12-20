@@ -82,6 +82,8 @@ type
     procedure BasicIntegrity;
     [Test]
     procedure ReaderIntegrity;
+    [Test]
+    procedure Contains;
   end;
 
   [TestFixture]
@@ -112,6 +114,7 @@ type
   IADStringListReader = IADListReader<String>;
   IADStringCircularList = IADCircularList<String>;
   IADStringCircularListReader = IADCircularListReader<String>;
+  IADStringSortableList = IADSortableList<String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
@@ -500,6 +503,22 @@ begin
     Log(TLogLevel.Information, Format('Sorted List Index %d = "%s"', [I, LList[I]]));
     Assert.IsTrue(LList[I] = BASIC_ITEMS_SORTED[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS_SORTED[I], LList[I]]));
   end;
+end;
+
+procedure TADUTCollectionsSortedList.Contains;
+var
+  LList: IADStringSortableList;
+  I: Integer;
+begin
+  LList := TADStringSortedList.Create(ADStringComparer, 10);
+
+  // Add our Basic Test Items
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    LList.Add(BASIC_ITEMS[I]);
+  // Should NOT contain "Googar"
+  Assert.IsFalse(LList.Contains('Googar'), 'List should NOT contain "Googar" but does.');
+  // Should contain "Bob"
+  Assert.IsTrue(LList.Contains('Bob'), 'List SHOULD contain "Bob" but does not.');
 end;
 
 procedure TADUTCollectionsSortedList.ReaderIntegrity;
