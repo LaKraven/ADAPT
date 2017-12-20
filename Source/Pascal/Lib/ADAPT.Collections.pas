@@ -381,6 +381,52 @@ type
     procedure RemoveItems(const AItems: Array of T);
   end;
 
+  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
+  ///  <remarks>
+  ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and Items are subsequently Replaced by new ones.</c></para>
+  ///    <para><c>Use IADListReader for Read-Only List access.</c></para>
+  ///    <para><c>Use IADList for Read/Write List access.</c></para>
+  ///    <para><c>Use IADIterableList for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
+  ///    <para><c>Use IADCircularListReader for Read-Only Circular List access.</c></para>
+  ///    <para><c>Use IADCircularList for Read/Write Circular List access.</c></para>  ///
+  ///    <para><c>This type is NOT Threadsafe.</c></para>
+  ///  </remarks>
+  TADCircularList<T> = class(TADListBase<T>, IADCircularListReader<T>, IADCircularList<T>)
+  private
+    // Getters
+  protected
+    // Getters
+    { IADCircularListReader<T> }
+    function GetNewestIndex: Integer; virtual;
+    function GetNewest: T; virtual;
+    function GetOldestIndex: Integer; virtual;
+    function GetOldest: T; virtual;
+    { IADCircularList<T> }
+    function GetReader: IADCircularListReader<T>;
+
+    // Setters
+    { TADListBase<T> Overrides }
+    procedure SetItem(const AIndex: Integer; const AItem: T); override;
+    { IADCircularListReader<T> }
+    { IADCircularList<T> }
+
+    // Overrides
+    { TADListBase<T> }
+    function AddActual(const AItem: T): Integer; override;
+    procedure DeleteActual(const AIndex: Integer); override;
+    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
+  public
+    // Properties
+    { IADCircularListReader<T> }
+    property NewestIndex: Integer read GetNewestIndex;
+    property Newest: T read GetNewest;
+    property OldestIndex: Integer read GetOldestIndex;
+    property Oldest: T read GetOldest;
+    { IADCircularList<T> }
+    property Reader: IADCircularListReader<T> read GetReader;
+  end;
+
   ///  <summary><c>Abstract Base Type for all Generic Map Collection Types.</c></summary>
   ///  <remarks>
   ///    <para><c>Use IADMapReader for Read-Only access.</c></para>
@@ -461,53 +507,6 @@ type
   TADMap<TKey, TValue> = class(TADMapBase<TKey, TValue>)
 
   end;
-
-  ///  <summary><c>A Generic Fixed-Capacity Revolving List</c></summary>
-  ///  <remarks>
-  ///    <para><c>When the current Index is equal to the Capacity, the Index resets to 0, and Items are subsequently Replaced by new ones.</c></para>
-  ///    <para><c>Use IADListReader for Read-Only List access.</c></para>
-  ///    <para><c>Use IADList for Read/Write List access.</c></para>
-  ///    <para><c>Use IADIterableList for Iterators.</c></para>
-  ///    <para><c>Call .Iterator against IADListReader to return the IADIterableList interface reference.</c></para>
-  ///    <para><c>Use IADCircularListReader for Read-Only Circular List access.</c></para>
-  ///    <para><c>Use IADCircularList for Read/Write Circular List access.</c></para>  ///
-  ///    <para><c>This type is NOT Threadsafe.</c></para>
-  ///  </remarks>
-  TADCircularList<T> = class(TADListBase<T>, IADCircularListReader<T>, IADCircularList<T>)
-  private
-    // Getters
-  protected
-    // Getters
-    { IADCircularListReader<T> }
-    function GetNewestIndex: Integer; virtual;
-    function GetNewest: T; virtual;
-    function GetOldestIndex: Integer; virtual;
-    function GetOldest: T; virtual;
-    { IADCircularList<T> }
-    function GetReader: IADCircularListReader<T>;
-
-    // Setters
-    { TADListBase<T> Overrides }
-    procedure SetItem(const AIndex: Integer; const AItem: T); override;
-    { IADCircularListReader<T> }
-    { IADCircularList<T> }
-
-    // Overrides
-    { TADListBase<T> }
-    function AddActual(const AItem: T): Integer; override;
-    procedure DeleteActual(const AIndex: Integer); override;
-    procedure InsertActual(const AItem: T; const AIndex: Integer); override;
-  public
-    // Properties
-    { IADCircularListReader<T> }
-    property NewestIndex: Integer read GetNewestIndex;
-    property Newest: T read GetNewest;
-    property OldestIndex: Integer read GetOldestIndex;
-    property Oldest: T read GetOldest;
-    { IADCircularList<T> }
-    property Reader: IADCircularListReader<T> read GetReader;
-  end;
-
 
   { List Sorters }
   ///  <summary><c>Abstract Base Class for all List Sorters.</c></summary>
@@ -1264,6 +1263,73 @@ begin
   AddActual(AItem);
 end;
 
+{ TADCircularList<T> }
+
+function TADCircularList<T>.AddActual(const AItem: T): Integer;
+begin
+  if FCount < FArray.Capacity then
+    Inc(FCount)
+  else
+    FArray.Delete(0);
+
+  Result := FCount - 1;
+
+  FArray[Result] := AItem; // Assign the Item to the Array at the Index.
+end;
+
+procedure TADCircularList<T>.DeleteActual(const AIndex: Integer);
+begin
+  FArray.Delete(AIndex);
+end;
+
+function TADCircularList<T>.GetNewest: T;
+begin
+  if FCount > 0 then
+    Result := FArray[FCount - 1];
+end;
+
+function TADCircularList<T>.GetNewestIndex: Integer;
+begin
+  Result := FCount - 1;
+end;
+
+function TADCircularList<T>.GetOldest: T;
+begin
+  if FCount > 0 then
+    Result := FArray[0];
+end;
+
+function TADCircularList<T>.GetOldestIndex: Integer;
+begin
+  if FCount = 0 then
+    Result := -1
+  else
+    Result := 0;
+end;
+
+function TADCircularList<T>.GetReader: IADCircularListReader<T>;
+begin
+  Result := IADCircularListReader<T>(Self);
+end;
+
+procedure TADCircularList<T>.InsertActual(const AItem: T; const AIndex: Integer);
+begin
+  if FCount < FArray.Capacity then
+  begin
+    FArray.Insert(AItem, AIndex);
+    Inc(FCount);
+  end else
+  begin
+    FArray.Delete(0);
+    FArray.Insert(AItem, AIndex);
+  end;
+end;
+
+procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
+begin
+  FArray[AIndex] := AItem;
+end;
+
 { TADMapBase<TKey, TValue> }
 
 function TADMapBase<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
@@ -1413,65 +1479,6 @@ begin
 end;
 
 procedure TADMapBase<TKey, TValue>.SetItem(const AKey: TKey; const AValue: TValue);
-begin
-
-end;
-
-{ TADCircularList<T> }
-
-function TADCircularList<T>.AddActual(const AItem: T): Integer;
-begin
-  if FCount < FArray.Capacity then
-    Inc(FCount)
-  else
-    FArray.Delete(0);
-
-  Result := FCount - 1;
-
-  FArray[Result] := AItem; // Assign the Item to the Array at the Index.
-end;
-
-procedure TADCircularList<T>.DeleteActual(const AIndex: Integer);
-begin
-  FArray.Delete(AIndex);
-end;
-
-function TADCircularList<T>.GetNewest: T;
-begin
-  if FCount > 0 then
-    Result := FArray[FCount - 1];
-end;
-
-function TADCircularList<T>.GetNewestIndex: Integer;
-begin
-  Result := FCount - 1;
-end;
-
-function TADCircularList<T>.GetOldest: T;
-begin
-  if FCount > 0 then
-    Result := FArray[0];
-end;
-
-function TADCircularList<T>.GetOldestIndex: Integer;
-begin
-  if FCount = 0 then
-    Result := -1
-  else
-    Result := 0;
-end;
-
-function TADCircularList<T>.GetReader: IADCircularListReader<T>;
-begin
-  Result := IADCircularListReader<T>(Self);
-end;
-
-procedure TADCircularList<T>.InsertActual(const AItem: T; const AIndex: Integer);
-begin
-
-end;
-
-procedure TADCircularList<T>.SetItem(const AIndex: Integer; const AItem: T);
 begin
 
 end;
