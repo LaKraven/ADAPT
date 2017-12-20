@@ -95,11 +95,6 @@ type
   end;
 
   [TestFixture]
-  TADUTCollectionsMap = class(TObject)
-
-  end;
-
-  [TestFixture]
   TADUTCollectionsCircularList = class(TObject)
     [Test]
     procedure BasicIntegrity;
@@ -107,6 +102,13 @@ type
     procedure ReaderIntegrity;
     [Test]
     procedure CircularIntegrity;
+  end;
+
+  [TestFixture]
+  TADUTCollectionsMap = class(TObject)
+  public
+    [Test]
+    procedure BasicIntegrity;
   end;
 
 implementation
@@ -123,11 +125,18 @@ type
   IADStringCircularList = IADCircularList<String>;
   IADStringCircularListReader = IADCircularListReader<String>;
   IADStringSortedList = IADSortedList<String>;
+  IADStringStringMap = IADMap<String, String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
   TADStringSortedList = TADSortedList<String>;
   TADStringCircularList = TADCircularList<String>;
+  TADStringStringMap = TADMap<String, String>;
+
+  TMapTestItem = record
+    Key: String;
+    Value: String;
+  end;
 
 const
   BASIC_ITEMS: Array[0..9] of String = (
@@ -168,6 +177,32 @@ const
                                                      'Marie',
                                                      'Ninette'
                                                    );
+
+  MAP_ITEMS: Array[0..9] of TMapTestItem = (
+                                             (Key: 'Foo'; Value: 'Bar'),
+                                             (Key: 'Donald'; Value: 'Duck'),
+                                             (Key: 'Mickey'; Value: 'Mouse'),
+                                             (Key: 'Winnie'; Value: 'Pooh'),
+                                             (Key: 'Goof'; Value: 'Troop'),
+                                             (Key: 'Tale'; Value: 'Spin'),
+                                             (Key: 'Captain'; Value: 'Kangaroo'),
+                                             (Key: 'Major'; Value: 'Tom'),
+                                             (Key: 'Gummie'; Value: 'Bears'),
+                                             (Key: 'Whacky'; Value: 'Races')
+                                           );
+
+  MAP_ITEMS_SORTED: Array[0..9] of TMapTestItem = (
+                                                    (Key: 'Captain'; Value: 'Kangaroo'),
+                                                    (Key: 'Donald'; Value: 'Duck'),
+                                                    (Key: 'Foo'; Value: 'Bar'),
+                                                    (Key: 'Goof'; Value: 'Troop'),
+                                                    (Key: 'Gummie'; Value: 'Bears'),
+                                                    (Key: 'Major'; Value: 'Tom'),
+                                                    (Key: 'Mickey'; Value: 'Mouse'),
+                                                    (Key: 'Tale'; Value: 'Spin'),
+                                                    (Key: 'Whacky'; Value: 'Races'),
+                                                    (Key: 'Winnie'; Value: 'Pooh')
+                                                  );
 
 { TADUTCollectionsArray }
 
@@ -677,6 +712,28 @@ begin
   // Make sure they match!
   for I := 0 to Length(BASIC_ITEMS) - 1 do
     Assert.IsTrue(LReader[I] = BASIC_ITEMS[I], Format('Item at Index %d does not match. Expected "%s" but got "%s"', [I, BASIC_ITEMS[I], LReader[I]]));
+end;
+
+{ TADUTCollectionsMap }
+
+procedure TADUTCollectionsMap.BasicIntegrity;
+var
+  LMap: IADStringStringMap;
+  LItem: IADKeyValuePair<String, String>;
+  I: Integer;
+begin
+  LMap := TADStringStringMap.Create(ADStringComparer);
+
+  // Add the Test Items
+  for I := Low(MAP_ITEMS) to High(MAP_ITEMS) do
+    LMap.Add(MAP_ITEMS[I].Key, MAP_ITEMS[I].Value);
+
+  // Verify they exist
+  for I := 0 to LMap.Count - 1 do
+  begin
+    LItem := LMap.Pairs[I];
+    Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I].Key) and (LItem.Value = MAP_ITEMS_SORTED[I].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I].Key, MAP_ITEMS_SORTED[I].Value, LItem.Key, LItem.Value]));
+  end;
 end;
 
 end.
