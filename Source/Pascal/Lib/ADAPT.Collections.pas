@@ -434,12 +434,14 @@ type
   ///    <para><c>Use IADIterableMap for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
   ///  </remarks>
-  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>, IADCompactable, IADExpandable)
+  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>, IADCompactable, IADExpandable, IADComparable<TKey>)
   private
     FCompactor: IADCompactor;
+    FComparer: IADComparer<TKey>;
     FExpander: IADExpander;
     FSorter: IADMapSorter<TKey, TValue>;
   protected
+    FArray: IADArray<IADKeyValuePair<TKey, TValue>>;
     // Getters
     { IADMapReader<TKey, TValue> }
     function GetItem(const AKey: TKey): TValue;
@@ -453,6 +455,10 @@ type
     function GetCompactor: IADCompactor; virtual;
     { IADExpandable }
     function GetExpander: IADExpander; virtual;
+    { IADComparable<T> }
+    function GetComparer: IADComparer<TKey>; virtual;
+    { IADComparable<T> }
+    procedure SetComparer(const AComparer: IADComparer<TKey>); virtual;
 
     // Setters
     { IADMapReader<TKey, TValue> }
@@ -464,6 +470,27 @@ type
     procedure SetCompactor(const ACompactor: IADCompactor); virtual;
     { IADExpandable }
     procedure SetExpander(const AExpander: IADExpander); virtual;
+
+    // Overrides
+    { TADCollection }
+    procedure CreateArray(const AInitialCapacity: Integer = 0); override;
+
+    // Management Methods
+    ///  <summary><c>Adds the Item to the correct Index of the Array WITHOUT checking capacity.</c></summary>
+    ///  <returns>
+    ///    <para>-1<c> if the Item CANNOT be added.</c></para>
+    ///    <para>0 OR GREATER<c> if the Item has be added, where the Value represents the Index of the Item.</c></para>
+    ///  </returns>
+    function AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer; virtual;
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); virtual;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); virtual;
+    ///  <summary><c>Determines the Index at which an Item would need to be Inserted for the List to remain in-order.</c></summary>
+    ///  <remarks>
+    ///    <para><c>This is basically a Binary Sort implementation.<c></para>
+    ///  </remarks>
+    function GetSortedPosition(const AKey: TKey): Integer; virtual;
   public
     // Management Methods
     { IADMapReader<TKey, TValue> }
@@ -471,7 +498,7 @@ type
     function ContainsAll(const AKeys: Array of TKey): Boolean;
     function ContainsAny(const AKeys: Array of TKey): Boolean;
     function ContainsNone(const AKeys: Array of TKey): Boolean;
-    function EqualItems(const AList: IADMapReader<TKey, TValue>): Boolean;
+    function EqualItems(const AMap: IADMapReader<TKey, TValue>): Boolean;
     function IndexOf(const AKey: TKey): Integer;
     { IADMap<TKey, TValue> }
     function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload;
@@ -514,6 +541,8 @@ type
     property Compactor: IADCompactor read GetCompactor write SetCompactor;
     { IADExpandable }
     property Expander: IADExpander read GetExpander write SetExpander;
+    { IADComparable<T> }
+    property Comparer: IADComparer<TKey> read GetComparer write SetComparer;
   end;
 
   ///  <summary><c>Generic Map Collection.</c></summary>
@@ -1350,68 +1379,148 @@ end;
 { TADMapBase<TKey, TValue> }
 
 function TADMapBase<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
+var
+  LPair: IADKeyValuePair<TKey, TValue>;
 begin
+  LPair := TADKeyValuePair<TKey, TValue>.Create(AKey, AValue);
+  Result := Add(LPair);
+end;
 
+function TADMapBase<TKey, TValue>.AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+begin
+  Result := GetSortedPosition(AItem.Key);
+  if Result = FCount then
+    FArray[FCount] := AItem
+  else
+    FArray.Insert(AItem, Result);
+
+  Inc(FCount);
 end;
 
 function TADMapBase<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
 begin
-
+  CheckExpand(1);
+  Result := AddActual(AItem);
 end;
 
 procedure TADMapBase<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  CheckExpand(Length(AItems));
+  for I := Low(AItems) to High(AItems) do
+    AddActual(AItems[I]);
 end;
 
 procedure TADMapBase<TKey, TValue>.AddItems(const AMap: IADMapReader<TKey, TValue>);
+var
+  I: Integer;
 begin
+  CheckExpand(AMap.Count);
+  for I := 0 to AMap.Count - 1 do
+    AddActual(AMap.Pairs[I]);
+end;
 
+procedure TADMapBase<TKey, TValue>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := FCompactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADMapBase<TKey, TValue>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := FExpander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
 procedure TADMapBase<TKey, TValue>.Compact;
 begin
-
+  FArray.Capacity := FCount;
 end;
 
 function TADMapBase<TKey, TValue>.Contains(const AKey: TKey): Boolean;
 begin
-
+  Result := (IndexOf(AKey) > -1);
 end;
 
 function TADMapBase<TKey, TValue>.ContainsAll(const AKeys: array of TKey): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := True; // Optimistic
+  for I := Low(AKeys) to High(AKeys) do
+    if (not Contains(AKeys[I])) then
+    begin
+      Result := False;
+      Break;
+    end;
 end;
 
 function TADMapBase<TKey, TValue>.ContainsAny(const AKeys: array of TKey): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := False; // Pessimistic
+  for I := Low(AKeys) to High(AKeys) do
+    if Contains(AKeys[I]) then
+    begin
+      Result := True;
+      Break;
+    end;
 end;
 
 function TADMapBase<TKey, TValue>.ContainsNone(const AKeys: array of TKey): Boolean;
 begin
+  Result := (not ContainsAny(AKeys));
+end;
 
+procedure TADMapBase<TKey, TValue>.CreateArray(const AInitialCapacity: Integer);
+begin
+  FArray := TADArray<IADKeyValuePair<TKey, TValue>>.Create(AInitialCapacity);
 end;
 
 procedure TADMapBase<TKey, TValue>.Delete(const AIndex: Integer);
 begin
-
+  FArray.Delete(AIndex);
+  Dec(FCount);
 end;
 
 procedure TADMapBase<TKey, TValue>.DeleteRange(const AFromIndex, ACount: Integer);
+var
+  I: Integer;
 begin
-
+  for I := AFromIndex + ACount - 1 downto AFromIndex do
+    Delete(I);
 end;
 
-function TADMapBase<TKey, TValue>.EqualItems(const AList: IADMapReader<TKey, TValue>): Boolean;
+function TADMapBase<TKey, TValue>.EqualItems(const AMap: IADMapReader<TKey, TValue>): Boolean;
+var
+  I: Integer;
 begin
-
+  Result := AMap.Count = FCount;
+  if Result then
+    for I := 0 to AMap.Count - 1 do
+      if (not FComparer.AEqualToB(AMap.Pairs[I].Key, FArray[I].Key)) then
+      begin
+        Result := False;
+        Break;
+      end;
 end;
 
 function TADMapBase<TKey, TValue>.GetCompactor: IADCompactor;
 begin
   Result := FCompactor;
+end;
+
+function TADMapBase<TKey, TValue>.GetComparer: IADComparer<TKey>;
+begin
+  Result := FComparer;
 end;
 
 function TADMapBase<TKey, TValue>.GetExpander: IADExpander;
@@ -1420,8 +1529,12 @@ begin
 end;
 
 function TADMapBase<TKey, TValue>.GetItem(const AKey: TKey): TValue;
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    Result := FArray[LIndex].Value;
 end;
 
 function TADMapBase<TKey, TValue>.GetIterator: IADIterableMap<TKey, TValue>;
@@ -1431,12 +1544,40 @@ end;
 
 function TADMapBase<TKey, TValue>.GetPair(const AIndex: Integer): IADKeyValuePair<TKey, TValue>;
 begin
-
+  Result := FArray[AIndex];
 end;
 
 function TADMapBase<TKey, TValue>.GetReader: IADMapReader<TKey, TValue>;
 begin
   Result := IADMapReader<TKey, TValue>(Self);
+end;
+
+function TADMapBase<TKey, TValue>.GetSortedPosition(const AKey: TKey): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+begin
+  Result := 0;
+  LLow := 0;
+  LHigh := FCount - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if FComparer.ALessThanOrEqualToB(AKey, FArray[LIndex].Key) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if FComparer.ALessThanB(FArray[LHigh].Key, AKey) then
+    Result := LHigh + 1
+  else if FComparer.ALessThanB(FArray[LLow].Key, AKey) then
+    Result := LLow + 1
+  else
+    Result := LLow;
 end;
 
 function TADMapBase<TKey, TValue>.GetSorter: IADMapSorter<TKey, TValue>;
@@ -1445,74 +1586,135 @@ begin
 end;
 
 function TADMapBase<TKey, TValue>.IndexOf(const AKey: TKey): Integer;
+var
+  LLow, LHigh, LMid: Integer;
 begin
-
+  Result := -1; // Pessimistic
+  LLow := 0;
+  LHigh := FCount - 1;
+  repeat
+    LMid := (LLow + LHigh) div 2;
+    if FComparer.AEqualToB(FArray[LMid].Key, AKey) then
+    begin
+      Result := LMid;
+      Break;
+    end
+    else if FComparer.ALessThanB(AKey, FArray[LMid].Key) then
+      LHigh := LMid - 1
+    else
+      LLow := LMid + 1;
+  until LHigh < LLow;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADMapBase<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackAnon<TKey, TValue>; const ADirection: TADIterateDirection = idRight);
   begin
-
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADMapBase<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackUnbound<TKey, TValue>; const ADirection: TADIterateDirection);
 begin
-
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 procedure TADMapBase<TKey, TValue>.Iterate(const ACallback: TADListMapCallbackOfObject<TKey, TValue>; const ADirection: TADIterateDirection);
 begin
-
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADMapBase<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackAnon<TKey, TValue>);
+  var
+    I: Integer;
   begin
-
+    for I := FCount - 1 downto 0 do
+      ACallback(FArray[I].Key, FArray[I].Value);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADMapBase<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADMapBase<TKey, TValue>.IterateBackward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := FCount - 1 downto 0 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADMapBase<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackAnon<TKey, TValue>);
+  var
+    I: Integer;
   begin
-
+    for I := 0 to FCount - 1 do
+      ACallback(FArray[I].Key, FArray[I].Value);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADMapBase<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackUnbound<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADMapBase<TKey, TValue>.IterateForward(const ACallback: TADListMapCallbackOfObject<TKey, TValue>);
+var
+  I: Integer;
 begin
-
+  for I := 0 to FCount - 1 do
+    ACallback(FArray[I].Key, FArray[I].Value);
 end;
 
 procedure TADMapBase<TKey, TValue>.Remove(const AKey: TKey);
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    Delete(LIndex);
 end;
 
 procedure TADMapBase<TKey, TValue>.RemoveItems(const AKeys: array of TKey);
+var
+  I: Integer;
 begin
-
+  for I := Low(AKeys) to High(AKeys) do
+    Remove(AKeys[I]);
 end;
 
 procedure TADMapBase<TKey, TValue>.SetCompactor(const ACompactor: IADCompactor);
 begin
   FCompactor := ACompactor;
+end;
+
+procedure TADMapBase<TKey, TValue>.SetComparer(const AComparer: IADComparer<TKey>);
+begin
+  FComparer := AComparer;
 end;
 
 procedure TADMapBase<TKey, TValue>.SetExpander(const AExpander: IADExpander);
@@ -1521,8 +1723,12 @@ begin
 end;
 
 procedure TADMapBase<TKey, TValue>.SetItem(const AKey: TKey; const AValue: TValue);
+var
+  LIndex: Integer;
 begin
-
+  LIndex := IndexOf(AKey);
+  if LIndex > -1 then
+    FArray[LIndex].Value := AValue;
 end;
 
 procedure TADMapBase<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
