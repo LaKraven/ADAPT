@@ -384,10 +384,15 @@ type
     ///  <summary><c>Insert the given Items starting at the specified Index.</c></summary>
     ///  <remarks><c>Will Expand the List if necessary.</c></remarks>
     procedure InsertItems(const AItems: Array of T; const AIndex: Integer);
-    ///  <summary><c>Sort the List.</c></summary>
-    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>);
-    ///  <summary><c>Sort the List between a given Range.</c></summary>
-    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer);
+
+    ///  <summary><c>Sort the List using the Default Sorter and the given Comparer</c></summary>
+    procedure Sort(const AComparer: IADComparer<T>); overload;
+    ///  <summary><c>Sort the List using the given Sorter and the given Comparer</c></summary>
+    procedure Sort(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>); overload;
+    ///  <summary><c>Sort PART of the List using the Default Sorter and the given Comparer</c></summary>
+    procedure SortRange(const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); overload;
+    ///  <summary><c>Sort PART of the List using the given Sorter and the given Comparer</c></summary>
+    procedure SortRange(const ASorter: IADListSorter<T>; const AComparer: IADComparer<T>; const AFromIndex: Integer; const AToIndex: Integer); overload;
 
     // Properties
     ///  <summary><c>Assigns the given Item to the given Index.</c></summary>
