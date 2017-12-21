@@ -43,27 +43,6 @@ type
     TArray<T> = Array of T; // FreePascal doesn't have this defined (yet)
   {$ENDIF FPC}
 
-  // Forward Declarations
-  IADArrayReader<T> = interface;
-  IADArray<T> = interface;
-  IADCollectionReader = interface;
-  IADCollection = interface;
-  IADExpander = interface;
-  IADExpandable = interface;
-  IADCompactor = interface;
-  IADCompactable = interface;
-  IADSorter = interface;
-  IADListSorter<T> = interface;
-  IADMapSorter<TKey, TValue> = interface;
-  IADIterableList<T> = interface;
-  IADIterableMap<TKey, TValue> = interface;
-  IADListReader<T> = interface;
-  IADList<T> = interface;
-  IADMapReader<TKey, TValue> = interface;
-  IADMap<TKey, TValue> = interface;
-  IADCircularListReader<T> = interface;
-  IADCircularList<T> = interface;
-
   ///  <summary><c>A Simple Generic Array with basic Management Methods (Read-Only Interface).</c></summary>
   IADArrayReader<T> = interface(IADInterface)
     // Getters
@@ -663,6 +642,190 @@ type
     property Items[const AIndex: Integer]: T read GetItem write SetItem; default;
     ///  <returns><c>Read-Only Interfaced Reference to this Circular List.</c></returns>
     property Reader: IADCircularListReader<T> read GetReader;
+  end;
+
+  ///  <summary><c>Generic Interface for Read-Only Tree Nodes.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Accessible in Read-Only Mode.</c></para>
+  ///  </remarks>
+  IADTreeNodeReader<T> = interface(IADCollection)
+    // Geters
+    ///  <returns><c>The number of Child Nodes directly beneath the given Node.</c></returns>
+    function GetChildCount: Integer;
+    ///  <returns><c>The number of Child Nodes beneath the given Node, and all of their respective Child Nodes.</c></returns>
+    ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
+    function GetChildCountRecursive: Integer;
+    ///  <returns><c>Returns the List of Children.</c></returns>
+    function GetChildren: IADListReader<IADTreeNodeReader<T>>;
+    ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
+    function GetDepth: Integer;
+    ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
+    ///  <remarks><c>Returns -1 if there is no Parent Node.</c></remarks>
+    function GetIndexAsChild: Integer;
+    ///  <returns><c>The Child Index of the given Node relative to this one.</c></returns>
+    ///  <remarks><c>Will return -1 if the given Node is NOT a Child of this one.</c></returns>
+    function GetIndexOf(const AChild: IADTreeNodeReader<T>): Integer;
+    ///  <returns><c>Is the given Node a Branch.</c></returns>
+    function GetIsBranch: Boolean;
+    ///  <returns><c>Is the given Node a Leaf.</c></returns>
+    function GetIsLeaf: Boolean;
+    ///  <returns><c>Is the given Node the Root.</c></returns>
+    function GetIsRoot: Boolean;
+    ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
+    ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
+    function GetParent: IADTreeNodeReader<T>;
+    ///  <returns><c>Reference to the Root Node.</c></returns>
+    ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
+    function GetRoot: IADTreeNodeReader<T>;
+    ///  <returns><c>The Value specialized to the given Generic Type.</c></returns>
+    function GetValue: T;
+
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>); overload;
+      ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>); overload;
+      ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    // Properties
+    ///  <returns><c>The number of Child Nodes directly beneath the given Node.</c></returns>
+    property ChildCount: Integer read GetChildCount;
+    ///  <returns><c>The number of Child Nodes beneath the given Node, and all of their respective Child Nodes.</c></returns>
+    ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
+    property ChildCountRecursive: Integer read GetChildCountRecursive;
+    ///  <returns><c>Returns the List of Children.</c></returns>
+    property Children: IADListReader<IADTreeNodeReader<T>> read GetChildren;
+    ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
+    property Depth: Integer read GetDepth;
+    ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
+    ///  <remarks><c>Returns -1 if there is no Parent Node.</c></remarks>
+    property IndexAsChild: Integer read GetIndexAsChild;
+    ///  <returns><c>The Child Index of the given Node relative to this one.</c></returns>
+    ///  <remarks><c>Will return -1 if the given Node is NOT a Child of this one.</c></returns>
+    property IndexOf[const AChild: IADTreeNodeReader<T>]: Integer read GetIndexOf;
+    ///  <returns><c>Is the given Node a Branch.</c></returns>
+    property IsBranch: Boolean read GetIsBranch;
+    ///  <returns><c>Is the given Node a Leaf.</c></returns>
+    property IsLeaf: Boolean read GetIsLeaf;
+    ///  <returns><c>Is the given Node the Root.</c></returns>
+    property IsRoot: Boolean read GetIsRoot;
+    ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
+    ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
+    property Parent: IADTreeNodeReader<T> read GetParent;
+    ///  <returns><c>Reference to the Root Node.</c></returns>
+    ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
+    property Root: IADTreeNodeReader<T> read GetRoot;
+    ///  <returns><c>The Value specialized to the given Generic Type.</c></returns>
+    property Value: T read GetValue;
+  end;
+
+  ///  <summary><c>Generic Interface for Read-Only Tree Nodes.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Accessible in Read/Write Mode.</c></para>
+  ///  </remarks>
+  IADTreeNode<T> = interface(IADTreeNodeReader<T>)
+    // Getters
+    ///  <returns><c>Returns the List of Children.</c></returns>
+    function GetChildren: IADList<IADTreeNode<T>>;
+    ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
+    ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
+    function GetParent: IADTreeNode<T>;
+    ///  <returns><c>Read-Only Interface Reference for this Tree Node.</c></returns>
+    function GetReader: IADTreeNodeReader<T>;
+    ///  <returns><c>Reference to the Root Node.</c></returns>
+    ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
+    function GetRoot: IADTreeNode<T>;
+
+    // Setters
+    ///  <summary><c>Defines the Parent Node for this Node.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Nil will unparent this Node from any existing Parent.</c></para>
+    ///    <para><c>You can ONLY use a Read/Write Tree Node reference.</c></para>
+    ///  </remarks>
+    procedure SetParent(const ARoot: IADTreeNode<T>);
+    ///  <summary><c>Defines the Value for this Node.</c></summary>
+    procedure SetValue(const AValue: T);
+
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+      ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+      ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+    ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+
+    // Management Methods
+    ///  <summary><c>Moves this Node to become a Child of the defined Parent Node, at the (optional) given Index.</c></summary>
+    ///  <remarks><c>If no AIndex value is defined, it will become the new LAST Child of the new Parent Node.</c></remarks>
+    procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
+    ///  <summary><c>Moves this Child Node to a designated Child Index of its current Parent Node.</c></summary>
+    procedure MoveTo(const AIndex: Integer); overload;
+
+    ///  <returns><c>Returns the List of Children.</c></returns>
+    property Children: IADList<IADTreeNode<T>> read GetChildren;
+    ///  <summary><c>Defines the Parent Node for this Node.</c></summary>
+    ///  <remarks>
+    ///    <para><c>This reference would be Nil for the Root Node.</c></para>
+    ///    <para><c>Nil will unparent this Node from any existing Parent.</c></para>
+    ///    <para><c>You can ONLY use a Read/Write Tree Node reference.</c></para>
+    ///  </remarks>
+    ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
+    property Parent: IADTreeNode<T> read GetParent write SetParent;
+    ///  <returns><c>Read-Only Interface Reference for this Tree Node.</c></returns>
+    property Reader: IADTreeNodeReader<T> read GetReader;
+    ///  <returns><c>Reference to the Root Node.</c></returns>
+    ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
+    property Root: IADTreeNode<T> read GetRoot;
+    ///  <summary><c>Defines the Value for this Node.</c></summary>
+    ///  <returns><c>The Value specialized to the given Generic Type.</c></returns>
+    property Value: T read GetValue write SetValue;
   end;
 
 implementation
