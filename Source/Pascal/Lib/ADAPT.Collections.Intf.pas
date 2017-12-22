@@ -656,7 +656,7 @@ type
     ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
     function GetChildCountRecursive: Integer;
     ///  <returns><c>Returns the List of Children.</c></returns>
-    function GetChildren: IADListReader<IADTreeNodeReader<T>>;
+    function GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
     ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
     function GetDepth: Integer;
     ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
@@ -673,10 +673,10 @@ type
     function GetIsRoot: Boolean;
     ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
     ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
-    function GetParent: IADTreeNodeReader<T>;
+    function GetParentReader: IADTreeNodeReader<T>;
     ///  <returns><c>Reference to the Root Node.</c></returns>
     ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
-    function GetRoot: IADTreeNodeReader<T>;
+    function GetRootReader: IADTreeNodeReader<T>;
     ///  <returns><c>The Value specialized to the given Generic Type.</c></returns>
     function GetValue: T;
 
@@ -695,7 +695,6 @@ type
     procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>); overload;
     ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
     procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
-
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
       procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>); overload;
@@ -718,7 +717,7 @@ type
     ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
     property ChildCountRecursive: Integer read GetChildCountRecursive;
     ///  <returns><c>Returns the List of Children.</c></returns>
-    property Children: IADListReader<IADTreeNodeReader<T>> read GetChildren;
+    property ChildrenReaders: IADListReader<IADTreeNodeReader<T>> read GetChildrenReaders;
     ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
     property Depth: Integer read GetDepth;
     ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
@@ -735,10 +734,10 @@ type
     property IsRoot: Boolean read GetIsRoot;
     ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
     ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
-    property Parent: IADTreeNodeReader<T> read GetParent;
+    property ParentReader: IADTreeNodeReader<T> read GetParentReader;
     ///  <returns><c>Reference to the Root Node.</c></returns>
     ///  <remarks><c>This reference would be Self for the Root Node.</c></remarks>
-    property Root: IADTreeNodeReader<T> read GetRoot;
+    property RootReader: IADTreeNodeReader<T> read GetRootReader;
     ///  <returns><c>The Value specialized to the given Generic Type.</c></returns>
     property Value: T read GetValue;
   end;
@@ -785,7 +784,6 @@ type
     procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
     ///  <summary><c>Steps recursively through the Tree from the current node, down, and executes the given Callback.</c></summary>
     procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
-
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       ///  <summary><c>Steps recursively through the Tree from the current node, up, and executes the given Callback.</c></summary>
       procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;

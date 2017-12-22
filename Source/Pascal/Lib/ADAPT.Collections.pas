@@ -578,6 +578,87 @@ type
     constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
   end;
 
+  TADTreeNode<T> = class(TADCollection, IADTreeNodeReader<T>, IADTreeNode<T>)
+  protected
+    // Geters
+    { IADTreeNodeReader<T> }
+    function GetChildCount: Integer;
+    function GetChildCountRecursive: Integer;
+    function GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
+    function GetDepth: Integer;
+    function GetIndexAsChild: Integer;
+    function GetIndexOf(const AChild: IADTreeNodeReader<T>): Integer;
+    function GetIsBranch: Boolean;
+    function GetIsLeaf: Boolean;
+    function GetIsRoot: Boolean;
+    function GetParentReader: IADTreeNodeReader<T>;
+    function GetRootReader: IADTreeNodeReader<T>;
+    function GetValue: T;
+    { IADTreeNode<T> }
+    function GetChildren: IADList<IADTreeNode<T>>;
+    function GetParent: IADTreeNode<T>;
+    function GetReader: IADTreeNodeReader<T>;
+    function GetRoot: IADTreeNode<T>;
+
+    // Setters
+    { IADTreeNode<T> }
+    procedure SetParent(const ARoot: IADTreeNode<T>);
+    procedure SetValue(const AValue: T);
+  public
+    // Iterators
+    { IADTreeNodeReader<T> }
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>); overload;
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>); overload;
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
+    { IADTreeNode<T> }
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    procedure PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>); overload;
+    procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
+
+    // Management Methods
+    procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
+    procedure MoveTo(const AIndex: Integer); overload;
+
+    // Properties
+    { IADTreeNodeReader<T> }
+    property ChildCount: Integer read GetChildCount;
+    property ChildCountRecursive: Integer read GetChildCountRecursive;
+    property ChildrenReaders: IADListReader<IADTreeNodeReader<T>> read GetChildrenReaders;
+    property Depth: Integer read GetDepth;
+    property IndexAsChild: Integer read GetIndexAsChild;
+    property IndexOf[const AChild: IADTreeNodeReader<T>]: Integer read GetIndexOf;
+    property IsBranch: Boolean read GetIsBranch;
+    property IsLeaf: Boolean read GetIsLeaf;
+    property IsRoot: Boolean read GetIsRoot;
+    property ParentReader: IADTreeNodeReader<T> read GetParentReader;
+    property RootReader: IADTreeNodeReader<T> read GetRootReader;
+    { IADTreeNode<T> }
+    property Children: IADList<IADTreeNode<T>> read GetChildren;
+    property Parent: IADTreeNode<T> read GetParent;
+    property Root: IADTreeNode<T> read GetRoot;
+    property Value: T read GetValue write SetValue;
+  end;
+
   { List Sorters }
   ///  <summary><c>Abstract Base Class for all List Sorters.</c></summary>
   TADListSorter<T> = class abstract(TADObject, IADListSorter<T>)
@@ -1814,6 +1895,206 @@ end;
 procedure TADMap<TKey, TValue>.CreateSorter;
 begin
   FSorter := TADMapSorterQuick<TKey, TValue>.Create;
+end;
+
+{ TADTreeNode<T> }
+
+function TADTreeNode<T>.GetChildCount: Integer;
+begin
+
+end;
+
+function TADTreeNode<T>.GetChildCountRecursive: Integer;
+begin
+
+end;
+
+function TADTreeNode<T>.GetChildren: IADList<IADTreeNode<T>>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetDepth: Integer;
+begin
+
+end;
+
+function TADTreeNode<T>.GetIndexAsChild: Integer;
+begin
+
+end;
+
+function TADTreeNode<T>.GetIndexOf(const AChild: IADTreeNodeReader<T>): Integer;
+begin
+
+end;
+
+function TADTreeNode<T>.GetIsBranch: Boolean;
+begin
+
+end;
+
+function TADTreeNode<T>.GetIsLeaf: Boolean;
+begin
+
+end;
+
+function TADTreeNode<T>.GetIsRoot: Boolean;
+begin
+
+end;
+
+function TADTreeNode<T>.GetParent: IADTreeNode<T>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetParentReader: IADTreeNodeReader<T>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetReader: IADTreeNodeReader<T>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetRoot: IADTreeNode<T>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetRootReader: IADTreeNodeReader<T>;
+begin
+
+end;
+
+function TADTreeNode<T>.GetValue: T;
+begin
+
+end;
+
+procedure TADTreeNode<T>.MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer);
+begin
+
+end;
+
+procedure TADTreeNode<T>.MoveTo(const AIndex: Integer);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>);
+  begin
+
+  end;
+
+  procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNodeReader<T>>);
+  begin
+
+  end;
+
+  procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNodeReader<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackAnon<IADTreeNode<T>>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<IADTreeNode<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackOfObject<T>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.PreOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNodeReader<T>>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.SetParent(const ARoot: IADTreeNode<T>);
+begin
+
+end;
+
+procedure TADTreeNode<T>.SetValue(const AValue: T);
+begin
+
 end;
 
 { TADListSorterQuick<T> }
