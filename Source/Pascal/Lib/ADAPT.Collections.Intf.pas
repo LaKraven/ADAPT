@@ -765,7 +765,7 @@ type
     ///    <para><c>Nil will unparent this Node from any existing Parent.</c></para>
     ///    <para><c>You can ONLY use a Read/Write Tree Node reference.</c></para>
     ///  </remarks>
-    procedure SetParent(const ARoot: IADTreeNode<T>);
+    procedure SetParent(const AParent: IADTreeNode<T>);
     ///  <summary><c>Defines the Value for this Node.</c></summary>
     procedure SetValue(const AValue: T);
 
@@ -800,11 +800,15 @@ type
     procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<T>); overload;
 
     // Management Methods
+    ///  <summary><c>Adds the given Node as a Child of this Node.</c></summary>
+    procedure AddChild(const AChild: IADTreeNode<T>; const AIndex: Integer = -1);
     ///  <summary><c>Moves this Node to become a Child of the defined Parent Node, at the (optional) given Index.</c></summary>
     ///  <remarks><c>If no AIndex value is defined, it will become the new LAST Child of the new Parent Node.</c></remarks>
     procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
     ///  <summary><c>Moves this Child Node to a designated Child Index of its current Parent Node.</c></summary>
     procedure MoveTo(const AIndex: Integer); overload;
+    ///  <summary><c>Removes the given Node from this Node's Children.</c></summary>
+    procedure RemoveChild(const AChild: IADTreeNode<T>);
 
     ///  <returns><c>Returns the List of Children.</c></returns>
     property Children: IADList<IADTreeNode<T>> read GetChildren;
