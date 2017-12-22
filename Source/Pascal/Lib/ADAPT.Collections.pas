@@ -585,7 +585,7 @@ type
   ///    <para><c>Iterators are defined in both IADTreeNodeReader and IADTreeNode Interfaces.</c></para>
   ///    <para><c>Call IADTreeNode.Reader to return an IADTreeNodeReader referenced Interface.</c></para>
   ///  </remarks>
-  TADTreeNode<T> = class(TADCollection, IADTreeNodeReader<T>, IADTreeNode<T>)
+  TADTreeNode<T> = class(TADObject, IADTreeNodeReader<T>, IADTreeNode<T>)
   private
     FChildren: IADList<IADTreeNode<T>>;
     FChildrenReaders: IADList<IADTreeNodeReader<T>>;
@@ -617,6 +617,10 @@ type
     procedure SetParent(const AParent: IADTreeNode<T>); virtual;
     procedure SetValue(const AValue: T); virtual;
   public
+    constructor Create(const AParent: IADTreeNode<T>; const AValue: T); reintroduce; overload;
+    constructor Create(const AParent: IADTreeNode<T>); reintroduce; overload;
+    constructor Create(const AValue: T); reintroduce; overload;
+
     // Iterators
     { IADTreeNodeReader<T> }
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
@@ -1921,6 +1925,29 @@ begin
     FChildren.Insert(AChild, AIndex);
 
   AChild.Parent := Self;
+end;
+
+constructor TADTreeNode<T>.Create(const AParent: IADTreeNode<T>; const AValue: T);
+begin
+  inherited Create;
+  if AParent <> nil then
+  begin
+    FParent := @AParent;
+    Parent.AddChild(Self);
+  end;
+  FChildren := TADList<IADTreeNode<T>>.Create(10);
+  FChildrenReaders := TADList<IADTreeNodeReader<T>>.Create(10);
+  FValue := AValue;
+end;
+
+constructor TADTreeNode<T>.Create(const AParent: IADTreeNode<T>);
+begin
+  Create(AParent, Default(T));
+end;
+
+constructor TADTreeNode<T>.Create(const AValue: T);
+begin
+  Create(nil, AValue);
 end;
 
 function TADTreeNode<T>.GetChildCount: Integer;

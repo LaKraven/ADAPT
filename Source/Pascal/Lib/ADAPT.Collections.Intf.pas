@@ -648,7 +648,7 @@ type
   ///  <remarks>
   ///    <para><c>Accessible in Read-Only Mode.</c></para>
   ///  </remarks>
-  IADTreeNodeReader<T> = interface(IADCollection)
+  IADTreeNodeReader<T> = interface(IADInterface)
     // Geters
     ///  <returns><c>The number of Child Nodes directly beneath the given Node.</c></returns>
     function GetChildCount: Integer;

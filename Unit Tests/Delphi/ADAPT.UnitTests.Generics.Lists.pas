@@ -111,6 +111,13 @@ type
     procedure BasicIntegrity;
   end;
 
+  [TestFixture]
+  TADUTCollectionsTree = class(TObject)
+  public
+    [Test]
+    procedure BasicIntegrity;
+  end;
+
 implementation
 
 uses
@@ -126,12 +133,15 @@ type
   IADStringCircularListReader = IADCircularListReader<String>;
   IADStringSortedList = IADSortedList<String>;
   IADStringStringMap = IADMap<String, String>;
+  IADStringTreeNodeReader = IADTreeNodeReader<String>;
+  IADStringTreeNode = IADTreeNode<String>;
   // Specialized Classes
   TADStringArray = TADArray<String>;
   TADStringList = TADList<String>;
   TADStringSortedList = TADSortedList<String>;
   TADStringCircularList = TADCircularList<String>;
   TADStringStringMap = TADMap<String, String>;
+  TADStringTreeNode = TADTreeNode<String>;
 
   TMapTestItem = record
     Key: String;
@@ -734,6 +744,26 @@ begin
     LItem := LMap.Pairs[I];
     Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I].Key) and (LItem.Value = MAP_ITEMS_SORTED[I].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I].Key, MAP_ITEMS_SORTED[I].Value, LItem.Key, LItem.Value]));
   end;
+end;
+
+{ TADUTCollectionsTree }
+
+procedure TADUTCollectionsTree.BasicIntegrity;
+var
+  LNode: IADStringTreeNode;
+  LNode2: IADStringTreeNode;
+begin
+  LNode := TADStringTreeNode.Create('Foo');
+  LNode2 := TADStringTreeNode.Create(LNode, 'Bar');
+
+  // Test Values for both Nodes
+  Assert.IsTrue(LNode.Value = 'Foo', Format('Node Value should be "Foo" but instead got "%s"', [LNode.Value]));
+  Assert.IsTrue(LNode2.Value = 'Bar', Format('Node2 Value should be "Bar" but instead got "%s"', [LNode.Value]));
+
+  LNode2.Parent.Value := 'Haha';
+  Assert.IsTrue(LNode.Value = 'Haha', Format('Node Value should be "Haha" but instead got "%s"', [LNode.Value]));
+
+  Assert.IsTrue(LNode2.Parent <> nil, 'Node2 Parent should be Node, but is not!');
 end;
 
 end.
