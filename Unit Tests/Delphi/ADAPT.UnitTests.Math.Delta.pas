@@ -119,6 +119,21 @@ begin
 
   // Verify the value at LCurrentTime + 0.5;
   Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 0.5] = 1.50, Format('Value at %n should be 1.50 but instead got %n', [LCurrentTime + 0.5, LDelta.ValueAt[LCurrentTime + 0.5]]));
+
+  // Verify the value at LCurrentTime + 0.75;
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 0.75] = 1.75, Format('Value at %n should be 1.75 but instead got %n', [LCurrentTime + 0.75, LDelta.ValueAt[LCurrentTime + 0.75]]));
+
+  // Now let's add a new reference value.
+  LDelta.ValueAt[LCurrentTime + 2] := 3.00;
+
+  // Verify the value at LCurrentTime + 0.5;
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 0.5] = 1.50, Format('Value at %n should be 1.50 but instead got %n', [LCurrentTime + 0.5, LDelta.ValueAt[LCurrentTime + 0.5]]));
+
+  // Verify the value at LCurrentTime + 0.75;
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 0.75] = 1.75, Format('Value at %n should be 1.75 but instead got %n', [LCurrentTime + 0.75, LDelta.ValueAt[LCurrentTime + 0.75]]));
+
+  // Verify the value at LCurrentTime + 1.50;
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 1.50] = 2.5, Format('Value at %n should be 2.5 but instead got %n', [LCurrentTime + 1.5, LDelta.ValueAt[LCurrentTime + 1.5]]));
 end;
 
 end.
