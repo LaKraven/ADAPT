@@ -40,7 +40,8 @@ uses
   ADAPT.Math.Averagers in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.pas',
   ADAPT.Collections.Intf in '..\..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas',
   ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas',
-  ADAPT.UnitTests.Streams in 'ADAPT.UnitTests.Streams.pas';
+  ADAPT.UnitTests.Streams in 'ADAPT.UnitTests.Streams.pas',
+  ADAPT.UnitTests.Math.Delta in 'ADAPT.UnitTests.Math.Delta.pas';
 
 var
   runner : ITestRunner;
