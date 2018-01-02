@@ -151,7 +151,7 @@ var
   LIndex, LLow, LHigh: Integer;
   LComparer: IADComparer<ADFloat>;
 begin
-  LComparer := ADFloatComparer;
+  LComparer := (FValues as IADComparable<ADFloat>).Comparer;
   Result := 0;
   LLow := 0;
   LHigh := FValues.Count - 1;
