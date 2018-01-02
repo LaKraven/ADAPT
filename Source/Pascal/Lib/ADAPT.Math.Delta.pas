@@ -26,43 +26,36 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  TADDeltaValue<T> = class(TADObject, IADDeltaValue<T>)
+  TADDeltaFloat = class(TADObject, IADDeltaValue<ADFloat>)
   private
-    FComparer: IADOrdinalComparer<T>;
-    FValues: IADMap<ADFloat, T>;
+    FValues: IADMap<ADFloat, ADFloat>;
   protected
     // Getters
     { IADDeltaValue<T> }
-    function GetValueAt(const ADelta: ADFloat): T; virtual;
-    function GetValueNow: T;
+    function GetValueAt(const ADelta: ADFloat): ADFloat; virtual;
+    function GetValueNow: ADFloat;
 
     // Setters
     { IADDeltaValue<T> }
-    procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual;
-    procedure SetValueNow(const AValue: T);
+    procedure SetValueAt(const ADelta: ADFloat; const AValue: ADFloat); virtual;
+    procedure SetValueNow(const AValue: ADFloat);
 
     // Overridables
-    function CalculateValueAt(const ADelta: ADFloat): T; virtual;
+    function CalculateValueAt(const ADelta: ADFloat): ADFloat; virtual;
   public
-    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>); reintroduce; overload;
-    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>; const AValueNow: T); reintroduce; overload;
-    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>; const ADelta: ADFloat; const AValue: T); reintroduce; overload;
+    constructor Create; overload; override;
+    constructor Create(const AValueNow: ADFloat); reintroduce; overload;
+    constructor Create(const ADelta: ADFloat; const AValue: ADFloat); reintroduce; overload;
     // Properties
-    { IADDeltaValue<T> }
-    property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt;
-    property ValueNow: T read GetValueNow write SetValueNow;
+    { IADDeltaValue<ADFloat> }
+    property ValueAt[const ADelta: ADFloat]: ADFloat read GetValueAt write SetValueAt;
+    property ValueNow: ADFloat read GetValueNow write SetValueNow;
   end;
 
 ///  <returns><c>The Current "Reference Time" used everywhere "Differential Time" (Delta) is calculated.</c></returns>
 function ADReferenceTime: ADFloat;
 ///  <returns><c>A fresh Instance of a Delta Float.</c></returns>
 function ADDeltaFloat: IADDeltaValue<ADFloat>;
-///  <returns><c>A fresh Instance of a Delta Integer.</c></returns>
-function ADDeltaInteger: IADDeltaValue<Integer>;
-///  <returns><c>A fresh Instance of a Delta Int64.</c></returns>
-function ADDeltaInt64: IADDeltaValue<Int64>;
-///  <returns><c>A fresh Instance of a Delta Cardinal.</c></returns>
-function ADDeltaCardinal: IADDeltaValue<Cardinal>;
 
 implementation
 
@@ -72,12 +65,6 @@ uses
 
 var
   ReferenceWatch: TStopwatch;
-
-type
-  TADDeltaFloat = class(TADDeltaValue<ADFloat>);
-  TADDeltaInteger = class(TADDeltaValue<Integer>);
-  TADDeltaInt64 = class(TADDeltaValue<Int64>);
-  TADDeltaCardinal = class(TADDeltaValue<Cardinal>);
 
 function ADReferenceTime: ADFloat;
 begin
@@ -89,57 +76,44 @@ begin
   Result := TADDeltaFloat.Create;
 end;
 
-function ADDeltaInteger: IADDeltaValue<Integer>;
-begin
-  Result := TADDeltaInteger.Create;
-end;
+{ TADDeltaFloat }
 
-function ADDeltaInt64: IADDeltaValue<Int64>;
-begin
-  Result := TADDeltaInt64.Create;
-end;
-
-function ADDeltaCardinal: IADDeltaValue<Cardinal>;
-begin
-  Result := TADDeltaCardinal.Create;
-end;
-
-{ TADDeltaValue<T> }
-
-constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>);
+constructor TADDeltaFloat.Create;
 begin
   inherited Create;
-  FComparer := AOrdinalComparer;
-  FValues := TADMap<ADFloat, T>.Create(ADFloatComparer);
+  FValues := TADMap<ADFloat, ADFloat>.Create(ADFloatComparer);
 end;
 
-constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>; const AValueNow: T);
+constructor TADDeltaFloat.Create(const AValueNow: ADFloat);
 begin
-  Create(AOrdinalComparer);
+  Create;
   SetValueNow(AValueNow);
 end;
 
-constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>; const ADelta: ADFloat; const AValue: T);
+constructor TADDeltaFloat.Create(const ADelta: ADFloat; const AValue: ADFloat);
 begin
-  Create(AOrdinalComparer);
+  Create;
   SetValueAt(ADelta, AValue);
 end;
 
-function TADDeltaValue<T>.CalculateValueAt(const ADelta: ADFloat): T;
+function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
 var
-  LDeltaDiff, LDeltaFactor: ADFloat;
-  LValueDiff: T;
+  LDeltaDiff: ADFloat;
+  LValueDiff: ADFloat;
 begin
-  Result := Default(T);
-  if (FValues.Count < 2) then
+  Result := 0.00;
+
+  if (FValues.Count < 2) then // Determine first whether or not we have enough Values to Interpolate/Extrapolate. 2 is the minimum.
     Exit; //TODO -oSJS -cDelta Value: Raise a rational exception here since we cannot calculate a result with less than two fixed Data Points.
+
   if (ADelta > FValues.Pairs[FValues.Count - 1].Key) then
   begin
     // Extrapolate (value is in the future)
     // Simple two-point Linear Extrapolation
     LDeltaDiff := (FValues.Pairs[FValues.Count - 1].Key - FValues.Pairs[FValues.Count - 2].Key);
-    LValueDiff := FComparer.Subtract(FValues.Pairs[FValues.Count - 1].Value, FValues.Pairs[FValues.Count - 2].Value);
-    LDeltaFactor := ADelta / LDeltaDiff;
+    LValueDiff := FValues.Pairs[FValues.Count - 1].Value - FValues.Pairs[FValues.Count - 2].Value;
+    LDeltaDiff := ADelta - FValues.Pairs[FValues.Count - 1].Key;
+    Result := FValues.Pairs[FValues.Count - 1].Value + (LValueDiff * LDeltaDiff);
   end
   else
   begin
@@ -155,7 +129,7 @@ begin
   end;
 end;
 
-function TADDeltaValue<T>.GetValueAt(const ADelta: ADFloat): T;
+function TADDeltaFloat.GetValueAt(const ADelta: ADFloat): ADFloat;
 begin
   if FValues.Contains(ADelta) then  // If we already have an exact value for the given Delta...
   begin
@@ -166,12 +140,12 @@ begin
   Result := CalculateValueAt(ADelta);
 end;
 
-function TADDeltaValue<T>.GetValueNow: T;
+function TADDeltaFloat.GetValueNow: ADFloat;
 begin
   Result := GetValueAt(ADReferenceTime);
 end;
 
-procedure TADDeltaValue<T>.SetValueAt(const ADelta: ADFloat; const AValue: T);
+procedure TADDeltaFloat.SetValueAt(const ADelta: ADFloat; const AValue: ADFloat);
 begin
   if FValues.Contains(ADelta) then
     FValues.Items[ADelta] := AValue
@@ -179,7 +153,7 @@ begin
     FValues.Add(ADelta, AValue);
 end;
 
-procedure TADDeltaValue<T>.SetValueNow(const AValue: T);
+procedure TADDeltaFloat.SetValueNow(const AValue: ADFloat);
 begin
   SetValueAt(ADReferenceTime, AValue);
 end;

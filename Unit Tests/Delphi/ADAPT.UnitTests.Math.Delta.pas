@@ -33,8 +33,6 @@ uses
 type
   // Interfaces
   IADFloatDelta = IADDeltaValue<ADFloat>;
-  // Classes
-  TADFloatDelta = TADDeltaValue<ADFloat>;
 
 { TADUTMathDelta }
 
@@ -46,7 +44,7 @@ begin
   // Get the current time as of Test Start.
   LCurrentTime := ADReferenceTime;
   // Create an empty Delta Value
-  LDelta := TADFloatDelta.Create(ADFloatComparer);
+  LDelta := TADDeltaFloat.Create;
 
   // Set the Value for test start to 1.00
   LDelta.ValueAt[LCurrentTime] := 1.00;
@@ -67,7 +65,7 @@ begin
   // Get the current time as of Test Start.
   LCurrentTime := ADReferenceTime;
   // Create an empty Delta Value
-  LDelta := TADFloatDelta.Create(ADFloatComparer);
+  LDelta := TADDeltaFloat.Create;
 
   // Set the Value for test start to 1.00
   LDelta.ValueAt[LCurrentTime] := 1.00;
@@ -81,6 +79,9 @@ begin
 
   // Verify the value at LCurrentTime + 2
   Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 2] = 3.00, Format('Value at %n should be 3.00 but instead got %n', [LCurrentTime + 2, LDelta.ValueAt[LCurrentTime + 2]]));
+
+  // Verify the value at LCurrentTime + 3
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 3] = 4.00, Format('Value at %n should be 4.00 but instead got %n', [LCurrentTime + 3, LDelta.ValueAt[LCurrentTime + 3]]));
 end;
 
 end.
