@@ -29,6 +29,9 @@ type
   TADDeltaFloat = class(TADObject, IADDeltaValue<ADFloat>)
   private
     FValues: IADMap<ADFloat, ADFloat>;
+    function Extrapolate(const ADelta: ADFloat): ADFloat;
+    function Interpolate(const ADelta: ADFloat): ADFloat;
+    function GetNearestNeighbour(const ADelta: ADFloat): Integer;
   protected
     // Getters
     { IADDeltaValue<T> }
@@ -96,36 +99,94 @@ begin
   SetValueAt(ADelta, AValue);
 end;
 
-function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
+function TADDeltaFloat.Extrapolate(const ADelta: ADFloat): ADFloat;
 var
+  LFirstValue, LSecondValue, LNearestDelta: ADFloat;
   LDeltaDiff: ADFloat;
   LValueDiff: ADFloat;
 begin
-  Result := 0.00;
+  LFirstValue := ADFLOAT_ZERO;
+  LSecondValue := ADFLOAT_ZERO;
+  LDeltaDiff := ADFLOAT_ZERO;
+
+  if (ADelta > FValues.Pairs[FValues.Count - 1].Key) then
+  begin
+    LFirstValue := FValues.Pairs[FValues.Count - 1].Value;
+    LSecondValue := FValues.Pairs[FValues.Count - 2].Value;
+    LNearestDelta := FValues.Pairs[FValues.Count - 1].Key;
+    LDeltaDiff := ADelta - LNearestDelta;
+  end
+  else if (ADelta < FValues.Pairs[0].Key) then
+  begin
+    LFirstValue := FValues.Pairs[0].Value;
+    LSecondValue := FValues.Pairs[1].Value;
+    LNearestDelta := FValues.Pairs[0].Key;
+    LDeltaDiff := LNearestDelta - ADelta;
+  end;
+
+  LValueDiff := LFirstValue - LSecondValue;
+  Result := LFirstValue + (LValueDiff * LDeltaDiff);
+end;
+
+function TADDeltaFloat.Interpolate(const ADelta: ADFloat): ADFloat;
+var
+  LNearestNeighbour: Integer;
+  LFirstValue, LSecondValue, LNearestDelta: ADFloat;
+  LDeltaDiff: ADFloat;
+  LValueDiff: ADFloat;
+begin
+  // Interpolate (Value is between the range.)
+  LNearestNeighbour := GetNearestNeighbour(ADelta) - 2;
+  LNearestDelta := FValues.Pairs[LNearestNeighbour].Key;
+  LFirstValue := FValues.Pairs[LNearestNeighbour].Value;
+  LSecondValue := FValues.Pairs[LNearestNeighbour + 1].Value;
+  // Calculate Value Difference between them
+  LDeltaDiff := ADelta - LNearestDelta;
+  LValueDiff := LSecondValue - LFirstValue;
+  Result := LFirstValue + (LValueDiff * lDeltaDiff);
+end;
+
+function TADDeltaFloat.GetNearestNeighbour(const ADelta: ADFloat): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+  LComparer: IADComparer<ADFloat>;
+begin
+  LComparer := ADFloatComparer;
+  Result := 0;
+  LLow := 0;
+  LHigh := FValues.Count - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if LComparer.ALessThanOrEqualToB(ADelta, FValues[LIndex]) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if LComparer.ALessThanB(FValues[LHigh], ADelta) then
+    Result := LHigh + 1
+  else if LComparer.ALessThanB(FValues[LLow], ADelta) then
+    Result := LLow + 1
+  else
+    Result := LLow;
+end;
+
+function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
+begin
+  Result := ADFLOAT_ZERO;
 
   if (FValues.Count < 2) then // Determine first whether or not we have enough Values to Interpolate/Extrapolate. 2 is the minimum.
     Exit; //TODO -oSJS -cDelta Value: Raise a rational exception here since we cannot calculate a result with less than two fixed Data Points.
 
-  if (ADelta > FValues.Pairs[FValues.Count - 1].Key) then
-  begin
-    // Extrapolate (value is in the future)
-    // Simple two-point Linear Extrapolation
-    LValueDiff := FValues.Pairs[FValues.Count - 1].Value - FValues.Pairs[FValues.Count - 2].Value;
-    LDeltaDiff := ADelta - FValues.Pairs[FValues.Count - 1].Key;
-    Result := FValues.Pairs[FValues.Count - 1].Value + (LValueDiff * LDeltaDiff);
-  end
-  else if (ADelta < FValues.Pairs[0].Key) then
-  begin
-    // Extrapolate (value is in the past)
-    LValueDiff := FValues.Pairs[0].Value - FValues.Pairs[1].Value;
-    LDeltaDiff := FValues.Pairs[0].Key - ADelta;
-    Result := FValues.Pairs[0].Value + (LValueDiff * LDeltaDiff);
-  end
+  if (ADelta > FValues.Pairs[FValues.Count - 1].Key) or (ADelta < FValues.Pairs[0].Key) then
+    Result := Extrapolate(ADelta)
   else
-  begin
-    // Interpolate (value is either in the past, or between the range
-    // Value is between the range.
-  end;
+    Result := Interpolate(ADelta);
 end;
 
 function TADDeltaFloat.GetValueAt(const ADelta: ADFloat): ADFloat;
