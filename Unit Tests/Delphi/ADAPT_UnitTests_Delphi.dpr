@@ -41,7 +41,8 @@ uses
   ADAPT.Collections.Intf in '..\..\Source\Pascal\Lib\ADAPT.Collections.Intf.pas',
   ADAPT.Collections in '..\..\Source\Pascal\Lib\ADAPT.Collections.pas',
   ADAPT.UnitTests.Streams in 'ADAPT.UnitTests.Streams.pas',
-  ADAPT.UnitTests.Math.Delta in 'ADAPT.UnitTests.Math.Delta.pas';
+  ADAPT.UnitTests.Math.Delta in 'ADAPT.UnitTests.Math.Delta.pas',
+  ADAPT.Comparers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Comparers.Intf.pas';
 
 var
   runner : ITestRunner;

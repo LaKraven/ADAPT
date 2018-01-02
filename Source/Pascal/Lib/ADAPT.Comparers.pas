@@ -17,7 +17,8 @@ uses
   {$ELSE}
     Classes, SysUtils,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
-  ADAPT.Intf, ADAPT;
+  ADAPT.Intf, ADAPT,
+  ADAPT.Comparers.Intf;
 
   {$I ADAPT_RTTI.inc}
 

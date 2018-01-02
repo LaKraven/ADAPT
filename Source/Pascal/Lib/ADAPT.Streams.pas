@@ -23,7 +23,8 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT, ADAPT.Intf,
   ADAPT.Collections.Intf,
-  ADAPT.Streams.Intf;
+  ADAPT.Streams.Intf,
+  ADAPT.Comparers.Intf;
 
   {$I ADAPT_RTTI.inc}
 
