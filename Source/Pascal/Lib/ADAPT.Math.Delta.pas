@@ -19,6 +19,7 @@ uses
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT, ADAPT.Intf,
   ADAPT.Collections.Intf,
+  ADAPT.Comparers.Intf,
   ADAPT.Math.Common.Intf,
   ADAPT.Math.Delta.Intf;
 
@@ -27,6 +28,7 @@ uses
 type
   TADDeltaValue<T> = class(TADObject, IADDeltaValue<T>)
   private
+    FComparer: IADOrdinalComparer<T>;
     FValues: IADMap<ADFloat, T>;
   protected
     // Getters
@@ -42,9 +44,9 @@ type
     // Overridables
     function CalculateValueAt(const ADelta: ADFloat): T; virtual;
   public
-    constructor Create; overload; override;
-    constructor Create(const AValueNow: T); reintroduce; overload;
-    constructor Create(const ADelta: ADFloat; const AValue: T); reintroduce; overload;
+    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>); reintroduce; overload;
+    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>; const AValueNow: T); reintroduce; overload;
+    constructor Create(const AOrdinalComparer: IADOrdinalComparer<T>; const ADelta: ADFloat; const AValue: T); reintroduce; overload;
     // Properties
     { IADDeltaValue<T> }
     property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt;
@@ -104,23 +106,31 @@ end;
 
 { TADDeltaValue<T> }
 
-constructor TADDeltaValue<T>.Create;
+constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>);
 begin
   inherited Create;
+  FComparer := AOrdinalComparer;
   FValues := TADMap<ADFloat, T>.Create(ADFloatComparer);
 end;
 
-constructor TADDeltaValue<T>.Create(const AValueNow: T);
+constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>; const AValueNow: T);
 begin
-  Create;
+  Create(AOrdinalComparer);
   SetValueNow(AValueNow);
+end;
+
+constructor TADDeltaValue<T>.Create(const AOrdinalComparer: IADOrdinalComparer<T>; const ADelta: ADFloat; const AValue: T);
+begin
+  Create(AOrdinalComparer);
+  SetValueAt(ADelta, AValue);
 end;
 
 function TADDeltaValue<T>.CalculateValueAt(const ADelta: ADFloat): T;
 var
-  LDeltaDiff: ADFloat;
+  LDeltaDiff, LDeltaFactor: ADFloat;
   LValueDiff: T;
 begin
+  Result := Default(T);
   if (FValues.Count < 2) then
     Exit; //TODO -oSJS -cDelta Value: Raise a rational exception here since we cannot calculate a result with less than two fixed Data Points.
   if (ADelta > FValues.Pairs[FValues.Count - 1].Key) then
@@ -128,7 +138,8 @@ begin
     // Extrapolate (value is in the future)
     // Simple two-point Linear Extrapolation
     LDeltaDiff := (FValues.Pairs[FValues.Count - 1].Key - FValues.Pairs[FValues.Count - 2].Key);
-//    LValueDiff := (FValues.Pairs[FValues.Count - 1].Value - FValues.Pairs[FValues.Count - 2].Value);
+    LValueDiff := FComparer.Subtract(FValues.Pairs[FValues.Count - 1].Value, FValues.Pairs[FValues.Count - 2].Value);
+    LDeltaFactor := ADelta / LDeltaDiff;
   end
   else
   begin
@@ -142,12 +153,6 @@ begin
       // Value is between the range.
     end;
   end;
-end;
-
-constructor TADDeltaValue<T>.Create(const ADelta: ADFloat; const AValue: T);
-begin
-  Create;
-  SetValueAt(ADelta, AValue);
 end;
 
 function TADDeltaValue<T>.GetValueAt(const ADelta: ADFloat): T;

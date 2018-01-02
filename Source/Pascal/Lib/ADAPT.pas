@@ -73,8 +73,8 @@ type
     function GetInstanceGUID: TGUID;
   protected
     FInstanceGUID: TGUID;
-  public
     constructor Create; virtual;
+  public
     property InstanceGUID: TGUID read GetInstanceGUID;
   end;
 
@@ -88,8 +88,8 @@ type
     function GetInstanceGUID: TGUID;
   protected
     FInstanceGUID: TGUID;
-  public
     constructor Create; virtual;
+  public
     property InstanceGUID: TGUID read GetInstanceGUID;
   end;
 
