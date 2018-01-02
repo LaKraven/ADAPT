@@ -22,9 +22,9 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  IADCardinalComparer = IADComparer<Cardinal>;
-  IADIntegerComparer = IADComparer<Integer>;
-  IADFloatComparer = IADComparer<ADFloat>;
+  IADCardinalComparer = IADOrdinalComparer<Cardinal>;
+  IADIntegerComparer = IADOrdinalComparer<Integer>;
+  IADFloatComparer = IADOrdinalComparer<ADFloat>;
   IADStringComparer = IADComparer<String>;
   IADObjectComparer = IADComparer<TADObject>;
   IADInterfaceComparer = IADComparer<IADInterface>;
@@ -37,6 +37,17 @@ type
     function AGreaterThanOrEqualToB(const A, B: T): Boolean; virtual; abstract;
     function ALessThanB(const A, B: T): Boolean; virtual; abstract;
     function ALessThanOrEqualToB(const A, B: T): Boolean; virtual; abstract;
+  end;
+
+  ///  <summary><c>Abstract Base Class for Generic Ordinal Comparers.</c></summary>
+  TADOrdinalComparer<T> = class(TADComparer<T>, IADOrdinalComparer<T>)
+  public
+    function Add(const A, B: T): T; virtual; abstract;
+    function AddAll(const Values: Array of T): T;
+    function Difference(const A, B: T): T;
+    function Divide(const A, B: T): T; virtual; abstract;
+    function Multiply(const A, B: T): T; virtual; abstract;
+    function Subtract(const A, B: T): T; virtual; abstract;
   end;
 
   ///  <summary><c>Generic Comparer for any Class implementing the IADInterface Type.</c></summary>
@@ -71,33 +82,48 @@ var
 
 type
   ///  <summary><c>Specialized Comparer for Cardinal values.</c></summary>
-  TADCardinalComparer = class(TADComparer<Cardinal>)
+  TADCardinalComparer = class(TADOrdinalComparer<Cardinal>)
   public
     function AEqualToB(const A, B: Cardinal): Boolean; override;
     function AGreaterThanB(const A, B: Cardinal): Boolean; override;
     function AGreaterThanOrEqualToB(const A, B: Cardinal): Boolean; override;
     function ALessThanB(const A, B: Cardinal): Boolean; override;
     function ALessThanOrEqualToB(const A, B: Cardinal): Boolean; override;
+
+    function Add(const A, B: Cardinal): Cardinal; override;
+    function Divide(const A, B: Cardinal): Cardinal; override;
+    function Multiply(const A, B: Cardinal): Cardinal; override;
+    function Subtract(const A, B: Cardinal): Cardinal; override;
   end;
 
   ///  <summary><c>Specialized Comparer for Integer values.</c></summary>
-  TADIntegerComparer = class(TADComparer<Integer>)
+  TADIntegerComparer = class(TADOrdinalComparer<Integer>)
   public
     function AEqualToB(const A, B: Integer): Boolean; override;
     function AGreaterThanB(const A, B: Integer): Boolean; override;
     function AGreaterThanOrEqualToB(const A, B: Integer): Boolean; override;
     function ALessThanB(const A, B: Integer): Boolean; override;
     function ALessThanOrEqualToB(const A, B: Integer): Boolean; override;
+
+    function Add(const A, B: Integer): Integer; override;
+    function Divide(const A, B: Integer): Integer; override;
+    function Multiply(const A, B: Integer): Integer; override;
+    function Subtract(const A, B: Integer): Integer; override;
   end;
 
   ///  <summary><c>Specialized Comparer for ADFloat values.</c></summary>
-  TADFloatComparer = class(TADComparer<ADFloat>)
+  TADFloatComparer = class(TADOrdinalComparer<ADFloat>)
   public
     function AEqualToB(const A, B: ADFloat): Boolean; override;
     function AGreaterThanB(const A, B: ADFloat): Boolean; override;
     function AGreaterThanOrEqualToB(const A, B: ADFloat): Boolean; override;
     function ALessThanB(const A, B: ADFloat): Boolean; override;
     function ALessThanOrEqualToB(const A, B: ADFloat): Boolean; override;
+
+    function Add(const A, B: ADFloat): ADFloat; override;
+    function Divide(const A, B: ADFloat): ADFloat; override;
+    function Multiply(const A, B: ADFloat): ADFloat; override;
+    function Subtract(const A, B: ADFloat): ADFloat; override;
   end;
 
   ///  <summary><c>Specialized Comparer for String values.</c></summary>
@@ -160,7 +186,31 @@ begin
   Result := GADInterfaceComparer;
 end;
 
+{ TADOrdinalComparer<T> }
+
+function TADOrdinalComparer<T>.AddAll(const Values: array of T): T;
+var
+  I: Integer;
+begin
+  Result := Default(T);
+  for I := Low(Values) to High(Values) do
+    if I = Low(Values) then
+      Result := Values[I]
+    else
+      Result := Add(Result, Values[I]);
+end;
+
+function TADOrdinalComparer<T>.Difference(const A, B: T): T;
+begin
+  Result := Subtract(A, B);
+end;
+
 { TADCardinalComparer }
+
+function TADCardinalComparer.Add(const A, B: Cardinal): Cardinal;
+begin
+  Result := A + B;
+end;
 
 function TADCardinalComparer.AEqualToB(const A, B: Cardinal): Boolean;
 begin
@@ -187,7 +237,27 @@ begin
   Result := (A <= B);
 end;
 
+function TADCardinalComparer.Divide(const A, B: Cardinal): Cardinal;
+begin
+  Result := A div B;
+end;
+
+function TADCardinalComparer.Multiply(const A, B: Cardinal): Cardinal;
+begin
+  Result := A * B;
+end;
+
+function TADCardinalComparer.Subtract(const A, B: Cardinal): Cardinal;
+begin
+  Result := A - B;
+end;
+
 { TADIntegerComparer }
+
+function TADIntegerComparer.Add(const A, B: Integer): Integer;
+begin
+  Result := A + B;
+end;
 
 function TADIntegerComparer.AEqualToB(const A, B: Integer): Boolean;
 begin
@@ -214,7 +284,27 @@ begin
   Result := (A <= B);
 end;
 
+function TADIntegerComparer.Divide(const A, B: Integer): Integer;
+begin
+  Result := A div B;
+end;
+
+function TADIntegerComparer.Multiply(const A, B: Integer): Integer;
+begin
+  Result := A * B;
+end;
+
+function TADIntegerComparer.Subtract(const A, B: Integer): Integer;
+begin
+  Result := A - B;
+end;
+
 { TADFloatComparer }
+
+function TADFloatComparer.Add(const A, B: ADFloat): ADFloat;
+begin
+  Result := A + B;
+end;
 
 function TADFloatComparer.AEqualToB(const A, B: ADFloat): Boolean;
 begin
@@ -239,6 +329,21 @@ end;
 function TADFloatComparer.ALessThanOrEqualToB(const A, B: ADFloat): Boolean;
 begin
   Result := (A <= B);
+end;
+
+function TADFloatComparer.Divide(const A, B: ADFloat): ADFloat;
+begin
+  Result := A / B;
+end;
+
+function TADFloatComparer.Multiply(const A, B: ADFloat): ADFloat;
+begin
+  Result := A * B;
+end;
+
+function TADFloatComparer.Subtract(const A, B: ADFloat): ADFloat;
+begin
+  Result := A - B;
 end;
 
 { TADStringComparer }

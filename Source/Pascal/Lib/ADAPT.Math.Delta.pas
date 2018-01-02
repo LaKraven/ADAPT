@@ -38,6 +38,9 @@ type
     { IADDeltaValue<T> }
     procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual;
     procedure SetValueNow(const AValue: T);
+
+    // Overridables
+    function CalculateValueAt(const ADelta: ADFloat): T; virtual;
   public
     constructor Create; overload; override;
     constructor Create(const AValueNow: T); reintroduce; overload;
@@ -113,6 +116,34 @@ begin
   SetValueNow(AValueNow);
 end;
 
+function TADDeltaValue<T>.CalculateValueAt(const ADelta: ADFloat): T;
+var
+  LDeltaDiff: ADFloat;
+  LValueDiff: T;
+begin
+  if (FValues.Count < 2) then
+    Exit; //TODO -oSJS -cDelta Value: Raise a rational exception here since we cannot calculate a result with less than two fixed Data Points.
+  if (ADelta > FValues.Pairs[FValues.Count - 1].Key) then
+  begin
+    // Extrapolate (value is in the future)
+    // Simple two-point Linear Extrapolation
+    LDeltaDiff := (FValues.Pairs[FValues.Count - 1].Key - FValues.Pairs[FValues.Count - 2].Key);
+//    LValueDiff := (FValues.Pairs[FValues.Count - 1].Value - FValues.Pairs[FValues.Count - 2].Value);
+  end
+  else
+  begin
+    // Interpolate (value is either in the past, or between the range
+    if (ADelta < FValues.Pairs[0].Key) then
+    begin
+      // Value is in the past.
+    end
+    else
+    begin
+      // Value is between the range.
+    end;
+  end;
+end;
+
 constructor TADDeltaValue<T>.Create(const ADelta: ADFloat; const AValue: T);
 begin
   Create;
@@ -121,12 +152,13 @@ end;
 
 function TADDeltaValue<T>.GetValueAt(const ADelta: ADFloat): T;
 begin
-  if FValues.Contains(ADelta) then
-    Result := FValues.Items[ADelta]
-  else
+  if FValues.Contains(ADelta) then  // If we already have an exact value for the given Delta...
   begin
-    //TODO -oDaniel -cTADDeltaValue: Interpolate/Extrapolate Value based on present data.
+    Result := FValues.Items[ADelta]; // ... simply return it.
+    Exit;
   end;
+
+  Result := CalculateValueAt(ADelta);
 end;
 
 function TADDeltaValue<T>.GetValueNow: T;
