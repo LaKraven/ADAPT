@@ -1409,6 +1409,8 @@ var
   LLow, LHigh, LMid: Integer;
 begin
   Result := -1; // Pessimistic
+  if (FCount = 0) then
+    Exit;
   LLow := 0;
   LHigh := FCount - 1;
   repeat
