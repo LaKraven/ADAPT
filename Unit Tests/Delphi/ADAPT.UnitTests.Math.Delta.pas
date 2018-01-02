@@ -80,8 +80,23 @@ begin
   // Verify the value at LCurrentTime + 2
   Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 2] = 3.00, Format('Value at %n should be 3.00 but instead got %n', [LCurrentTime + 2, LDelta.ValueAt[LCurrentTime + 2]]));
 
+  // Verify the value at LCurrentTime + 2.5
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 2.5] = 3.50, Format('Value at %n should be 3.50 but instead got %n', [LCurrentTime + 2.5, LDelta.ValueAt[LCurrentTime + 2.5]]));
+
   // Verify the value at LCurrentTime + 3
   Assert.IsTrue(LDelta.ValueAt[LCurrentTime + 3] = 4.00, Format('Value at %n should be 4.00 but instead got %n', [LCurrentTime + 3, LDelta.ValueAt[LCurrentTime + 3]]));
+
+  // Verify the value at LCurrentTime -1
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime - 1] = 0.00, Format('Value at %n should be 0.00 but instead got %n', [LCurrentTime - 1, LDelta.ValueAt[LCurrentTime - 1]]));
+
+  // Verify the value at LCurrentTime -2
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime - 2] = -1.00, Format('Value at %n should be -1.00 but instead got %n', [LCurrentTime - 2, LDelta.ValueAt[LCurrentTime - 2]]));
+
+  // Verify the value at LCurrentTime -2.5
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime - 2.5] = -1.50, Format('Value at %n should be -1.50 but instead got %n', [LCurrentTime - 2.5, LDelta.ValueAt[LCurrentTime - 2.5]]));
+
+  // Verify the value at LCurrentTime -3
+  Assert.IsTrue(LDelta.ValueAt[LCurrentTime - 3] = -2.00, Format('Value at %n should be -2.00 but instead got %n', [LCurrentTime - 3, LDelta.ValueAt[LCurrentTime - 3]]));
 end;
 
 end.

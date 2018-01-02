@@ -110,22 +110,21 @@ begin
   begin
     // Extrapolate (value is in the future)
     // Simple two-point Linear Extrapolation
-    LDeltaDiff := (FValues.Pairs[FValues.Count - 1].Key - FValues.Pairs[FValues.Count - 2].Key);
     LValueDiff := FValues.Pairs[FValues.Count - 1].Value - FValues.Pairs[FValues.Count - 2].Value;
     LDeltaDiff := ADelta - FValues.Pairs[FValues.Count - 1].Key;
     Result := FValues.Pairs[FValues.Count - 1].Value + (LValueDiff * LDeltaDiff);
   end
+  else if (ADelta < FValues.Pairs[0].Key) then
+  begin
+    // Extrapolate (value is in the past)
+    LValueDiff := FValues.Pairs[0].Value - FValues.Pairs[1].Value;
+    LDeltaDiff := FValues.Pairs[0].Key - ADelta;
+    Result := FValues.Pairs[0].Value + (LValueDiff * LDeltaDiff);
+  end
   else
   begin
     // Interpolate (value is either in the past, or between the range
-    if (ADelta < FValues.Pairs[0].Key) then
-    begin
-      // Value is in the past.
-    end
-    else
-    begin
-      // Value is between the range.
-    end;
+    // Value is between the range.
   end;
 end;
 
