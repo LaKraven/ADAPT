@@ -50,6 +50,8 @@ type
     function CalculateValueAt(const ADelta: ADFloat): T; virtual; abstract;
   public
     constructor Create(const AHistoryToKeep: Integer = 5); reintroduce; overload; virtual;
+    constructor Create(const AValueNow: T; const AHistoryToKeep: Integer = 5); reintroduce; overload;
+    constructor Create(const ADelta: ADFloat; const AValue: T; const AHistoryToKeep: Integer = 5); reintroduce; overload;
     // Properties
     { IADDeltaValue<ADFloat> }
     property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt; default;
@@ -64,10 +66,6 @@ type
   protected
     // Overridables
     function CalculateValueAt(const ADelta: ADFloat): ADFloat; override;
-  public
-    constructor Create(const AHistoryToKeep: Integer = 5); overload; override;
-    constructor Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
-    constructor Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
   end;
 
 ///  <returns><c>The Current "Reference Time" used everywhere "Differential Time" (Delta) is calculated.</c></returns>
@@ -117,6 +115,18 @@ begin
     FValues := TADMap<ADFloat, T>.Create(ADFloatComparer)
   else
     FValues := TADCircularMap<ADFloat, T>.Create(ADFloatComparer, AHistoryToKeep);
+end;
+
+constructor TADDeltaValueBase<T>.Create(const AValueNow: T; const AHistoryToKeep: Integer);
+begin
+  Create(AHistoryToKeep);
+  SetValueNow(AValueNow);
+end;
+
+constructor TADDeltaValueBase<T>.Create(const ADelta: ADFloat; const AValue: T; const AHistoryToKeep: Integer);
+begin
+  Create(AHistoryToKeep);
+  SetValueAt(ADelta, AValue);
 end;
 
 function TADDeltaValueBase<T>.GetNearestNeighbour(const ADelta: ADFloat): Integer;
@@ -184,23 +194,6 @@ begin
 end;
 
 { TADDeltaFloat }
-
-constructor TADDeltaFloat.Create(const AHistoryToKeep: Integer = 5);
-begin
-  inherited Create(AHistoryToKeep);
-end;
-
-constructor TADDeltaFloat.Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5);
-begin
-  Create(AHistoryToKeep);
-  SetValueNow(AValueNow);
-end;
-
-constructor TADDeltaFloat.Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5);
-begin
-  Create(AHistoryToKeep);
-  SetValueAt(ADelta, AValue);
-end;
 
 function TADDeltaFloat.Extrapolate(const ADelta: ADFloat): ADFloat;
 var
