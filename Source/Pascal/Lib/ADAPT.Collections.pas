@@ -436,11 +436,9 @@ type
   ///    <para><c>Use IADIterableMap for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
   ///  </remarks>
-  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>, IADCompactable, IADExpandable, IADComparable<TKey>)
+  TADMapBase<TKey, TValue> = class abstract(TADCollection, IADMapReader<TKey, TValue>, IADMap<TKey, TValue>, IADIterableMap<TKey, TValue>, IADComparable<TKey>)
   private
-    FCompactor: IADCompactor;
     FComparer: IADComparer<TKey>;
-    FExpander: IADExpander;
     FSorter: IADMapSorter<TKey, TValue>;
   protected
     FArray: IADArray<IADKeyValuePair<TKey, TValue>>;
@@ -453,10 +451,6 @@ type
     { IADMap<TKey, TValue> }
     function GetReader: IADMapReader<TKey, TValue>;
     { IADIterableMap<TKey, TValue> }
-    { IADCompactable }
-    function GetCompactor: IADCompactor; virtual;
-    { IADExpandable }
-    function GetExpander: IADExpander; virtual;
     { IADComparable<T> }
     function GetComparer: IADComparer<TKey>; virtual;
     { IADComparable<T> }
@@ -468,10 +462,6 @@ type
     procedure SetItem(const AKey: TKey; const AValue: TValue);
     procedure SetSorter(const ASorter: IADMapSorter<TKey, TValue>); virtual;
     { IADIterableMap<TKey, TValue> }
-    { IADCompactable }
-    procedure SetCompactor(const ACompactor: IADCompactor); virtual;
-    { IADExpandable }
-    procedure SetExpander(const AExpander: IADExpander); virtual;
 
     // Overrides
     { TADCollection Overrides }
@@ -487,10 +477,6 @@ type
     ///    <para>0 OR GREATER<c> if the Item has be added, where the Value represents the Index of the Item.</c></para>
     ///  </returns>
     function AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer; virtual;
-    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
-    procedure CheckCompact(const AAmount: Integer); virtual;
-    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
-    procedure CheckExpand(const AAmount: Integer); virtual;
     ///  <summary><c>Determines the Index at which an Item would need to be Inserted for the List to remain in-order.</c></summary>
     ///  <remarks>
     ///    <para><c>This is basically a Binary Sort implementation.<c></para>
@@ -510,15 +496,15 @@ type
     function EqualItems(const AMap: IADMapReader<TKey, TValue>): Boolean;
     function IndexOf(const AKey: TKey): Integer;
     { IADMap<TKey, TValue> }
-    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload;
-    function Add(const AKey: TKey; const AValue: TValue): Integer; overload;
-    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload;
-    procedure AddItems(const AMap: IADMapReader<TKey, TValue>); overload;
+    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; virtual;
+    function Add(const AKey: TKey; const AValue: TValue): Integer; overload; virtual;
+    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; virtual;
+    procedure AddItems(const AMap: IADMapReader<TKey, TValue>); overload; virtual;
     procedure Compact;
-    procedure Delete(const AIndex: Integer); overload;
-    procedure DeleteRange(const AFromIndex, ACount: Integer); overload;
-    procedure Remove(const AKey: TKey);
-    procedure RemoveItems(const AKeys: Array of TKey);
+    procedure Delete(const AIndex: Integer); overload; virtual;
+    procedure DeleteRange(const AFromIndex, ACount: Integer); overload; virtual;
+    procedure Remove(const AKey: TKey); virtual;
+    procedure RemoveItems(const AKeys: Array of TKey); virtual;
     { TADCollection Overrides }
     procedure Clear; override;
 
@@ -548,12 +534,57 @@ type
     property Items[const AKey: TKey]: TValue read GetItem write SetItem; default;
     property Reader: IADMapReader<TKey, TValue> read GetReader;
     { IADIterableMap<TKey, TValue> }
+    { IADComparable<T> }
+    property Comparer: IADComparer<TKey> read GetComparer write SetComparer;
+  end;
+
+  ///  <summary><c>Abstract Base Type for all Expandable Generic Map Collection Types.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Use IADMapReader for Read-Only access.</c></para>
+  ///    <para><c>Use IADMap for Read/Write access.</c></para>
+  ///    <para><c>Use IADIterableMap for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
+  ///    <para><c>Use IADCompactable to Get/Set the Compactor.</c></para>
+  ///    <para><c>Use IADExpandable to Get/Set the Expander.</c></para>
+  ///  </remarks>
+  TADMapExpandableBase<TKey, TValue> = class abstract(TADMapBase<TKey, TValue>, IADCompactable, IADExpandable)
+  private
+    FCompactor: IADCompactor;
+    FExpander: IADExpander;
+  protected
+    // Getters
+    { IADCompactable }
+    function GetCompactor: IADCompactor; virtual;
+    { IADExpandable }
+    function GetExpander: IADExpander; virtual;
+
+    // Setters
+    { IADCompactable }
+    procedure SetCompactor(const ACompactor: IADCompactor); virtual;
+    { IADExpandable }
+    procedure SetExpander(const AExpander: IADExpander); virtual;
+
+    // Overridables
+    ///  <summary><c>Compacts the Array according to the given Compactor Algorithm.</c></summary>
+    procedure CheckCompact(const AAmount: Integer); virtual;
+    ///  <summary><c>Expands the Array according to the given Expander Algorithm.</c></summary>
+    procedure CheckExpand(const AAmount: Integer); virtual;
+  public
+    { IADMap<TKey, TValue> }
+    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; override;
+    function Add(const AKey: TKey; const AValue: TValue): Integer; overload; override;
+    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; override;
+    procedure AddItems(const AMap: IADMapReader<TKey, TValue>); overload; override;
+    procedure Delete(const AIndex: Integer); overload; override;
+    procedure DeleteRange(const AFromIndex, ACount: Integer); overload; override;
+    procedure Remove(const AKey: TKey); override;
+    procedure RemoveItems(const AKeys: Array of TKey); override;
+
+    // Properties
     { IADCompactable }
     property Compactor: IADCompactor read GetCompactor write SetCompactor;
     { IADExpandable }
     property Expander: IADExpander read GetExpander write SetExpander;
-    { IADComparable<T> }
-    property Comparer: IADComparer<TKey> read GetComparer write SetComparer;
   end;
 
   ///  <summary><c>Generic Map Collection.</c></summary>
@@ -562,8 +593,10 @@ type
   ///    <para><c>Use IADMap for Read/Write access.</c></para>
   ///    <para><c>Use IADIterableMap for Iterators.</c></para>
   ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
+  ///    <para><c>Use IADCompactable to Get/Set the Compactor.</c></para>
+  ///    <para><c>Use IADExpandable to Get/Set the Expander.</c></para>
   ///  </remarks>
-  TADMap<TKey, TValue> = class(TADMapBase<TKey, TValue>)
+  TADMap<TKey, TValue> = class(TADMapExpandableBase<TKey, TValue>)
   protected
     // Overrides
     { TADMapBase<TKey, TValue> Override }
@@ -577,6 +610,30 @@ type
     constructor Create(const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload;
     ///  <summary><c>Creates an instance of your Sorted List using a Custom Expander and Compactor Instance.</c></summary>
     constructor Create(const AExpander: IADExpander; const ACompactor: IADCompactor; const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 0); reintroduce; overload; virtual;
+  end;
+
+  ///  <summary><c>Generic Circular Map Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Designed to have a fixed Capacity, it automatically removes older Items to make way for new ones.</c></para>
+  ///    <para><c>Use IADMapReader for Read-Only access.</c></para>
+  ///    <para><c>Use IADMap for Read/Write access.</c></para>
+  ///    <para><c>Use IADIterableMap for Iterators.</c></para>
+  ///    <para><c>Call .Iterator against IADMapReader to return the IADIterableMap interface reference.</c></para>
+  ///  </remarks>
+  TADCircularMap<TKey, TValue> = class(TADMapBase<TKey, TValue>)
+  protected
+    // Overrides
+    { TADMapBase<TKey, TValue> Override }
+    procedure CreateSorter; override;
+  public
+    ///  <summary><c>Creates an instance of your Circular Map with the given Capacity (Default = 10).</c></summary>
+    constructor Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 10); reintroduce; overload;
+
+    { IADMapBase<TKey, TValue> Overrides }
+    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; override;
+    function Add(const AKey: TKey; const AValue: TValue): Integer; overload; override;
+    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; override;
+    procedure AddItems(const AMap: IADMapReader<TKey, TValue>); overload; override;
   end;
 
   ///  <summary><c>Generic Tree Collection.</c></summary>
@@ -1523,7 +1580,6 @@ end;
 
 function TADMapBase<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
 begin
-  CheckExpand(1);
   Result := AddActual(AItem);
 end;
 
@@ -1531,7 +1587,6 @@ procedure TADMapBase<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePa
 var
   I: Integer;
 begin
-  CheckExpand(Length(AItems));
   for I := Low(AItems) to High(AItems) do
     AddActual(AItems[I]);
 end;
@@ -1540,27 +1595,8 @@ procedure TADMapBase<TKey, TValue>.AddItems(const AMap: IADMapReader<TKey, TValu
 var
   I: Integer;
 begin
-  CheckExpand(AMap.Count);
   for I := 0 to AMap.Count - 1 do
     AddActual(AMap.Pairs[I]);
-end;
-
-procedure TADMapBase<TKey, TValue>.CheckCompact(const AAmount: Integer);
-var
-  LShrinkBy: Integer;
-begin
-  LShrinkBy := FCompactor.CheckCompact(FArray.Capacity, FCount, AAmount);
-  if LShrinkBy > 0 then
-    FArray.Capacity := FArray.Capacity - LShrinkBy;
-end;
-
-procedure TADMapBase<TKey, TValue>.CheckExpand(const AAmount: Integer);
-var
-  LNewCapacity: Integer;
-begin
-  LNewCapacity := FExpander.CheckExpand(FArray.Capacity, FCount, AAmount);
-  if LNewCapacity > 0 then
-    FArray.Capacity := FArray.Capacity + LNewCapacity;
 end;
 
 procedure TADMapBase<TKey, TValue>.Clear;
@@ -1655,19 +1691,9 @@ begin
   Result := FArray.Capacity;
 end;
 
-function TADMapBase<TKey, TValue>.GetCompactor: IADCompactor;
-begin
-  Result := FCompactor;
-end;
-
 function TADMapBase<TKey, TValue>.GetComparer: IADComparer<TKey>;
 begin
   Result := FComparer;
-end;
-
-function TADMapBase<TKey, TValue>.GetExpander: IADExpander;
-begin
-  Result := FExpander;
 end;
 
 function TADMapBase<TKey, TValue>.GetIsCompact: Boolean;
@@ -1861,19 +1887,9 @@ begin
   FArray.Capacity := ACapacity;
 end;
 
-procedure TADMapBase<TKey, TValue>.SetCompactor(const ACompactor: IADCompactor);
-begin
-  FCompactor := ACompactor;
-end;
-
 procedure TADMapBase<TKey, TValue>.SetComparer(const AComparer: IADComparer<TKey>);
 begin
   FComparer := AComparer;
-end;
-
-procedure TADMapBase<TKey, TValue>.SetExpander(const AExpander: IADExpander);
-begin
-  FExpander := AExpander;
 end;
 
 procedure TADMapBase<TKey, TValue>.SetItem(const AKey: TKey; const AValue: TValue);
@@ -1888,6 +1904,94 @@ end;
 procedure TADMapBase<TKey, TValue>.SetSorter(const ASorter: IADMapSorter<TKey, TValue>);
 begin
   FSorter := ASorter;
+end;
+
+{ TADMapExpandableBase<TKey, TValue> }
+
+function TADMapExpandableBase<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+begin
+  CheckExpand(1);
+  inherited;
+end;
+
+function TADMapExpandableBase<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
+begin
+  CheckExpand(1);
+  inherited;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
+begin
+  CheckExpand(Length(AItems));
+  inherited;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.AddItems(const AMap: IADMapReader<TKey, TValue>);
+begin
+  CheckExpand(AMap.Count);
+  inherited;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.CheckCompact(const AAmount: Integer);
+var
+  LShrinkBy: Integer;
+begin
+  LShrinkBy := FCompactor.CheckCompact(FArray.Capacity, FCount, AAmount);
+  if LShrinkBy > 0 then
+    FArray.Capacity := FArray.Capacity - LShrinkBy;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.CheckExpand(const AAmount: Integer);
+var
+  LNewCapacity: Integer;
+begin
+  LNewCapacity := FExpander.CheckExpand(FArray.Capacity, FCount, AAmount);
+  if LNewCapacity > 0 then
+    FArray.Capacity := FArray.Capacity + LNewCapacity;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.Delete(const AIndex: Integer);
+begin
+  inherited;
+  CheckCompact(1);
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.DeleteRange(const AFromIndex, ACount: Integer);
+begin
+  inherited;
+  CheckCompact(ACount);
+end;
+
+function TADMapExpandableBase<TKey, TValue>.GetCompactor: IADCompactor;
+begin
+  Result := FCompactor;
+end;
+
+function TADMapExpandableBase<TKey, TValue>.GetExpander: IADExpander;
+begin
+  Result := FExpander;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.Remove(const AKey: TKey);
+begin
+  inherited;
+  CheckCompact(1);
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.RemoveItems(const AKeys: array of TKey);
+begin
+  inherited;
+  CheckCompact(Length(AKeys));
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.SetCompactor(const ACompactor: IADCompactor);
+begin
+  FCompactor := ACompactor;
+end;
+
+procedure TADMapExpandableBase<TKey, TValue>.SetExpander(const AExpander: IADExpander);
+begin
+  FExpander := AExpander;
 end;
 
 { TADMap<TKey, TValue> }
@@ -1916,6 +2020,39 @@ begin
 end;
 
 procedure TADMap<TKey, TValue>.CreateSorter;
+begin
+  FSorter := TADMapSorterQuick<TKey, TValue>.Create;
+end;
+
+{ TADCircularMap<TKey, TValue> }
+
+function TADCircularMap<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+begin
+
+end;
+
+function TADCircularMap<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
+begin
+
+end;
+
+procedure TADCircularMap<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
+begin
+
+end;
+
+procedure TADCircularMap<TKey, TValue>.AddItems(const AMap: IADMapReader<TKey, TValue>);
+begin
+
+end;
+
+constructor TADCircularMap<TKey, TValue>.Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
+begin
+  inherited Create(AInitialCapacity);
+  FComparer := AComparer;
+end;
+
+procedure TADCircularMap<TKey, TValue>.CreateSorter;
 begin
   FSorter := TADMapSorterQuick<TKey, TValue>.Create;
 end;
