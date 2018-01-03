@@ -47,9 +47,9 @@ type
     // Overridables
     function CalculateValueAt(const ADelta: ADFloat): ADFloat; virtual;
   public
-    constructor Create; overload; override;
-    constructor Create(const AValueNow: ADFloat); reintroduce; overload;
-    constructor Create(const ADelta: ADFloat; const AValue: ADFloat); reintroduce; overload;
+    constructor Create(const AHistoryToKeep: Integer = 5); reintroduce; overload;
+    constructor Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
+    constructor Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
     // Properties
     { IADDeltaValue<ADFloat> }
     property ValueAt[const ADelta: ADFloat]: ADFloat read GetValueAt write SetValueAt; default;
@@ -96,21 +96,24 @@ end;
 
 { TADDeltaFloat }
 
-constructor TADDeltaFloat.Create;
+constructor TADDeltaFloat.Create(const AHistoryToKeep: Integer = 5);
 begin
   inherited Create;
-  FValues := TADMap<ADFloat, ADFloat>.Create(ADFloatComparer);
+  if AHistoryToKeep < 2 then // If the number to keep is defined as less than 2, we'll keep EVERYTHING
+    FValues := TADMap<ADFloat, ADFloat>.Create(ADFloatComparer)
+  else
+    FValues := TADCircularMap<ADFloat, ADFloat>.Create(ADFloatComparer, AHistoryToKeep);
 end;
 
-constructor TADDeltaFloat.Create(const AValueNow: ADFloat);
+constructor TADDeltaFloat.Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5);
 begin
-  Create;
+  Create(AHistoryToKeep);
   SetValueNow(AValueNow);
 end;
 
-constructor TADDeltaFloat.Create(const ADelta: ADFloat; const AValue: ADFloat);
+constructor TADDeltaFloat.Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5);
 begin
-  Create;
+  Create(AHistoryToKeep);
   SetValueAt(ADelta, AValue);
 end;
 
