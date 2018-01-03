@@ -625,15 +625,10 @@ type
     // Overrides
     { TADMapBase<TKey, TValue> Override }
     procedure CreateSorter; override;
+    function AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer; override;
   public
     ///  <summary><c>Creates an instance of your Circular Map with the given Capacity (Default = 10).</c></summary>
     constructor Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer = 10); reintroduce; overload;
-
-    { IADMapBase<TKey, TValue> Overrides }
-    function Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer; overload; override;
-    function Add(const AKey: TKey; const AValue: TValue): Integer; overload; override;
-    procedure AddItems(const AItems: Array of IADKeyValuePair<TKey, TValue>); overload; override;
-    procedure AddItems(const AMap: IADMapReader<TKey, TValue>); overload; override;
   end;
 
   ///  <summary><c>Generic Tree Collection.</c></summary>
@@ -2026,24 +2021,22 @@ end;
 
 { TADCircularMap<TKey, TValue> }
 
-function TADCircularMap<TKey, TValue>.Add(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
+function TADCircularMap<TKey, TValue>.AddActual(const AItem: IADKeyValuePair<TKey, TValue>): Integer;
 begin
-
-end;
-
-function TADCircularMap<TKey, TValue>.Add(const AKey: TKey; const AValue: TValue): Integer;
-begin
-
-end;
-
-procedure TADCircularMap<TKey, TValue>.AddItems(const AItems: array of IADKeyValuePair<TKey, TValue>);
-begin
-
-end;
-
-procedure TADCircularMap<TKey, TValue>.AddItems(const AMap: IADMapReader<TKey, TValue>);
-begin
-
+  Result := GetSortedPosition(AItem.Key);
+  if Result = FCount then
+    FArray[FCount] := AItem
+  else
+  begin
+    if FCount = FArray.Capacity then // If the Array is full, we need to bump off 0
+    begin
+      FArray.Delete(0);
+      Dec(Result); // Since we've removed Item 0 (lowest-order item) we need to decrement the position by 1
+    end
+    else
+      Inc(FCount);
+    FArray.Insert(AItem, Result);
+  end;
 end;
 
 constructor TADCircularMap<TKey, TValue>.Create(const AComparer: IADComparer<TKey>; const AInitialCapacity: Integer);
