@@ -26,6 +26,7 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values</c></summary>
   TADDeltaFloat = class(TADObject, IADDeltaValue<ADFloat>)
   private
     FValues: IADMap<ADFloat, ADFloat>;
@@ -51,14 +52,18 @@ type
     constructor Create(const ADelta: ADFloat; const AValue: ADFloat); reintroduce; overload;
     // Properties
     { IADDeltaValue<ADFloat> }
-    property ValueAt[const ADelta: ADFloat]: ADFloat read GetValueAt write SetValueAt;
+    property ValueAt[const ADelta: ADFloat]: ADFloat read GetValueAt write SetValueAt; default;
     property ValueNow: ADFloat read GetValueNow write SetValueNow;
   end;
 
 ///  <returns><c>The Current "Reference Time" used everywhere "Differential Time" (Delta) is calculated.</c></returns>
 function ADReferenceTime: ADFloat;
 ///  <returns><c>A fresh Instance of a Delta Float.</c></returns>
-function ADDeltaFloat: IADDeltaValue<ADFloat>;
+function ADDeltaFloat: IADDeltaValue<ADFloat>; overload;
+///  <returns><c>A fresh Instance of a Delta Float with a Value defined for right now.</c></returns>
+function ADDeltaFloat(const AValueNow: ADFloat): IADDeltaValue<ADFloat>; overload;
+///  <returns><c>A fresh instance of a Delta float with a Value defined for the given Delta Time.</c></returns>
+function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat): IADDeltaValue<ADFloat>; overload;
 
 implementation
 
@@ -77,6 +82,16 @@ end;
 function ADDeltaFloat: IADDeltaValue<ADFloat>;
 begin
   Result := TADDeltaFloat.Create;
+end;
+
+function ADDeltaFloat(const AValueNow: ADFloat): IADDeltaValue<ADFloat>;
+begin
+  Result := TADDeltaFloat.Create(AValueNow);
+end;
+
+function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat): IADDeltaValue<ADFloat>;
+begin
+  Result := TADDeltaFloat.Create(ADelta, AValue);
 end;
 
 { TADDeltaFloat }

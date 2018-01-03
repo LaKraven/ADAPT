@@ -46,7 +46,7 @@ begin
   // Get the current time as of Test Start.
   LCurrentTime := ADReferenceTime;
   // Create an empty Delta Value
-  LDelta := TADDeltaFloat.Create;
+  LDelta := ADDeltaFloat;
 
   // Set the Value for test start to 1.00
   LDelta.ValueAt[LCurrentTime] := 1.00;
@@ -67,7 +67,7 @@ begin
   // Get the current time as of Test Start.
   LCurrentTime := ADReferenceTime;
   // Create an empty Delta Value
-  LDelta := TADDeltaFloat.Create;
+  LDelta := ADDeltaFloat;
 
   // Set the Value for test start to 1.00
   LDelta.ValueAt[LCurrentTime] := 1.00;
@@ -109,7 +109,7 @@ begin
   // Get the current time as of Test Start.
   LCurrentTime := ADReferenceTime;
   // Create an empty Delta Value
-  LDelta := TADDeltaFloat.Create;
+  LDelta := ADDeltaFloat;
 
   // Set the Value for test start to 1.00
   LDelta.ValueAt[LCurrentTime] := 1.00;

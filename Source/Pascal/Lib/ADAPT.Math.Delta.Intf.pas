@@ -59,7 +59,7 @@ type
     // Properties
     ///  <summary><c>Defines a Known Value for a specific Delta (Reference Time).</c></summary>
     ///  <returns><c>The Value at the given Delta (Reference Time).</c></returns>
-    property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt;
+    property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt; default;
     ///  <summary><c>Defines a Known Value for the CURRENT Delta (Reference Time).</c></summary>
     ///  <returns><c>The Value for the CURRENT Delta (Reference Time).</c></returns>
     property ValueNow: T read GetValueNow write SetValueNow;
