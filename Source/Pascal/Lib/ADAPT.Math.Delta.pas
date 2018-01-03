@@ -26,38 +26,48 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values</c></summary>
-  TADDeltaFloat = class(TADObject, IADDeltaValueReader<ADFloat>, IADDeltaValue<ADFloat>)
+  TADDeltaValueBase<T> = class(TADObject, IADDeltaValueReader<T>, IADDeltaValue<T>)
   private
-    FValues: IADMap<ADFloat, ADFloat>;
+    FValues: IADMap<ADFloat, T>;
     // Getters
     { IADDeltaValue<T> }
-    function GetReader: IADDeltaValueReader<ADFloat>;
-
-    function Extrapolate(const ADelta: ADFloat): ADFloat;
-    function Interpolate(const ADelta: ADFloat): ADFloat;
-    function GetNearestNeighbour(const ADelta: ADFloat): Integer;
+    function GetReader: IADDeltaValueReader<T>;
   protected
     // Getters
     { IADDeltaValueReader<T> }
-    function GetValueAt(const ADelta: ADFloat): ADFloat; virtual;
-    function GetValueNow: ADFloat;
+    function GetValueAt(const ADelta: ADFloat): T; virtual;
+    function GetValueNow: T;
 
     // Setters
     { IADDeltaValue<T> }
-    procedure SetValueAt(const ADelta: ADFloat; const AValue: ADFloat); virtual;
-    procedure SetValueNow(const AValue: ADFloat);
+    procedure SetValueAt(const ADelta: ADFloat; const AValue: T); virtual;
+    procedure SetValueNow(const AValue: T);
+
+    // Management Methods
+    function GetNearestNeighbour(const ADelta: ADFloat): Integer;
 
     // Overridables
-    function CalculateValueAt(const ADelta: ADFloat): ADFloat; virtual;
+    function CalculateValueAt(const ADelta: ADFloat): T; virtual; abstract;
   public
-    constructor Create(const AHistoryToKeep: Integer = 5); reintroduce; overload;
-    constructor Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
-    constructor Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
+    constructor Create(const AHistoryToKeep: Integer = 5); reintroduce; overload; virtual;
     // Properties
     { IADDeltaValue<ADFloat> }
-    property ValueAt[const ADelta: ADFloat]: ADFloat read GetValueAt write SetValueAt; default;
-    property ValueNow: ADFloat read GetValueNow write SetValueNow;
+    property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt; default;
+    property ValueNow: T read GetValueNow write SetValueNow;
+  end;
+
+  ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values</c></summary>
+  TADDeltaFloat = class(TADDeltaValueBase<ADFloat>)
+  private
+    function Extrapolate(const ADelta: ADFloat): ADFloat;
+    function Interpolate(const ADelta: ADFloat): ADFloat;
+  protected
+    // Overridables
+    function CalculateValueAt(const ADelta: ADFloat): ADFloat; override;
+  public
+    constructor Create(const AHistoryToKeep: Integer = 5); overload; override;
+    constructor Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
+    constructor Create(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5); reintroduce; overload;
   end;
 
 ///  <returns><c>The Current "Reference Time" used everywhere "Differential Time" (Delta) is calculated.</c></returns>
@@ -98,15 +108,86 @@ begin
   Result := TADDeltaFloat.Create(ADelta, AValue, AHistoryToKeep);
 end;
 
+{ TADDeltaValueBase<T> }
+
+constructor TADDeltaValueBase<T>.Create(const AHistoryToKeep: Integer);
+begin
+  inherited Create;
+  if AHistoryToKeep < 2 then // If the number to keep is defined as less than 2, we'll keep EVERYTHING
+    FValues := TADMap<ADFloat, T>.Create(ADFloatComparer)
+  else
+    FValues := TADCircularMap<ADFloat, T>.Create(ADFloatComparer, AHistoryToKeep);
+end;
+
+function TADDeltaValueBase<T>.GetNearestNeighbour(const ADelta: ADFloat): Integer;
+var
+  LIndex, LLow, LHigh: Integer;
+  LComparer: IADComparer<ADFloat>;
+begin
+  LComparer := (FValues as IADComparable<ADFloat>).Comparer;
+  Result := 0;
+  LLow := 0;
+  LHigh := FValues.Count - 1;
+  if LHigh = -1 then
+    Exit;
+  if LLow < LHigh then
+  begin
+    while (LHigh - LLow > 1) do
+    begin
+      LIndex := (LHigh + LLow) div 2;
+      if LComparer.ALessThanOrEqualToB(ADelta, FValues.Pairs[LIndex].Key) then
+        LHigh := LIndex
+      else
+        LLow := LIndex;
+    end;
+  end;
+  if LComparer.ALessThanB(FValues.Pairs[LHigh].Key, ADelta) then
+    Result := LHigh + 1
+  else if LComparer.ALessThanB(FValues.Pairs[LLow].Key, ADelta) then
+    Result := LLow + 1
+  else
+    Result := LLow;
+end;
+
+function TADDeltaValueBase<T>.GetReader: IADDeltaValueReader<T>;
+begin
+  Result := IADDeltaValueReader<T>(Self);
+end;
+
+function TADDeltaValueBase<T>.GetValueAt(const ADelta: ADFloat): T;
+begin
+  if FValues.Contains(ADelta) then  // If we already have an exact value for the given Delta...
+  begin
+    Result := FValues.Items[ADelta]; // ... simply return it.
+    Exit;
+  end;
+
+  Result := CalculateValueAt(ADelta);
+end;
+
+function TADDeltaValueBase<T>.GetValueNow: T;
+begin
+  Result := GetValueAt(ADReferenceTime);
+end;
+
+procedure TADDeltaValueBase<T>.SetValueAt(const ADelta: ADFloat; const AValue: T);
+begin
+  if FValues.Contains(ADelta) then
+    FValues.Items[ADelta] := AValue
+  else
+    FValues.Add(ADelta, AValue);
+end;
+
+procedure TADDeltaValueBase<T>.SetValueNow(const AValue: T);
+begin
+  SetValueAt(ADReferenceTime, AValue);
+end;
+
 { TADDeltaFloat }
 
 constructor TADDeltaFloat.Create(const AHistoryToKeep: Integer = 5);
 begin
-  inherited Create;
-  if AHistoryToKeep < 2 then // If the number to keep is defined as less than 2, we'll keep EVERYTHING
-    FValues := TADMap<ADFloat, ADFloat>.Create(ADFloatComparer)
-  else
-    FValues := TADCircularMap<ADFloat, ADFloat>.Create(ADFloatComparer, AHistoryToKeep);
+  inherited Create(AHistoryToKeep);
 end;
 
 constructor TADDeltaFloat.Create(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5);
@@ -158,7 +239,7 @@ var
   LValueDiff: ADFloat;
 begin
   // Interpolate (Value is between the range.)
-  LNearestNeighbour := GetNearestNeighbour(ADelta) - 2;
+  LNearestNeighbour := GetNearestNeighbour(ADelta) - 1;
   LNearestDelta := FValues.Pairs[LNearestNeighbour].Key;
   LFirstValue := FValues.Pairs[LNearestNeighbour].Value;
   LSecondValue := FValues.Pairs[LNearestNeighbour + 1].Value;
@@ -166,41 +247,6 @@ begin
   LDeltaDiff := ADelta - LNearestDelta;
   LValueDiff := LSecondValue - LFirstValue;
   Result := LFirstValue + (LValueDiff * lDeltaDiff);
-end;
-
-function TADDeltaFloat.GetNearestNeighbour(const ADelta: ADFloat): Integer;
-var
-  LIndex, LLow, LHigh: Integer;
-  LComparer: IADComparer<ADFloat>;
-begin
-  LComparer := (FValues as IADComparable<ADFloat>).Comparer;
-  Result := 0;
-  LLow := 0;
-  LHigh := FValues.Count - 1;
-  if LHigh = -1 then
-    Exit;
-  if LLow < LHigh then
-  begin
-    while (LHigh - LLow > 1) do
-    begin
-      LIndex := (LHigh + LLow) div 2;
-      if LComparer.ALessThanOrEqualToB(ADelta, FValues[LIndex]) then
-        LHigh := LIndex
-      else
-        LLow := LIndex;
-    end;
-  end;
-  if LComparer.ALessThanB(FValues[LHigh], ADelta) then
-    Result := LHigh + 1
-  else if LComparer.ALessThanB(FValues[LLow], ADelta) then
-    Result := LLow + 1
-  else
-    Result := LLow;
-end;
-
-function TADDeltaFloat.GetReader: IADDeltaValueReader<ADFloat>;
-begin
-  Result := IADDeltaValueReader<ADFloat>(Self);
 end;
 
 function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
@@ -214,35 +260,6 @@ begin
     Result := Extrapolate(ADelta)
   else
     Result := Interpolate(ADelta);
-end;
-
-function TADDeltaFloat.GetValueAt(const ADelta: ADFloat): ADFloat;
-begin
-  if FValues.Contains(ADelta) then  // If we already have an exact value for the given Delta...
-  begin
-    Result := FValues.Items[ADelta]; // ... simply return it.
-    Exit;
-  end;
-
-  Result := CalculateValueAt(ADelta);
-end;
-
-function TADDeltaFloat.GetValueNow: ADFloat;
-begin
-  Result := GetValueAt(ADReferenceTime);
-end;
-
-procedure TADDeltaFloat.SetValueAt(const ADelta: ADFloat; const AValue: ADFloat);
-begin
-  if FValues.Contains(ADelta) then
-    FValues.Items[ADelta] := AValue
-  else
-    FValues.Add(ADelta, AValue);
-end;
-
-procedure TADDeltaFloat.SetValueNow(const AValue: ADFloat);
-begin
-  SetValueAt(ADReferenceTime, AValue);
 end;
 
 initialization
