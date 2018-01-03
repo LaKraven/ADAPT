@@ -59,11 +59,11 @@ type
 ///  <returns><c>The Current "Reference Time" used everywhere "Differential Time" (Delta) is calculated.</c></returns>
 function ADReferenceTime: ADFloat;
 ///  <returns><c>A fresh Instance of a Delta Float.</c></returns>
-function ADDeltaFloat: IADDeltaValue<ADFloat>; overload;
+function ADDeltaFloat(const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>; overload;
 ///  <returns><c>A fresh Instance of a Delta Float with a Value defined for right now.</c></returns>
-function ADDeltaFloat(const AValueNow: ADFloat): IADDeltaValue<ADFloat>; overload;
+function ADDeltaFloat(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>; overload;
 ///  <returns><c>A fresh instance of a Delta float with a Value defined for the given Delta Time.</c></returns>
-function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat): IADDeltaValue<ADFloat>; overload;
+function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>; overload;
 
 implementation
 
@@ -79,19 +79,19 @@ begin
   Result := TStopwatch.GetTimeStamp / TStopwatch.Frequency;
 end;
 
-function ADDeltaFloat: IADDeltaValue<ADFloat>;
+function ADDeltaFloat(const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>;
 begin
-  Result := TADDeltaFloat.Create;
+  Result := TADDeltaFloat.Create(AHistoryToKeep);
 end;
 
-function ADDeltaFloat(const AValueNow: ADFloat): IADDeltaValue<ADFloat>;
+function ADDeltaFloat(const AValueNow: ADFloat; const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>;
 begin
-  Result := TADDeltaFloat.Create(AValueNow);
+  Result := TADDeltaFloat.Create(AValueNow, AHistoryToKeep);
 end;
 
-function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat): IADDeltaValue<ADFloat>;
+function ADDeltaFloat(const ADelta: ADFloat; const AValue: ADFloat; const AHistoryToKeep: Integer = 5): IADDeltaValue<ADFloat>;
 begin
-  Result := TADDeltaFloat.Create(ADelta, AValue);
+  Result := TADDeltaFloat.Create(ADelta, AValue, AHistoryToKeep);
 end;
 
 { TADDeltaFloat }
