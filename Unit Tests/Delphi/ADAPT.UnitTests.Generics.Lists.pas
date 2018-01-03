@@ -112,6 +112,15 @@ type
   end;
 
   [TestFixture]
+  TADUTCollectionsCircularMap = class(TObject)
+  public
+    [Test]
+    procedure BasicIntegrity;
+    [Test]
+    procedure CircularIntegrity;
+  end;
+
+  [TestFixture]
   TADUTCollectionsTree = class(TObject)
   public
     [Test]
@@ -141,6 +150,7 @@ type
   TADStringSortedList = TADSortedList<String>;
   TADStringCircularList = TADCircularList<String>;
   TADStringStringMap = TADMap<String, String>;
+  TADStringStringCircularMap = TADCircularMap<String, String>;
   TADStringTreeNode = TADTreeNode<String>;
 
   TMapTestItem = record
@@ -743,6 +753,48 @@ begin
   begin
     LItem := LMap.Pairs[I];
     Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I].Key) and (LItem.Value = MAP_ITEMS_SORTED[I].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I].Key, MAP_ITEMS_SORTED[I].Value, LItem.Key, LItem.Value]));
+  end;
+end;
+
+{ TADUTCollectionsCircularMap }
+
+procedure TADUTCollectionsCircularMap.BasicIntegrity;
+var
+  LMap: IADStringStringMap;
+  LItem: IADKeyValuePair<String, String>;
+  I: Integer;
+begin
+  LMap := TADStringStringCircularMap.Create(ADStringComparer);
+
+  // Add the Test Items
+  for I := Low(MAP_ITEMS) to High(MAP_ITEMS) do
+    LMap.Add(MAP_ITEMS[I].Key, MAP_ITEMS[I].Value);
+
+  // Verify they exist
+  for I := 0 to LMap.Count - 1 do
+  begin
+    LItem := LMap.Pairs[I];
+    Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I].Key) and (LItem.Value = MAP_ITEMS_SORTED[I].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I].Key, MAP_ITEMS_SORTED[I].Value, LItem.Key, LItem.Value]));
+  end;
+end;
+
+procedure TADUTCollectionsCircularMap.CircularIntegrity;
+var
+  LMap: IADStringStringMap;
+  LItem: IADKeyValuePair<String, String>;
+  I: Integer;
+begin
+  LMap := TADStringStringCircularMap.Create(ADStringComparer, 5);
+
+  // Add the Test Items
+  for I := Low(MAP_ITEMS) to High(MAP_ITEMS) do
+    LMap.Add(MAP_ITEMS[I].Key, MAP_ITEMS[I].Value);
+
+  // Verify they exist
+  for I := 0 to LMap.Count - 1 do
+  begin
+    LItem := LMap.Pairs[I];
+    Assert.IsTrue((LItem.Key = MAP_ITEMS_SORTED[I+5].Key) and (LItem.Value = MAP_ITEMS_SORTED[I+5].Value), Format('Pair should be "%s", "%s" but instead got pair "%s", "%s".', [MAP_ITEMS_SORTED[I+5].Key, MAP_ITEMS_SORTED[I+5].Value, LItem.Key, LItem.Value]));
   end;
 end;
 

@@ -2025,13 +2025,16 @@ function TADCircularMap<TKey, TValue>.AddActual(const AItem: IADKeyValuePair<TKe
 begin
   Result := GetSortedPosition(AItem.Key);
   if Result = FCount then
-    FArray[FCount] := AItem
-  else
+  begin
+    FArray[FCount] := AItem;
+    Inc(FCount);
+  end else
   begin
     if FCount = FArray.Capacity then // If the Array is full, we need to bump off 0
     begin
       FArray.Delete(0);
-      Dec(Result); // Since we've removed Item 0 (lowest-order item) we need to decrement the position by 1
+      if Result > 0 then
+        Dec(Result); // Since we've removed Item 0 (lowest-order item) we need to decrement the position by 1
     end
     else
       Inc(FCount);
