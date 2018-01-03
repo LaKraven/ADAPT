@@ -2027,7 +2027,8 @@ begin
   if Result = FCount then
   begin
     FArray[FCount] := AItem;
-    Inc(FCount);
+    if (FCount < FArray.Capacity) then
+      Inc(FCount);
   end else
   begin
     if FCount = FArray.Capacity then // If the Array is full, we need to bump off 0
