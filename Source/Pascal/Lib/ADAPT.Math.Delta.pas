@@ -26,6 +26,7 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  ///  <summary><c>Generic Base class for Delta Value Types, providing the means to Interpolate and Extrapolate Estimated values based on multiple Absolute Values.</c></summary>
   TADDeltaValueBase<T> = class(TADObject, IADDeltaValueReader<T>, IADDeltaValue<T>)
   private
     FValues: IADMap<ADFloat, T>;
@@ -58,7 +59,7 @@ type
     property ValueNow: T read GetValueNow write SetValueNow;
   end;
 
-  ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values</c></summary>
+  ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values.</c></summary>
   TADDeltaFloat = class(TADDeltaValueBase<ADFloat>)
   private
     function Extrapolate(const ADelta: ADFloat): ADFloat;
