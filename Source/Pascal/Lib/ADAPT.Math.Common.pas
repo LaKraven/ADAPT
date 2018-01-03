@@ -23,11 +23,11 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
-  TADExtrapolator<T> = class abstract(TADObject, IADExtrapolator<T>)
+  TADExtrapolator<TKey, TValue> = class abstract(TADObject, IADExtrapolator<TKey, TValue>)
 
   end;
 
-  TADInterpolator<T> = class abstract(TADObject, IADInterpolator<T>)
+  TADInterpolator<TKey, TValue> = class abstract(TADObject, IADInterpolator<TKey, TValue>)
 
   end;
 

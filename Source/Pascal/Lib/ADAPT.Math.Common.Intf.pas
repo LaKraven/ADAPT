@@ -28,47 +28,45 @@ type
       EADMathAveragerListNotSorted = class(EADMathAveragerException);
 
   ///  <summary><c>An Extrapolator calculates Values beyond the range of Known (Reference) Values.</c></summary>
-  IADExtrapolator<T> = interface(IADInterface)
+  IADExtrapolator<TKey, TValue> = interface(IADInterface)
 
   end;
 
   ///  <summary><c>An Object containing an Extrapolator.</c></summary>
-  IADExtrapolatable<T> = interface(IADInterface)
-  ['{0198D26B-6654-4E17-A4B0-2EFF1EF7025B}']
+  IADExtrapolatable<TKey, TValue> = interface(IADInterface)
     // Getters
     ///  <returns><c>The Extrapolator used by this Object.</c></returns>
-    function GetExtrapolator: IADExtrapolator<T>;
+    function GetExtrapolator: IADExtrapolator<TKey, TValue>;
 
     // Setters
     ///  <summary><c>Defines the Extrapolator to be used by this Object.</c></returns>
-    procedure SetExtrapolator(const AExtrapolator: IADExtrapolator<T>);
+    procedure SetExtrapolator(const AExtrapolator: IADExtrapolator<TKey, TValue>);
 
     // Properties
     ///  <summary><c>Defines the Extrapolator to be used by this Object.</c></returns>
     ///  <returns><c>The Extrapolator used by this Object.</c></returns>
-    property Extrapolator: IADExtrapolator<T> read GetExtrapolator write SetExtrapolator;
+    property Extrapolator: IADExtrapolator<TKey, TValue> read GetExtrapolator write SetExtrapolator;
   end;
 
   ///  <summary><c>An Interpolator calculates Values between Known (Reference) Values.</c></summary>
-  IADInterpolator<T> = interface(IADInterface)
+  IADInterpolator<TKey, TValue> = interface(IADInterface)
 
   end;
 
   ///  <summary><c>An Object containing an Interpolator.</c></summary>
-  IADInterpolatable<T> = interface(IADInterface)
-  ['{A66A8CEF-3030-4BF4-8187-6AFC2AD1E941}']
+  IADInterpolatable<TKey, TValue> = interface(IADInterface)
     // Getters
     ///  <returns>The Interpolator used by this Object.</c></returns>
-    function GetInterpolator: IADInterpolator<T>;
+    function GetInterpolator: IADInterpolator<TKey, TValue>;
 
     // Setters
     ///  <summary><c>Defines the Interpolator to be used by this Object.</c></summary>
-    procedure SetInterpolator(const AInterpolator: IADInterpolator<T>);
+    procedure SetInterpolator(const AInterpolator: IADInterpolator<TKey, TValue>);
 
     // Properties
     ///  <summary><c>Defines the Interpolator to be used by this Object.</c></summary>
     ///  <returns>The Interpolator used by this Object.</c></returns>
-    property Interpolator: IADInterpolator<T> read GetInterpolator write SetInterpolator;
+    property Interpolator: IADInterpolator<TKey, TValue> read GetInterpolator write SetInterpolator;
   end;
 
 implementation

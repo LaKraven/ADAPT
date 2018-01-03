@@ -27,15 +27,19 @@ uses
 
 type
   ///  <summary><c>A Delta Float provides the means to Interpolate and Extrapolate Estimated Values based on multiple Absolute Values</c></summary>
-  TADDeltaFloat = class(TADObject, IADDeltaValue<ADFloat>)
+  TADDeltaFloat = class(TADObject, IADDeltaValueReader<ADFloat>, IADDeltaValue<ADFloat>)
   private
     FValues: IADMap<ADFloat, ADFloat>;
+    // Getters
+    { IADDeltaValue<T> }
+    function GetReader: IADDeltaValueReader<ADFloat>;
+
     function Extrapolate(const ADelta: ADFloat): ADFloat;
     function Interpolate(const ADelta: ADFloat): ADFloat;
     function GetNearestNeighbour(const ADelta: ADFloat): Integer;
   protected
     // Getters
-    { IADDeltaValue<T> }
+    { IADDeltaValueReader<T> }
     function GetValueAt(const ADelta: ADFloat): ADFloat; virtual;
     function GetValueNow: ADFloat;
 
@@ -192,6 +196,11 @@ begin
     Result := LLow + 1
   else
     Result := LLow;
+end;
+
+function TADDeltaFloat.GetReader: IADDeltaValueReader<ADFloat>;
+begin
+  Result := IADDeltaValueReader<ADFloat>(Self);
 end;
 
 function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
