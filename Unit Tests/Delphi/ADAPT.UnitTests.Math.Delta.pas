@@ -139,7 +139,14 @@ begin
   LDelta[LCurrentTime + 4] := 5.00;
   LDelta[LCurrentTime + 5] := 6.00;
 
+  // Verify the value at LCurrentTime + 4.5;
   Assert.IsTrue(LDelta[LCurrentTime + 4.5] = 5.5, Format('Value at %n should be 5.5 but instead got %n', [LCurrentTime + 4.5, LDelta[LCurrentTime + 4.5]]));
+
+  // Re-Verify the value at LCurrentTime + 0.5;
+  Assert.IsTrue(LDelta[LCurrentTime + 0.5] = 1.50, Format('Value at %n should be 1.50 but instead got %n', [LCurrentTime + 0.5, LDelta[LCurrentTime + 0.5]]));
+
+  // Verify the value at LCurrentTime - 1;
+  Assert.IsTrue(LDelta[LCurrentTime - 1.00] = 0.00, Format('Value at %n should be 0.00 but instead got %n', [LCurrentTime - 1.00, LDelta[LCurrentTime - 1.00]]));
 end;
 
 end.
