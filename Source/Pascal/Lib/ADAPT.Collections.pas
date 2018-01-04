@@ -280,10 +280,12 @@ type
   ///  <remarks>
   ///    <para><c>Use IADTreeNodeReader for Read-Only access.</c></para>
   ///    <para><c>Use IADTreeNode for Read/Write access.</c></para>
+  ///    <para><c>Use IADCompactable to define a Compactor for the Child List.</c></para>
+  ///    <para><c>Use IADExpandable to define an Expander for the Child List.</c></para>
   ///    <para><c>Iterators are defined in both IADTreeNodeReader and IADTreeNode Interfaces.</c></para>
   ///    <para><c>Call IADTreeNode.Reader to return an IADTreeNodeReader referenced Interface.</c></para>
   ///  </remarks>
-  TADTreeNode<T> = class(TADObject, IADTreeNodeReader<T>, IADTreeNode<T>)
+  TADTreeNode<T> = class(TADObject, IADTreeNodeReader<T>, IADTreeNode<T>, IADCompactable, IADExpandable)
   private
     FChildren: IADList<IADTreeNode<T>>;
     FParent: Pointer;
@@ -308,11 +310,19 @@ type
     function GetParent: IADTreeNode<T>;
     function GetReader: IADTreeNodeReader<T>;
     function GetRoot: IADTreeNode<T>;
+    { IADCompactable }
+    function GetCompactor: IADCompactor;
+    { IADExpandable }
+    function GetExpander: IADExpander;
 
     // Setters
     { IADTreeNode<T> }
     procedure SetParent(const AParent: IADTreeNode<T>); virtual;
     procedure SetValue(const AValue: T); virtual;
+    { IADCompactable }
+    procedure SetCompactor(const ACompactor: IADCompactor);
+    { IADExpandable }
+    procedure SetExpander(const AExpander: IADExpander);
   public
     constructor Create(const AParent: IADTreeNode<T>; const AValue: T); reintroduce; overload;
     constructor Create(const AParent: IADTreeNode<T>); reintroduce; overload;
@@ -349,10 +359,13 @@ type
     procedure PostOrderWalk(const AAction: TADTreeNodeValueCallbackUnbound<IADTreeNode<T>>); overload;
 
     // Management Methods
+    { IADTreeNode<T> }
     procedure AddChild(const AChild: IADTreeNode<T>; const AIndex: Integer = -1);
     procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
     procedure MoveTo(const AIndex: Integer); overload;
     procedure RemoveChild(const AChild: IADTreeNodeReader<T>);
+    { IADCompactable }
+    procedure Compact;
 
     // Properties
     { IADTreeNodeReader<T> }
@@ -988,6 +1001,11 @@ begin
   Create(AParent, Default(T));
 end;
 
+procedure TADTreeNode<T>.Compact;
+begin
+  (FChildren as IADCompactable).Compact;
+end;
+
 constructor TADTreeNode<T>.Create(const AValue: T);
 begin
   Create(nil, AValue);
@@ -1015,6 +1033,11 @@ begin
   Result := FChildren[AIndex];
 end;
 
+function TADTreeNode<T>.GetCompactor: IADCompactor;
+begin
+
+end;
+
 function TADTreeNode<T>.GetChild(const AIndex: Integer): IADTreeNode<T>;
 begin
   Result := FChildren[AIndex];
@@ -1032,6 +1055,11 @@ begin
     Inc(Result);
     Ancestor := Ancestor.ParentReader;
   end;
+end;
+
+function TADTreeNode<T>.GetExpander: IADExpander;
+begin
+
 end;
 
 function TADTreeNode<T>.GetIndexAsChild: Integer;
@@ -1240,6 +1268,16 @@ begin
   LIndex := IndexOf[AChild];
   if LIndex > -1 then
     FChildren.Delete(LIndex);
+end;
+
+procedure TADTreeNode<T>.SetCompactor(const ACompactor: IADCompactor);
+begin
+  (FChildren as IADCompactable).Compactor := ACompactor;
+end;
+
+procedure TADTreeNode<T>.SetExpander(const AExpander: IADExpander);
+begin
+  (FChildren as IADExpandable).Expander := AExpander;
 end;
 
 procedure TADTreeNode<T>.SetParent(const AParent: IADTreeNode<T>);
