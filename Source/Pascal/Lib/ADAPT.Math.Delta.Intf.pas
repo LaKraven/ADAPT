@@ -24,17 +24,33 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  ///  <summary><c>Common Interface for Delta Extrapolator and Interpolator Interfaces.</c></summary>
+  IADDeltaPolator<T> = interface(IADInterface)
+    // Getters
+    ///  <returns><c>The Minimum number of Absolute Data Points required for the Extrapolator/Interpolator to work.</c></returns>
+    function GetMinimumKnownValues: Integer;
+
+    // Setters
+    ///  <summary><c>Defines the Minimum number of Absolute Data Points required for the Extrapolator/Interpolator to work.</c></summary>
+    procedure SetMinimumKnownValues(const AMinimumKnownValues: Integer);
+
+    // Properties
+    ///  <summary><c>Defines the Minimum number of Absolute Data Points required for the Extrapolator/Interpolator to work.</c></summary>
+    ///  <returns><c>The Minimum number of Absolute Data Points required for the Extrapolator/Interpolator to work.</c></returns>
+    property MinimumKnownValues: Integer read GetMinimumKnownValues write SetMinimumKnownValues;
+  end;
+
   ///  <summary><c>Provides an algorithmic solution for calculating values beyond the range of fixed data points.</c></summary>
-  IADDeltaExtrapolator<T> = interface(IADInterface)
+  IADDeltaExtrapolator<T> = interface(IADDeltaPolator<T>)
     ///  <summary><c>Takes a Map of existing data points, calculates a rate of change, then returns the calculated value for the given Key Data Point.</c></summary>
-    ///  <returns><c>The Calculated Value for the given Key Data Point.</c></returns>
+    ///  <returns><c>The Calculated Value for the given Delta Point.</c></returns>
     function Extrapolate(const AMap: IADMapReader<ADFloat, T>; const ADelta: ADFloat): T;
   end;
 
   ///  <summary><c>Provides an algorithmic solution for calculating values between fixed data points.</c></summary>
-  IADDeltaInterpolator<T> = interface(IADInterface)
+  IADDeltaInterpolator<T> = interface(IADDeltaPolator<T>)
     ///  <summary><c>Takes a Map of existing data points, calculates a rate of change, then returns the calculated value for the given Key Data Point.</c></summary>
-    ///  <returns><c>The Calculated Value for the given Key Data Point.</c></returns>
+    ///  <returns><c>The Calculated Value for the given Delta Point.</c></returns>
     function Interpolate(const AMap: IADMapReader<ADFloat, T>; const ANearestNeighbour: Integer; const ADelta: ADFloat): T;
   end;
 
