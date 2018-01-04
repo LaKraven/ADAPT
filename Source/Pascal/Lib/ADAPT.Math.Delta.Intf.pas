@@ -24,6 +24,11 @@ uses
   {$I ADAPT_RTTI.inc}
 
 type
+  { Exception Types }
+  EADMathDeltaException = class(EADMathException);
+    EADMathDeltaPolatorException = class(EADMathDeltaException);
+      EADMathDeltaPolatorInsufficientDataPoints = class(EADMathDeltaPolatorException);
+
   ///  <summary><c>Common Interface for Delta Extrapolator and Interpolator Interfaces.</c></summary>
   IADDeltaPolator<T> = interface(IADInterface)
     // Getters

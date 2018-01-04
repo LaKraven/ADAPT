@@ -104,15 +104,19 @@ end;
 
 function TADDeltaFloat.CalculateValueAt(const ADelta: ADFloat): ADFloat;
 begin
-  Result := ADFLOAT_ZERO;
-
-  if (FValues.Count < 2) then // Determine first whether or not we have enough Values to Interpolate/Extrapolate. 2 is the minimum.
-    Exit; //TODO -oSJS -cDelta Value: Raise a rational exception here since we cannot calculate a result with less than two fixed Data Points.
-
   if (ADelta > FValues.Pairs[FValues.Count - 1].Key) or (ADelta < FValues.Pairs[0].Key) then
-    Result := FExtrapolator.Extrapolate(FValues, ADelta)
-  else
-    Result := FInterpolator.Interpolate(FValues, GetNearestNeighbour(ADelta) - 1, ADelta);
+  begin
+    if (FValues.Count < FExtrapolator.MinimumKnownValues) then
+      raise EADMathDeltaPolatorInsufficientDataPoints.CreateFmt('Insufficient Data Points for Extrapolation. Required %d, got %d', [FExtrapolator.MinimumKnownValues, FValues.Count])
+    else
+      Result := FExtrapolator.Extrapolate(FValues, ADelta)
+  end else
+  begin
+    if (FValues.Count < FInterpolator.MinimumKnownValues) then
+      raise EADMathDeltaPolatorInsufficientDataPoints.CreateFmt('Insufficient Data Points for Interpolation. Required %d, got %d', [FInterpolator.MinimumKnownValues, FValues.Count])
+    else
+      Result := FInterpolator.Interpolate(FValues, GetNearestNeighbour(ADelta) - 1, ADelta);
+  end;
 end;
 
 { TADDeltaFloatLinearExtrapolator }
