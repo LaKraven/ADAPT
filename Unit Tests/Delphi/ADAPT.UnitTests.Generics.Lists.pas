@@ -799,7 +799,6 @@ begin
 end;
 
 { TADUTCollectionsTree }
-
 procedure TADUTCollectionsTree.BasicIntegrity;
 var
   LNode: IADStringTreeNode;
@@ -810,12 +809,21 @@ begin
 
   // Test Values for both Nodes
   Assert.IsTrue(LNode.Value = 'Foo', Format('Node Value should be "Foo" but instead got "%s"', [LNode.Value]));
-  Assert.IsTrue(LNode2.Value = 'Bar', Format('Node2 Value should be "Bar" but instead got "%s"', [LNode.Value]));
+  Assert.IsTrue(LNode2.Value = 'Bar', Format('Node2 Value should be "Bar" but instead got "%s"', [LNode2.Value]));
 
+  // Verify that we can access the value of the Child Node via its Parent Node.
+  Assert.IsTrue(LNode[0].Value = 'Bar', Format('Node1 Child 0 Value should be "Bar" but instead got "%s"', [LNode[0].Value]));
+
+  // Verify that the Parent of our Child Node is not nil
+  Assert.IsTrue(LNode2.Parent <> nil, 'Node2 Parent should be Node, but is not!');
+
+  // Test Values for both Nodes (prevent the Reference being lost...)
+  Assert.IsTrue(LNode.Value = 'Foo', Format('Node Value should be "Foo" but instead got "%s"', [LNode.Value]));
+  Assert.IsTrue(LNode2.Value = 'Bar', Format('Node2 Value should be "Bar" but instead got "%s"', [LNode2.Value]));
+
+  // Verify that we can access the value of the Parent Node via its Child Node.
   LNode2.Parent.Value := 'Haha';
   Assert.IsTrue(LNode.Value = 'Haha', Format('Node Value should be "Haha" but instead got "%s"', [LNode.Value]));
-
-  Assert.IsTrue(LNode2.Parent <> nil, 'Node2 Parent should be Node, but is not!');
 end;
 
 end.

@@ -656,8 +656,10 @@ type
     ///  <returns><c>The number of Child Nodes beneath the given Node, and all of their respective Child Nodes.</c></returns>
     ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
     function GetChildCountRecursive: Integer;
-    ///  <returns><c>Returns the List of Children.</c></returns>
-    function GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
+
+    ///  <returns><c>The Child Reader for the given Index.</c></returns>
+    function GetChildReader(const AIndex: Integer): IADTreeNodeReader<T>;
+
     ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
     function GetDepth: Integer;
     ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
@@ -717,8 +719,8 @@ type
     ///  <returns><c>The number of Child Nodes beneath the given Node, and all of their respective Child Nodes.</c></returns>
     ///  <remarks><c>This is an Aggregate Total, and can be computationally expensive. Use only when you really need to.</c></remarks>
     property ChildCountRecursive: Integer read GetChildCountRecursive;
-    ///  <returns><c>Returns the List of Children.</c></returns>
-    property ChildrenReaders: IADListReader<IADTreeNodeReader<T>> read GetChildrenReaders;
+    ///  <returns><c>The Child Reader for the given Index.</c></returns>
+    property ChildReader[const AIndex: Integer]: IADTreeNodeReader<T> read GetChildReader; default;
     ///  <returns><c>The Depth of the given Node relative to the Root.</c></returns>
     property Depth: Integer read GetDepth;
     ///  <returns><c>The Index of the given Node relative to its Parent Node.</c></returns>
@@ -749,8 +751,8 @@ type
   ///  </remarks>
   IADTreeNode<T> = interface(IADTreeNodeReader<T>)
     // Getters
-    ///  <returns><c>Returns the List of Children.</c></returns>
-    function GetChildren: IADList<IADTreeNode<T>>;
+    ///  <returns><c>Returns the Child at the given Index.</c></returns>
+    function GetChild(const AIndex: Integer): IADTreeNode<T>;
     ///  <returns><c>Reference to the Parent of the given Node.</c></returns>
     ///  <remarks><c>This reference would be Nil for the Root Node.</c></summary>
     function GetParent: IADTreeNode<T>;
@@ -809,10 +811,10 @@ type
     ///  <summary><c>Moves this Child Node to a designated Child Index of its current Parent Node.</c></summary>
     procedure MoveTo(const AIndex: Integer); overload;
     ///  <summary><c>Removes the given Node from this Node's Children.</c></summary>
-    procedure RemoveChild(const AChild: IADTreeNode<T>);
+    procedure RemoveChild(const AChild: IADTreeNodeReader<T>);
 
-    ///  <returns><c>Returns the List of Children.</c></returns>
-    property Children: IADList<IADTreeNode<T>> read GetChildren;
+    ///  <returns><c>Returns the Child at the given Index.</c></returns>
+    property Child[const AIndex: Integer]: IADTreeNode<T> read GetChild; default;
     ///  <summary><c>Defines the Parent Node for this Node.</c></summary>
     ///  <remarks>
     ///    <para><c>This reference would be Nil for the Root Node.</c></para>

@@ -286,7 +286,6 @@ type
   TADTreeNode<T> = class(TADObject, IADTreeNodeReader<T>, IADTreeNode<T>)
   private
     FChildren: IADList<IADTreeNode<T>>;
-    FChildrenReaders: IADList<IADTreeNodeReader<T>>;
     FParent: Pointer;
     FValue: T;
   protected
@@ -294,7 +293,7 @@ type
     { IADTreeNodeReader<T> }
     function GetChildCount: Integer;
     function GetChildCountRecursive: Integer;
-    function GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
+    function GetChildReader(const AIndex: Integer): IADTreeNodeReader<T>;
     function GetDepth: Integer;
     function GetIndexAsChild: Integer;
     function GetIndexOf(const AChild: IADTreeNodeReader<T>): Integer;
@@ -305,7 +304,7 @@ type
     function GetRootReader: IADTreeNodeReader<T>;
     function GetValue: T;
     { IADTreeNode<T> }
-    function GetChildren: IADList<IADTreeNode<T>>;
+    function GetChild(const AIndex: Integer): IADTreeNode<T>;
     function GetParent: IADTreeNode<T>;
     function GetReader: IADTreeNodeReader<T>;
     function GetRoot: IADTreeNode<T>;
@@ -353,13 +352,13 @@ type
     procedure AddChild(const AChild: IADTreeNode<T>; const AIndex: Integer = -1);
     procedure MoveTo(const ANewParent: IADTreeNode<T>; const AIndex: Integer = -1); overload;
     procedure MoveTo(const AIndex: Integer); overload;
-    procedure RemoveChild(const AChild: IADTreeNode<T>);
+    procedure RemoveChild(const AChild: IADTreeNodeReader<T>);
 
     // Properties
     { IADTreeNodeReader<T> }
     property ChildCount: Integer read GetChildCount;
     property ChildCountRecursive: Integer read GetChildCountRecursive;
-    property ChildrenReaders: IADListReader<IADTreeNodeReader<T>> read GetChildrenReaders;
+    property ChildReader[const AIndex: Integer]: IADTreeNodeReader<T> read GetChildReader;
     property Depth: Integer read GetDepth;
     property IndexAsChild: Integer read GetIndexAsChild;
     property IndexOf[const AChild: IADTreeNodeReader<T>]: Integer read GetIndexOf;
@@ -369,7 +368,7 @@ type
     property ParentReader: IADTreeNodeReader<T> read GetParentReader;
     property RootReader: IADTreeNodeReader<T> read GetRootReader;
     { IADTreeNode<T> }
-    property Children: IADList<IADTreeNode<T>> read GetChildren;
+    property Child[const AIndex: Integer]: IADTreeNode<T> read GetChild; default;
     property Parent: IADTreeNode<T> read GetParent;
     property Root: IADTreeNode<T> read GetRoot;
     property Value: T read GetValue write SetValue;
@@ -972,20 +971,15 @@ begin
     FChildren.Add(AChild)
   else
     FChildren.Insert(AChild, AIndex);
-
-  AChild.Parent := Self;
 end;
 
 constructor TADTreeNode<T>.Create(const AParent: IADTreeNode<T>; const AValue: T);
 begin
   inherited Create;
+  FParent := nil;
   if AParent <> nil then
-  begin
-    FParent := @AParent;
-    Parent.AddChild(Self);
-  end;
+    SetParent(AParent);
   FChildren := TADList<IADTreeNode<T>>.Create(10);
-  FChildrenReaders := TADList<IADTreeNodeReader<T>>.Create(10);
   FValue := AValue;
 end;
 
@@ -1016,14 +1010,14 @@ begin
   end;
 end;
 
-function TADTreeNode<T>.GetChildren: IADList<IADTreeNode<T>>;
+function TADTreeNode<T>.GetChildReader(const AIndex: Integer): IADTreeNodeReader<T>;
 begin
-  Result := FChildren;
+  Result := FChildren[AIndex];
 end;
 
-function TADTreeNode<T>.GetChildrenReaders: IADListReader<IADTreeNodeReader<T>>;
+function TADTreeNode<T>.GetChild(const AIndex: Integer): IADTreeNode<T>;
 begin
-  Result := FChildrenReaders;
+  Result := FChildren[AIndex];
 end;
 
 function TADTreeNode<T>.GetDepth: Integer;
@@ -1050,7 +1044,7 @@ end;
 
 function TADTreeNode<T>.GetIndexOf(const AChild: IADTreeNodeReader<T>): Integer;
 begin
-  if (not ADInterfaceComparer.AEqualToB(AChild, Self)) then
+  if (not ADInterfaceComparer.AEqualToB(AChild.ParentReader, Self)) then
     Result := -1
   else
     Result := AChild.IndexAsChild;
@@ -1076,7 +1070,7 @@ begin
   if FParent = nil then
     Result := nil
   else
-    Result := IADTreeNode<T>(FParent^);
+    Result := IADTreeNode<T>(FParent);
 end;
 
 function TADTreeNode<T>.GetParentReader: IADTreeNodeReader<T>;
@@ -1084,7 +1078,7 @@ begin
   if FParent = nil then
     Result := nil
   else
-    Result := IADTreeNodeReader<T>(FParent^);
+    Result := IADTreeNodeReader<T>(FParent);
 end;
 
 function TADTreeNode<T>.GetReader: IADTreeNodeReader<T>;
@@ -1120,25 +1114,20 @@ begin
 
   if Parent = ANewParent then // If it's the existing Parent...
   begin
-    if AIndex <> IndexAsChild then
+    if AIndex <> IndexAsChild then // If the Index of this Child is NOT the same as we're attempting to Move it to...
     begin
-      Parent.RemoveChild(Self);
-      if AIndex < 0 then
-        Parent.Children.Add(Self)
-      else
-        Parent.Children.Insert(Self, AIndex);
+      Parent.RemoveChild(Self); // Remove the Child
+      Parent.AddChild(Self, AIndex); // Add it again at the given Index
     end;
   end else // If it's a NEW Parent
   begin
     if Parent <> nil then
       Parent.RemoveChild(Self);
 
-    FParent := @ANewParent;
-
-    Parent.AddChild(Self, AIndex);
-
-    //DoAncestorChanged;
+    ANewParent.AddChild(Self, AIndex);
   end;
+
+  FParent := Pointer(ANewParent);
 end;
 
 procedure TADTreeNode<T>.MoveTo(const AIndex: Integer);
@@ -1244,21 +1233,25 @@ begin
 
 end;
 
-procedure TADTreeNode<T>.RemoveChild(const AChild: IADTreeNode<T>);
+procedure TADTreeNode<T>.RemoveChild(const AChild: IADTreeNodeReader<T>);
 var
   LIndex: Integer;
 begin
   LIndex := IndexOf[AChild];
   if LIndex > -1 then
-  begin
     FChildren.Delete(LIndex);
-    FChildrenReaders.Delete(LIndex);
-  end;
 end;
 
 procedure TADTreeNode<T>.SetParent(const AParent: IADTreeNode<T>);
+var
+  LParent: IADTreeNode<T>;
 begin
-  MoveTo(AParent);
+  LParent := GetParent;
+  if LParent <> nil then
+    LParent.RemoveChild(Self);
+
+  FParent := Pointer(AParent);
+  AParent.AddChild(Self);
 end;
 
 procedure TADTreeNode<T>.SetValue(const AValue: T);
