@@ -77,6 +77,7 @@ begin
       System.ExitCode := EXIT_ERRORS;
 
     {$IFNDEF CI}
+    ReportMemoryLeaksOnShutdown := True;
     //We don't want this happening when running under CI.
     if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
     begin

@@ -28,24 +28,38 @@ type
   IADDeltaExtrapolator<T> = interface(IADInterface)
     ///  <summary><c>Takes a Map of existing data points, calculates a rate of change, then returns the calculated value for the given Key Data Point.</c></summary>
     ///  <returns><c>The Calculated Value for the given Key Data Point.</c></returns>
-    function Extrapolate(const AMap: IADMap<ADFloat, T>; const ADataPoint: ADFloat): T;
+    function Extrapolate(const AMap: IADMapReader<ADFloat, T>; const ADelta: ADFloat): T;
   end;
 
   ///  <summary><c>Provides an algorithmic solution for calculating values between fixed data points.</c></summary>
   IADDeltaInterpolator<T> = interface(IADInterface)
     ///  <summary><c>Takes a Map of existing data points, calculates a rate of change, then returns the calculated value for the given Key Data Point.</c></summary>
     ///  <returns><c>The Calculated Value for the given Key Data Point.</c></returns>
-    function Interpolate(const AMap: IADMap<ADFloat, T>; const ADataPoint: ADFloat): T;
+    function Interpolate(const AMap: IADMapReader<ADFloat, T>; const ANearestNeighbour: Integer; const ADelta: ADFloat): T;
   end;
 
+  ///  <summary><c>Stores n Values to enable calculations based on historical Values.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Uses an IADDeltaInterpolator to calculate values between given data points.</c></para>
+  ///    <para><c>Uses an IADDeltaExtrapolator to calculate values beyond given data points.</c></para>
+  ///    <para><c>Provides Read-Only Access.</c></para>
+  ///  </remarks>
   IADDeltaValueReader<T> = interface(IADInterface)
     // Getters
+    ///  <returns><c>The Extrapolator being used to calculate Values beyond the range of the Absolute Values given.</c></returns>
+    function GetExtrapolator: IADDeltaExtrapolator<T>;
+    ///  <returns><c>The Interpolator being used to calculate Values between the range of the Absolute Values given.</c></returns>
+    function GetInterpolator: IADDeltaInterpolator<T>;
     ///  <returns><c>The Value at the given Delta (Reference Time).</c></returns>
     function GetValueAt(const ADelta: ADFloat): T;
     ///  <returns><c>The Value for the CURRENT Delta (Reference Time).</c></returns>
     function GetValueNow: T;
 
     // Properties
+    ///  <returns><c>The Extrapolator being used to calculate Values beyond the range of the Absolute Values given.</c></returns>
+    property Extrapolator: IADDeltaExtrapolator<T> read GetExtrapolator;
+    ///  <returns><c>The Interpolator being used to calculate Values between the range of the Absolute Values given.</c></returns>
+    property Interpolator: IADDeltaInterpolator<T> read GetInterpolator;
     ///  <returns><c>The Value at the given Delta (Reference Time).</c></returns>
     property ValueAt[const ADelta: ADFloat]: T read GetValueAt; default;
     ///  <returns><c>The Value for the CURRENT Delta (Reference Time).</c></returns>
@@ -54,8 +68,11 @@ type
 
   ///  <summary><c>Stores n Values to enable calculations based on historical Values.</c></summary>
   ///  <remarks>
+  ///    <para><c>Use IADDeltaValueReader for Read-Only Access.</c></para>
+  ///    <para><c>Call .Reader to return an IADDeltaValueReader reference to this Delta Value Object.</c></para>
   ///    <para><c>Uses an IADDeltaInterpolator to calculate values between given data points.</c></para>
   ///    <para><c>Uses an IADDeltaExtrapolator to calculate values beyond given data points.</c></para>
+  ///    <para><c>Provides Read/Write Access.</c></para>
   ///  </remarks>
   IADDeltaValue<T> = interface(IADDeltaValueReader<T>)
     // Getters
@@ -63,13 +80,22 @@ type
     function GetReader: IADDeltaValueReader<T>;
 
     // Setters
+    ///  <summary><c>Defines the Extrapolator to use when calculating Values beyond the range of the Absolute Values given.</c></summary>
+    procedure SetExtrapolator(const AExtrapolator: IADDeltaExtrapolator<T>);
+    ///  <summary><c>Defines the Interpolator to use when calculating Values between the range of the Absolute Values given.</c></summary>
+    procedure SetInterpolator(const AInterpolator: IADDeltaInterpolator<T>);
     ///  <summary><c>Defines a Known Value for a specific Delta (Reference Time).</c></summary>
     procedure SetValueAt(const ADelta: ADFloat; const AValue: T);
     ///  <summary><c>Defines a Known Value for the CURRENT Delta (Reference Time).</c></summary>
     procedure SetValueNow(const AValue: T);
 
     // Properties
-
+    ///  <summary><c>Defines the Extrapolator to use when calculating Values beyond the range of the Absolute Values given.</c></summary>
+    ///  <returns><c>The Extrapolator being used to calculate Values beyond the range of the Absolute Values given.</c></returns>
+    property Extrapolator: IADDeltaExtrapolator<T> read GetExtrapolator write SetExtrapolator;
+    ///  <summary><c>Defines the Interpolator to use when calculating Values between the range of the Absolute Values given.</c></summary>
+    ///  <returns><c>The Interpolator being used to calculate Values between the range of the Absolute Values given.</c></returns>
+    property Interpolator: IADDeltaInterpolator<T> read GetInterpolator write SetInterpolator;
     ///  <summary><c>Defines a Known Value for a specific Delta (Reference Time).</c></summary>
     ///  <returns><c>The Value at the given Delta (Reference Time).</c></returns>
     property ValueAt[const ADelta: ADFloat]: T read GetValueAt write SetValueAt; default;
