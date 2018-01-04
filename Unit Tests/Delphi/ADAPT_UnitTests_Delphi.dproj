@@ -200,6 +200,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Comparers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Abstract.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Abstract.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Comparers.Abstract.pas"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txaPackage"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck"/>
@@ -466,7 +467,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -490,7 +491,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\EventEngine\Intf\default.txvpck" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\Generics\Comparers\default.txvpck" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
