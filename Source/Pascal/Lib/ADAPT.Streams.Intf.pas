@@ -176,6 +176,7 @@ type
     procedure UnregisterCaret(const ACaret: IADStreamCaret);
   end;
 
+  ///  <summary><c>Provides Methods/Properties specific to a Memory Stream.</c></summary>
   IADMemoryStream = interface(IADStream)
   ['{DD2B94EB-B752-4973-8639-833298CD410C}']
   // Getters

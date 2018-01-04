@@ -43,7 +43,8 @@ uses
   ADAPT.UnitTests.Streams in 'ADAPT.UnitTests.Streams.pas',
   ADAPT.UnitTests.Math.Delta in 'ADAPT.UnitTests.Math.Delta.pas',
   ADAPT.Comparers.Intf in '..\..\Source\Pascal\Lib\ADAPT.Comparers.Intf.pas',
-  ADAPT.Math.Delta.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Abstract.pas';
+  ADAPT.Math.Delta.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Abstract.pas',
+  ADAPT.Streams.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Streams.Abstract.pas';
 
 var
   runner : ITestRunner;

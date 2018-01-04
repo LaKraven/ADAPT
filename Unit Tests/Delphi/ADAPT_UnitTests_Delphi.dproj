@@ -199,6 +199,7 @@
         <DCCReference Include="ADAPT.UnitTests.Math.Delta.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Comparers.Intf.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Delta.Abstract.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Abstract.pas"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txaPackage"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck"/>
