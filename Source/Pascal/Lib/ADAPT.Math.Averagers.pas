@@ -20,24 +20,15 @@ uses
   ADAPT, ADAPT.Intf,
   ADAPT.Collections.Intf,
   ADAPT.Math.Common.Intf,
-  ADAPT.Math.Averagers.Intf;
+  ADAPT.Math.Averagers.Intf, ADAPT.Math.Averagers.Abstract;
 
   {$I ADAPT_RTTI.inc}
 
 type
-  TADAverager<T> = class abstract(TADObject, IADAverager<T>)
-  protected
-    procedure CheckSorted(const ASeries: IADListReader<T>); overload;
-    procedure CheckSorted(const ASortedState: TADSortedState); overload;
-  public
-    function CalculateAverage(const ASeries: IADListReader<T>): T; overload; virtual; abstract;
-    function CalculateAverage(const ASeries: Array of T; const ASortedState: TADSortedState): T; overload; virtual; abstract;
-  end;
-
-  TADAveragerFloat = class abstract(TADAverager<ADFloat>);
-  TADAveragerInteger = class abstract(TADAverager<Integer>);
-  TADAveragerInt64 = class abstract(TADAverager<Int64>);
-  TADAveragerCardinal = class abstract(TADAverager<Cardinal>);
+  TADAveragerFloat = class(TADAverager<ADFloat>);
+  TADAveragerInteger = class(TADAverager<Integer>);
+  TADAveragerInt64 = class(TADAverager<Int64>);
+  TADAveragerCardinal = class(TADAverager<Cardinal>);
 
 // Float Averagers
 ///  <returns><c>An Arithmetic Mean Averager for Float Values.</c></returns>
@@ -219,19 +210,6 @@ end;
 function ADAveragerCardinalRange: IADAverager<Cardinal>;
 begin
   Result := GAveragerCardinalRange;
-end;
-
-{ TADAverager<T> }
-
-procedure TADAverager<T>.CheckSorted(const ASeries: IADListReader<T>);
-begin
-  CheckSorted(ASeries.SortedState);
-end;
-
-procedure TADAverager<T>.CheckSorted(const ASortedState: TADSortedState);
-begin
-  if ASortedState <> ssSorted then
-    raise EADMathAveragerListNotSorted.Create('Series MUST be Sorted.');
 end;
 
 { TADAveragerFloatMean }

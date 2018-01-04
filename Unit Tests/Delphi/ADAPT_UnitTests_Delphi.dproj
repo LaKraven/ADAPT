@@ -202,6 +202,7 @@
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Streams.Abstract.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Comparers.Abstract.pas"/>
         <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Common.Abstract.pas"/>
+        <DCCReference Include="..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Abstract.pas"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txaPackage"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\default.txvpck"/>
         <None Include="ModelSupport_ADAPT_UnitTests_Delphi\ADAPT\default.txvpck"/>
