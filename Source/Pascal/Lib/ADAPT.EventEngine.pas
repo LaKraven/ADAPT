@@ -18,6 +18,7 @@ uses
     Classes, SyncObjs,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT, ADAPT.Intf, ADAPT.Threadsafe,
+  ADAPT.Comparers.Intf,
   ADAPT.Collections.Intf,
   ADAPT.Threads, ADAPT.Threads.Intf,
   ADAPT.EventEngine.Intf;
@@ -230,7 +231,7 @@ implementation
 
 uses
   ADAPT.Math.Delta,
-  ADAPT.Comparers,
+  ADAPT.Comparers, ADAPT.Comparers.Abstract,
   ADAPT.Collections;
 
 type
