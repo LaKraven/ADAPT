@@ -18,18 +18,9 @@ uses
     Classes,
   {$ENDIF ADAPT_USE_EXPLICIT_UNIT_NAMES}
   ADAPT, ADAPT.Intf,
-  ADAPT.Math.Common.Intf;
+  ADAPT.Math.Common.Intf, ADAPT.Math.Common.Abstract;
 
   {$I ADAPT_RTTI.inc}
-
-type
-  TADExtrapolator<TKey, TValue> = class abstract(TADObject, IADExtrapolator<TKey, TValue>)
-
-  end;
-
-  TADInterpolator<TKey, TValue> = class abstract(TADObject, IADInterpolator<TKey, TValue>)
-
-  end;
 
 implementation
 
