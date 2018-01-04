@@ -4,6 +4,8 @@ object DemoForm: TDemoForm
   Caption = 'ADAPT - Delphi (FMX) - Precision Thread Test'
   ClientHeight = 480
   ClientWidth = 640
+  Fill.Color = claBlack
+  Fill.Kind = Solid
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -17,11 +19,13 @@ object DemoForm: TDemoForm
     Size.PlatformDefault = False
     TabOrder = 0
     object Label1: TLabel
+      StyledSettings = [Family, Size, Style]
       Position.X = 8.000000000000000000
       Position.Y = 8.000000000000000000
       Size.Width = 113.000000000000000000
       Size.Height = 17.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.FontColor = claMaroon
       TextSettings.HorzAlign = Trailing
       Text = 'Tick Rate Limit:'
       object sbTickRateLimit: TSpinBox
@@ -40,11 +44,13 @@ object DemoForm: TDemoForm
       end
     end
     object Label2: TLabel
+      StyledSettings = [Family, Size, Style]
       Position.X = 8.000000000000000000
       Position.Y = 40.000000000000000000
       Size.Width = 113.000000000000000000
       Size.Height = 17.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.FontColor = claOrange
       TextSettings.HorzAlign = Trailing
       Text = 'Desired Tick Rate:'
       object sbDesiredTickRate: TSpinBox
@@ -63,11 +69,13 @@ object DemoForm: TDemoForm
       end
     end
     object Label3: TLabel
+      StyledSettings = [Family, Size, Style]
       Position.X = 272.000000000000000000
       Position.Y = 8.000000000000000000
       Size.Width = 113.000000000000000000
       Size.Height = 17.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.FontColor = claWhite
       TextSettings.HorzAlign = Trailing
       Text = 'History Limit:'
       object sbHIstoryLimit: TSpinBox
@@ -86,11 +94,13 @@ object DemoForm: TDemoForm
       end
     end
     object Label4: TLabel
+      StyledSettings = [Family, Size, Style]
       Position.X = 272.000000000000000000
       Position.Y = 40.000000000000000000
       Size.Width = 113.000000000000000000
       Size.Height = 17.000000000000000000
       Size.PlatformDefault = False
+      TextSettings.FontColor = claWhite
       TextSettings.HorzAlign = Trailing
       Text = 'Work Sim Max:'
       object sbWorkSimMax: TSpinBox
