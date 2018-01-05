@@ -859,7 +859,6 @@ type
     property CountTotal: Integer read GetCount;
     ///  <returns><c>The total number of Items in the Queue AND Stack for the given Priority.</c></returns>
     property Count[const APriority: Integer]: Integer read GetCount;
-
     ///  <returns><c>An IADIterableList Interface Reference for this Stack/Queue.</c></returns>
     property Iterator: IADIterableList<T> read GetIterator;
     ///  <returns><c>The number of Items in the Queue (full Priority range).</c></returns>

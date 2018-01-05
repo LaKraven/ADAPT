@@ -387,6 +387,48 @@ type
     property Value: T read GetValue write SetValue;
   end;
 
+  TADStackQueue<T> = class(TADObject, IADStackQueueReader<T>, IADStackQueue<T>)
+  protected
+    // Getters
+    { IADStackQueueReader<T> }
+    function GetCount: Integer; overload; virtual;
+    function GetCount(const APriority: Integer): Integer; overload; virtual;
+    function GetIterator: IADIterableList<T>; virtual;
+    function GetQueueCount: Integer; overload; virtual;
+    function GetQueueCount(const APriority: Integer): Integer; overload; virtual;
+    function GetStackCount: Integer; overload; virtual;
+    function GetStackCount(const APriority: Integer): Integer; overload; virtual;
+    { IADStackQueue<T> }
+    function GetReader: IADStackQueueReader<T>;
+  public
+
+    // Management Methods
+    procedure Queue(const AItem: T); overload; virtual;
+    procedure Queue(const AItem: T; const APriority: Integer); overload; virtual;
+    procedure Queue(const AItems: IADListReader<T>); overload; virtual;
+    procedure Queue(const AItems: IADListReader<T>; const APriority: Integer); overload; virtual;
+    procedure Queue(const AItems: Array of T); overload; virtual;
+    procedure Queue(const AItems: Array of T; const APriority: Integer); overload; virtual;
+    procedure Stack(const AItem: T); overload; virtual;
+    procedure Stack(const AItem: T; const APriority: Integer); overload; virtual;
+    procedure Stack(const AItems: IADListReader<T>); overload; virtual;
+    procedure Stack(const AItems: IADListReader<T>; const APriority: Integer); overload; virtual;
+    procedure Stack(const AItems: Array of T); overload; virtual;
+    procedure Stack(const AItems: Array of T; const APriority: Integer); overload; virtual;
+
+    // Properties
+    { IADStackQueueReader<T> }
+    property CountTotal: Integer read GetCount;
+    property Count[const APriority: Integer]: Integer read GetCount;
+    property Iterator: IADIterableList<T> read GetIterator;
+    property QueueTotalCount: Integer read GetQueueCount;
+    property QueueCount[const APriority: Integer]: Integer read GetQueueCount;
+    property StackTotalCount: Integer read GetStackCount;
+    property StackCount[const APriority: Integer]: Integer read GetStackCount;
+    { IADStackQueue<T> }
+    property Reader: IADStackQueueReader<T> read GetReader;
+  end;
+
   { List Sorters }
   ///  <summary><c>Sorter for Lists using the Quick Sort implementation.</c></summary>
   TADListSorterQuick<T> = class(TADListSorter<T>)
@@ -1295,6 +1337,108 @@ end;
 procedure TADTreeNode<T>.SetValue(const AValue: T);
 begin
   FValue := AValue;
+end;
+
+{ TADStackQueue<T> }
+
+function TADStackQueue<T>.GetCount: Integer;
+begin
+
+end;
+
+function TADStackQueue<T>.GetCount(const APriority: Integer): Integer;
+begin
+
+end;
+
+function TADStackQueue<T>.GetIterator: IADIterableList<T>;
+begin
+
+end;
+
+function TADStackQueue<T>.GetQueueCount: Integer;
+begin
+
+end;
+
+function TADStackQueue<T>.GetQueueCount(const APriority: Integer): Integer;
+begin
+
+end;
+
+function TADStackQueue<T>.GetReader: IADStackQueueReader<T>;
+begin
+
+end;
+
+function TADStackQueue<T>.GetStackCount(const APriority: Integer): Integer;
+begin
+
+end;
+
+function TADStackQueue<T>.GetStackCount: Integer;
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItem: T);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItem: T; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItems: array of T; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Queue(const AItems: array of T);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: IADListReader<T>; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: array of T);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: array of T; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItem: T; const APriority: Integer);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItem: T);
+begin
+
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: IADListReader<T>);
+begin
+
 end;
 
 { TADListSorterQuick<T> }
