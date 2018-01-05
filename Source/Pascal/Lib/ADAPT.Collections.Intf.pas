@@ -911,18 +911,18 @@ type
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       ///  <summary><c>Iterates the Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
       ///  <remarks>
-      ///    <para><c>Empties the Queue when it hsa been fully Iterated.</c></para>
+      ///    <para><c>Empties the Queue when it has been fully Iterated.</c></para>
       ///  <remarks>
       procedure ProcessQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     ///  <summary><c>Iterates the Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
     ///  <remarks>
-    ///    <para><c>Empties the Queue when it hsa been fully Iterated.</c></para>
+    ///    <para><c>Empties the Queue when it has been fully Iterated.</c></para>
     ///  <remarks>
     procedure ProcessQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
     ///  <summary><c>Iterates the Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
     ///  <remarks>
-    ///    <para><c>Empties the Queue when it hsa been fully Iterated.</c></para>
+    ///    <para><c>Empties the Queue when it has been fully Iterated.</c></para>
     ///  <remarks>
     procedure ProcessQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
 
@@ -930,26 +930,38 @@ type
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
       ///  <summary><c>Iterates the Stack (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
       ///  <remarks>
-      ///    <para><c>Empties the Stack when it hsa been fully Iterated.</c></para>
+      ///    <para><c>Empties the Stack when it has been fully Iterated.</c></para>
       ///  <remarks>
       procedure ProcessStack(const AOnItem: TADListItemCallbackAnon<T>); overload;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
     ///  <summary><c>Iterates the Stack (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
     ///  <remarks>
-    ///    <para><c>Empties the Stack when it hsa been fully Iterated.</c></para>
+    ///    <para><c>Empties the Stack when it has been fully Iterated.</c></para>
     ///  <remarks>
     procedure ProcessStack(const AOnItem: TADListItemCallbackOfObject<T>); overload;
     ///  <summary><c>Iterates the Stack (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
     ///  <remarks>
-    ///    <para><c>Empties the Stack when it hsa been fully Iterated.</c></para>
+    ///    <para><c>Empties the Stack when it has been fully Iterated.</c></para>
     ///  <remarks>
     procedure ProcessStack(const AOnItem: TADListItemCallbackUnbound<T>); overload;
 
     // Specialized Stack/Queue Iterators
     {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      ///  <summary><c>Iterates the Stack and Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
+      ///  <remarks>
+      ///    <para><c>Empties the Stack and Queue when they have been fully Iterated.</c></para>
+      ///  <remarks>
       procedure ProcessStackQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
     {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    ///  <summary><c>Iterates the Stack and Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Empties the Stack and Queue when they have been fully Iterated.</c></para>
+    ///  <remarks>
     procedure ProcessStackQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    ///  <summary><c>Iterates the Stack and Queue (fully Priority range, in order) and invokes the AOnItem Callback.</c></summary>
+    ///  <remarks>
+    ///    <para><c>Empties the Stack and Queue when they have been fully Iterated.</c></para>
+    ///  <remarks>
     procedure ProcessStackQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
 
     // Properties
