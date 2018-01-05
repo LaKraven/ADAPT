@@ -833,6 +833,69 @@ type
     property Value: T read GetValue write SetValue;
   end;
 
+  ///  <summary><c>Read-Only Interface for the special Stack/Queue Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Call .Iterator to get the IADIterableList Interface Reference.</c></para>
+  ///  </remarks>
+  IADStackQueueReader<T> = interface(IADInterface)
+    // Getters
+    ///  <returns><c>The total number of Items in the Queue AND Stack.</c></returns>
+    function GetCount: Integer;
+    ///  <returns><c>An IADIterableList Interface Reference for this Stack/Queue.</c></returns>
+    function GetIterator: IADIterableList<T>;
+    ///  <returns><c>The number of Items in the Queue.</c></returns>
+    function GetQueueCount: Integer;
+    ///  <returns>An Item from the Queue at the given Index.</c></returns>
+    function GetQueueItem(const AIndex: Integer): T;
+    ///  <returns><c>The number of Items in the Stack.</c></returns>
+    function GetStackCount: Integer;
+    ///  <returns>An Item from the Stack at the given Index.</c></returns>
+    function GetStackItem(const AIndex: Integer): T;
+
+    // Properties
+    ///  <returns><c>The total number of Items in the Queue AND Stack.</c></returns>
+    property Count: Integer read GetCount;
+    ///  <returns><c>An IADIterableList Interface Reference for this Stack/Queue.</c></returns>
+    property Iterator: IADIterableList<T> read GetIterator;
+    ///  <returns><c>The number of Items in the Queue.</c></returns>
+    property QueueCount: Integer read GetQueueCount;
+    ///  <returns>An Item from the Queue at the given Index.</c></returns>
+    property QueueItem[const AIndex: Integer]: T read GetQueueItem;
+    ///  <returns><c>The number of Items in the Stack.</c></returns>
+    property StackCount: Integer read GetStackCount;
+    ///  <returns>An Item from the Stack at the given Index.</c></returns>
+    property StackItem[const AIndex: Integer]: T read GetStackItem;
+  end;
+
+  ///  <summary><c>Read/Write Interface for the special Stack/Queue Collection.</c></summary>
+  ///  <remarks>
+  ///    <para><c>Use IADStackQueueReader for Read-Only access.</c></para>
+  ///    <para><c>Call .Reader to get an IADStackQueueReader Interface Reference to this Stack/Queue Object.</c></para>
+  ///  </remarks>
+  IADStackQueue<T> = interface(IADStackQueueReader<T>)
+    // Getters
+    ///  <returns><c>A Read-Only Interface Reference to this Stack/Queue.</c></returns>
+    function GetReader: IADStackQueueReader<T>;
+
+    // Management Methods
+    ///  <summary><c>Adds an Item to the Queue.</c></summary>
+    procedure Queue(const AItem: T); overload;
+    ///  <summary><c>Adds a List of Items to the Queue.</c></summary>
+    procedure Queue(const AItems: IADListReader<T>); overload;
+    ///  <summary><c>Adds an Array of Items to the Queue.</c></summary>
+    procedure Queue(const AItems: Array of T); overload;
+    ///  <summary><c>Adds an Item to the Stack.</c></summary>
+    procedure Stack(const AItem: T); overload;
+    ///  <summary><c>Adds a List of Items to the Stack.</c></summary>
+    procedure Stack(const AItems: IADListReader<T>); overload;
+    ///  <summary><c>Adds an Array of Items to the Stack.</c></summary>
+    procedure Stack(const AItems: Array of T); overload;
+
+    // Properties
+    ///  <returns><c>A Read-Only Interface Reference to this Stack/Queue.</c></returns>
+    property Reader: IADStackQueueReader<T> read GetReader;
+  end;
+
 implementation
 
 end.
