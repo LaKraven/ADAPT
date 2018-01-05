@@ -1416,7 +1416,7 @@ var
 begin
   Result := 0;
   for I := 0 to FQueues.Capacity - 1 do
-    Result := Result := FQueues[I].Count;
+    Result := Result + FQueues[I].Count;
 end;
 
 function TADStackQueue<T>.GetQueueCount(const APriority: Integer): Integer;
@@ -1446,118 +1446,199 @@ var
 begin
   Result := 0;
   for I := 0 to FStacks.Capacity - 1 do
-    Result := Result := FStacks[I].Count;
+    Result := Result + FStacks[I].Count;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection);
   begin
-
+    case ADirection of
+      idLeft: IterateBackward(ACallback);
+      idRight: IterateForward(ACallback);
+      else
+        raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
 begin
-
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
 begin
-
+  case ADirection of
+    idLeft: IterateBackward(ACallback);
+    idRight: IterateForward(ACallback);
+    else
+      raise EADGenericsIterateDirectionUnknownException.Create('Unhandled Iterate Direction given.');
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    LPriority, I: Integer;
   begin
+    for LPriority := FQueues.Capacity - 1 downto 0 do
+      for I := FQueues[LPriority].Count - 1 downto 0 do
+        ACallback(FQueues[LPriority][I]);
 
+    for LPriority := FStacks.Capacity - 1 downto 0 do
+      for I := FStacks[LPriority].Count - 1 downto 0 do
+        ACallback(FStacks[LPriority][I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+var
+  LPriority, I: Integer;
 begin
+  for LPriority := FQueues.Capacity - 1 downto 0 do
+    for I := FQueues[LPriority].Count - 1 downto 0 do
+      ACallback(FQueues[LPriority][I]);
 
+  for LPriority := FStacks.Capacity - 1 downto 0 do
+    for I := FStacks[LPriority].Count - 1 downto 0 do
+      ACallback(FStacks[LPriority][I]);
 end;
 
 procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  LPriority, I: Integer;
 begin
+  for LPriority := FQueues.Capacity - 1 downto 0 do
+    for I := FQueues[LPriority].Count - 1 downto 0 do
+      ACallback(FQueues[LPriority][I]);
 
+  for LPriority := FStacks.Capacity - 1 downto 0 do
+    for I := FStacks[LPriority].Count - 1 downto 0 do
+      ACallback(FStacks[LPriority][I]);
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  var
+    LPriority, I: Integer;
   begin
+    for LPriority := 0 to FStacks.Capacity - 1 do
+      for I := 0 to FStacks[LPriority].Count - 1 do
+        ACallback(FStacks[LPriority][I]);
 
+    for LPriority := 0 to FQueues.Capacity - 1 do
+      for I := 0 to FQueues[LPriority].Count - 1 do
+        ACallback(FQueues[LPriority][I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+var
+  LPriority, I: Integer;
 begin
+  for LPriority := 0 to FStacks.Capacity - 1 do
+    for I := 0 to FStacks[LPriority].Count - 1 do
+      ACallback(FStacks[LPriority][I]);
 
+  for LPriority := 0 to FQueues.Capacity - 1 do
+    for I := 0 to FQueues[LPriority].Count - 1 do
+      ACallback(FQueues[LPriority][I]);
 end;
 
 procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
+var
+  LPriority, I: Integer;
 begin
+  for LPriority := 0 to FStacks.Capacity - 1 do
+    for I := 0 to FStacks[LPriority].Count - 1 do
+      ACallback(FStacks[LPriority][I]);
 
-end;
-
-procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>);
-begin
-
-end;
-
-procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>; const APriority: Integer);
-begin
-
+  for LPriority := 0 to FQueues.Capacity - 1 do
+    for I := 0 to FQueues[LPriority].Count - 1 do
+      ACallback(FQueues[LPriority][I]);
 end;
 
 procedure TADStackQueue<T>.Queue(const AItem: T);
 begin
-
+  Queue(AItem, FPriorityCount div 2);
 end;
 
 procedure TADStackQueue<T>.Queue(const AItem: T; const APriority: Integer);
+var
+  LPriority: Integer;
 begin
-
+  LPriority := CheckPriority(APriority, True);
+  FQueues[LPriority].Add(AItem);
 end;
 
-procedure TADStackQueue<T>.Queue(const AItems: array of T; const APriority: Integer);
+procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>);
 begin
+  Queue(AItems, FPriorityCount div 2);
+end;
 
+procedure TADStackQueue<T>.Queue(const AItems: IADListReader<T>; const APriority: Integer);
+var
+  I: Integer;
+begin
+  for I := 0 to AItems.Count - 1 do
+    Queue(AItems[I], APriority);
 end;
 
 procedure TADStackQueue<T>.Queue(const AItems: array of T);
 begin
-
+  Queue(AItems, FPriorityCount div 2);
 end;
 
-procedure TADStackQueue<T>.Stack(const AItems: IADListReader<T>; const APriority: Integer);
+procedure TADStackQueue<T>.Queue(const AItems: array of T; const APriority: Integer);
+var
+  I: Integer;
 begin
-
-end;
-
-procedure TADStackQueue<T>.Stack(const AItems: array of T);
-begin
-
-end;
-
-procedure TADStackQueue<T>.Stack(const AItems: array of T; const APriority: Integer);
-begin
-
-end;
-
-procedure TADStackQueue<T>.Stack(const AItem: T; const APriority: Integer);
-begin
-
+  for I := Low(AItems) to High(AItems) do
+    Queue(AItems[I], APriority);
 end;
 
 procedure TADStackQueue<T>.Stack(const AItem: T);
 begin
+  Stack(AItem, FPriorityCount div 2);
+end;
 
+procedure TADStackQueue<T>.Stack(const AItem: T; const APriority: Integer);
+var
+  LPriority: Integer;
+begin
+  LPriority := CheckPriority(APriority, True);
+  FStacks[LPriority].Add(AItem);
 end;
 
 procedure TADStackQueue<T>.Stack(const AItems: IADListReader<T>);
 begin
+  Stack(AItems, FPriorityCount div 2);
+end;
 
+procedure TADStackQueue<T>.Stack(const AItems: IADListReader<T>; const APriority: Integer);
+var
+  I: Integer;
+begin
+  for I := 0 to AItems.Count - 1 do
+    Stack(AItems[I], APriority);
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: array of T);
+begin
+  Stack(AItems, FPriorityCount div 2);
+end;
+
+procedure TADStackQueue<T>.Stack(const AItems: array of T; const APriority: Integer);
+var
+  I: Integer;
+begin
+  for I := Low(AItems) to High(AItems) do
+    Stack(AItems[I], APriority);
 end;
 
 { TADListSorterQuick<T> }
