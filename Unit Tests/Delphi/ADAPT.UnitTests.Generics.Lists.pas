@@ -836,6 +836,7 @@ var
   LStackQueue: IADStackQueue<String>;
   I: Integer;
   LConfirms: Array[0..9] of Boolean;
+  LConfirmAll: Boolean;
   LSortedList: IADSortedList<String>;
 begin
   Randomize;
@@ -861,6 +862,21 @@ begin
   Assert.IsTrue(LStackQueue.CountTotal = 10, Format('Stack/Queue should contain 10 items, instead contains %d.', [LStackQueue.CountTotal]));
 
   // Now that our StackQueue is populated, we need to Process it to ensure it Processes EVERY Value...
+  LStackQueue.ProcessStackQueue(procedure(const AItem: String) begin
+    I := LSortedList.IndexOf(AItem);
+    if I > -1 then
+      LConfirms[I] := True;
+  end);
+
+  LConfirmAll := True; // Optimistic
+  for I := Low(LConfirms) to High(LConfirms) do
+    if (not LConfirms[I]) then
+    begin
+      LConfirmAll := False;
+      Break;
+    end;
+
+  Assert.IsTrue(LConfirmAll, 'Not all Values in the StackQueue could be verified.');
 end;
 
 end.
