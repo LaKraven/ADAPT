@@ -907,6 +907,27 @@ type
     ///  <summary><c>Adds an Array of Items to the Stack with the given Priority.</c></summary>
     procedure Stack(const AItems: Array of T; const APriority: Integer); overload;
 
+    // Specialized Queue Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
+    // Specialized Stack Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessStack(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessStack(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessStack(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
+    // Specialized Stack/Queue Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessStackQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessStackQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessStackQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
     // Properties
     ///  <returns><c>A Read-Only Interface Reference to this Stack/Queue.</c></returns>
     property Reader: IADStackQueueReader<T> read GetReader;

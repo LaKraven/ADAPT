@@ -442,6 +442,27 @@ type
     procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
     procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
 
+    // Specialized Queue Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
+    // Specialized Stack Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessStack(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessStack(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessStack(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
+    // Specialized Stack/Queue Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure ProcessStackQueue(const AOnItem: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure ProcessStackQueue(const AOnItem: TADListItemCallbackOfObject<T>); overload;
+    procedure ProcessStackQueue(const AOnItem: TADListItemCallbackUnbound<T>); overload;
+
     // Properties
     { IADStackQueueReader<T> }
     property CountTotal: Integer read GetCount;
@@ -1491,7 +1512,7 @@ end;
         ACallback(FQueues[LPriority][I]);
 
     for LPriority := FStacks.Capacity - 1 downto 0 do
-      for I := FStacks[LPriority].Count - 1 downto 0 do
+      for I := 0 to FStacks[LPriority].Count - 1 do
         ACallback(FStacks[LPriority][I]);
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
@@ -1505,7 +1526,7 @@ begin
       ACallback(FQueues[LPriority][I]);
 
   for LPriority := FStacks.Capacity - 1 downto 0 do
-    for I := FStacks[LPriority].Count - 1 downto 0 do
+    for I := 0 to FStacks[LPriority].Count - 1 do
       ACallback(FStacks[LPriority][I]);
 end;
 
@@ -1518,7 +1539,7 @@ begin
       ACallback(FQueues[LPriority][I]);
 
   for LPriority := FStacks.Capacity - 1 downto 0 do
-    for I := FStacks[LPriority].Count - 1 downto 0 do
+    for I := 0 to FStacks[LPriority].Count - 1 do
       ACallback(FStacks[LPriority][I]);
 end;
 
@@ -1528,7 +1549,7 @@ end;
     LPriority, I: Integer;
   begin
     for LPriority := 0 to FStacks.Capacity - 1 do
-      for I := 0 to FStacks[LPriority].Count - 1 do
+      for I := FStacks[LPriority].Count - 1 downto 0 do
         ACallback(FStacks[LPriority][I]);
 
     for LPriority := 0 to FQueues.Capacity - 1 do
@@ -1542,7 +1563,7 @@ var
   LPriority, I: Integer;
 begin
   for LPriority := 0 to FStacks.Capacity - 1 do
-    for I := 0 to FStacks[LPriority].Count - 1 do
+    for I := FStacks[LPriority].Count - 1 downto 0 do
       ACallback(FStacks[LPriority][I]);
 
   for LPriority := 0 to FQueues.Capacity - 1 do
@@ -1555,12 +1576,66 @@ var
   LPriority, I: Integer;
 begin
   for LPriority := 0 to FStacks.Capacity - 1 do
-    for I := 0 to FStacks[LPriority].Count - 1 do
+    for I := FStacks[LPriority].Count - 1 downto 0 do
       ACallback(FStacks[LPriority][I]);
 
   for LPriority := 0 to FQueues.Capacity - 1 do
     for I := 0 to FQueues[LPriority].Count - 1 do
       ACallback(FQueues[LPriority][I]);
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackUnbound<T>);
+begin
+
+end;
+
+procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackUnbound<T>);
+begin
+
+end;
+
+procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.ProcessStackQueue(const AOnItem: TADListItemCallbackAnon<T>);
+  begin
+    ProcessStack(AOnItem);
+    ProcessQueue(AOnItem);
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.ProcessStackQueue(const AOnItem: TADListItemCallbackOfObject<T>);
+begin
+  ProcessStack(AOnItem);
+  ProcessQueue(AOnItem);
+end;
+
+procedure TADStackQueue<T>.ProcessStackQueue(const AOnItem: TADListItemCallbackUnbound<T>);
+begin
+  ProcessStack(AOnItem);
+  ProcessQueue(AOnItem);
 end;
 
 procedure TADStackQueue<T>.Queue(const AItem: T);
