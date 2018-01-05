@@ -839,32 +839,37 @@ type
   ///  </remarks>
   IADStackQueueReader<T> = interface(IADInterface)
     // Getters
-    ///  <returns><c>The total number of Items in the Queue AND Stack.</c></returns>
-    function GetCount: Integer;
+    ///  <returns><c>The total number of Items in the Queue AND Stack (full Priority range).</c></returns>
+    function GetCount: Integer; overload;
+    ///  <returns><c>The total number of Items in the Queue AND Stack for the given Priority.</c></returns>
+    function GetCount(const APriority: Integer): Integer; overload;
     ///  <returns><c>An IADIterableList Interface Reference for this Stack/Queue.</c></returns>
     function GetIterator: IADIterableList<T>;
-    ///  <returns><c>The number of Items in the Queue.</c></returns>
-    function GetQueueCount: Integer;
-    ///  <returns>An Item from the Queue at the given Index.</c></returns>
-    function GetQueueItem(const AIndex: Integer): T;
-    ///  <returns><c>The number of Items in the Stack.</c></returns>
-    function GetStackCount: Integer;
-    ///  <returns>An Item from the Stack at the given Index.</c></returns>
-    function GetStackItem(const AIndex: Integer): T;
+    ///  <returns><c>The number of Items in the Queue (full Priority range).</c></returns>
+    function GetQueueCount: Integer; overload;
+    ///  <returns><c>The number of Items in the Queue for the given Priority.</c></returns>
+    function GetQueueCount(const APriority: Integer): Integer; overload;
+    ///  <returns><c>The number of Items in the Stack (full Priority range).</c></returns>
+    function GetStackCount: Integer; overload;
+    ///  <returns><c>The number of Items in the Stack for the given Priority.</c></returns>
+    function GetStackCount(const APriority: Integer): Integer; overload;
 
     // Properties
-    ///  <returns><c>The total number of Items in the Queue AND Stack.</c></returns>
-    property Count: Integer read GetCount;
+    ///  <returns><c>The total number of Items in the Queue AND Stack (full Priority range).</c></returns>
+    property CountTotal: Integer read GetCount;
+    ///  <returns><c>The total number of Items in the Queue AND Stack for the given Priority.</c></returns>
+    property Count[const APriority: Integer]: Integer read GetCount;
+
     ///  <returns><c>An IADIterableList Interface Reference for this Stack/Queue.</c></returns>
     property Iterator: IADIterableList<T> read GetIterator;
-    ///  <returns><c>The number of Items in the Queue.</c></returns>
-    property QueueCount: Integer read GetQueueCount;
-    ///  <returns>An Item from the Queue at the given Index.</c></returns>
-    property QueueItem[const AIndex: Integer]: T read GetQueueItem;
-    ///  <returns><c>The number of Items in the Stack.</c></returns>
-    property StackCount: Integer read GetStackCount;
-    ///  <returns>An Item from the Stack at the given Index.</c></returns>
-    property StackItem[const AIndex: Integer]: T read GetStackItem;
+    ///  <returns><c>The number of Items in the Queue (full Priority range).</c></returns>
+    property QueueTotalCount: Integer read GetQueueCount;
+    ///  <returns><c>The number of Items in the Queue for the given Priority.</c></returns>
+    property QueueCount[const APriority: Integer]: Integer read GetQueueCount;
+    ///  <returns><c>The number of Items in the Stack (full Priority range).</c></returns>
+    property StackTotalCount: Integer read GetStackCount;
+    ///  <returns><c>The number of Items in the Stack for the given Priority.</c></returns>
+    property StackCount[const APriority: Integer]: Integer read GetStackCount;
   end;
 
   ///  <summary><c>Read/Write Interface for the special Stack/Queue Collection.</c></summary>
@@ -878,18 +883,30 @@ type
     function GetReader: IADStackQueueReader<T>;
 
     // Management Methods
-    ///  <summary><c>Adds an Item to the Queue.</c></summary>
+    ///  <summary><c>Adds an Item to the Queue with the Middle Priority.</c></summary>
     procedure Queue(const AItem: T); overload;
-    ///  <summary><c>Adds a List of Items to the Queue.</c></summary>
+    ///  <summary><c>Adds an Item to the Queue with the given Priority.</c></summary>
+    procedure Queue(const AItem: T; const APriority: Integer); overload;
+    ///  <summary><c>Adds a List of Items to the Queue with the Middle Priority.</c></summary>
     procedure Queue(const AItems: IADListReader<T>); overload;
-    ///  <summary><c>Adds an Array of Items to the Queue.</c></summary>
+    ///  <summary><c>Adds a List of Items to the Queue with the given Priority.</c></summary>
+    procedure Queue(const AItems: IADListReader<T>; const APriority: Integer); overload;
+    ///  <summary><c>Adds an Array of Items to the Queue with the Middle Priority.</c></summary>
     procedure Queue(const AItems: Array of T); overload;
-    ///  <summary><c>Adds an Item to the Stack.</c></summary>
+    ///  <summary><c>Adds an Array of Items to the Queue with the given Priority.</c></summary>
+    procedure Queue(const AItems: Array of T; const APriority: Integer); overload;
+    ///  <summary><c>Adds an Item to the Stack with the Middle Priority.</c></summary>
     procedure Stack(const AItem: T); overload;
-    ///  <summary><c>Adds a List of Items to the Stack.</c></summary>
+    ///  <summary><c>Adds an Item to the Stack with the given Priority.</c></summary>
+    procedure Stack(const AItem: T; const APriority: Integer); overload;
+    ///  <summary><c>Adds a List of Items to the Stack with the Middle Priority.</c></summary>
     procedure Stack(const AItems: IADListReader<T>); overload;
-    ///  <summary><c>Adds an Array of Items to the Stack.</c></summary>
+    ///  <summary><c>Adds a List of Items to the Stack with the given Priority.</c></summary>
+    procedure Stack(const AItems: IADListReader<T>; const APriority: Integer); overload;
+    ///  <summary><c>Adds an Array of Items to the Stack with the Middle Priority.</c></summary>
     procedure Stack(const AItems: Array of T); overload;
+    ///  <summary><c>Adds an Array of Items to the Stack with the given Priority.</c></summary>
+    procedure Stack(const AItems: Array of T; const APriority: Integer); overload;
 
     // Properties
     ///  <returns><c>A Read-Only Interface Reference to this Stack/Queue.</c></returns>
