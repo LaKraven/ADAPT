@@ -1586,36 +1586,84 @@ end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackAnon<T>);
+  var
+    LPriority: Integer;
+    I: Integer;
   begin
-
+    for LPriority := 0 to FPriorityCount - 1 do
+    begin
+      for I := 0 to FQueues[LPriority].Count - 1 do
+        AOnItem(FQueues[LPriority][I]);
+      FQueues[LPriority].Clear; // This empties the Priority Queue when it has been fully processed via the AOnItem Callback.
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackUnbound<T>);
+var
+  LPriority: Integer;
+  I: Integer;
 begin
-
+  for LPriority := 0 to FPriorityCount - 1 do
+  begin
+    for I := 0 to FQueues[LPriority].Count - 1 do
+      AOnItem(FQueues[LPriority][I]);
+    FQueues[LPriority].Clear; // This empties the Priority Queue when it has been fully processed via the AOnItem Callback.
+  end;
 end;
 
 procedure TADStackQueue<T>.ProcessQueue(const AOnItem: TADListItemCallbackOfObject<T>);
+var
+  LPriority: Integer;
+  I: Integer;
 begin
-
+  for LPriority := 0 to FPriorityCount - 1 do
+  begin
+    for I := 0 to FQueues[LPriority].Count - 1 do
+      AOnItem(FQueues[LPriority][I]);
+    FQueues[LPriority].Clear; // This empties the Priority Queue when it has been fully processed via the AOnItem Callback.
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
   procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackAnon<T>);
+  var
+    LPriority: Integer;
+    I: Integer;
   begin
-
+    for LPriority := 0 to FPriorityCount - 1 do
+    begin
+      for I := FStacks[LPriority].Count - 1 downto 0 do
+        AOnItem(FStacks[LPriority][I]);
+      FStacks[LPriority].Clear; // This empties the Priority Stack when it has been fully processed via the AOnItem Callback.
+    end;
   end;
 {$ENDIF SUPPORTS_REFERENCETOMETHOD}
 
 procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackUnbound<T>);
+var
+  LPriority: Integer;
+  I: Integer;
 begin
-
+  for LPriority := 0 to FPriorityCount - 1 do
+  begin
+    for I := FStacks[LPriority].Count - 1 downto 0 do
+      AOnItem(FStacks[LPriority][I]);
+    FStacks[LPriority].Clear; // This empties the Priority Stack when it has been fully processed via the AOnItem Callback.
+  end;
 end;
 
 procedure TADStackQueue<T>.ProcessStack(const AOnItem: TADListItemCallbackOfObject<T>);
+var
+  LPriority: Integer;
+  I: Integer;
 begin
-
+  for LPriority := 0 to FPriorityCount - 1 do
+  begin
+    for I := FStacks[LPriority].Count - 1 downto 0 do
+      AOnItem(FStacks[LPriority][I]);
+    FStacks[LPriority].Clear; // This empties the Priority Stack when it has been fully processed via the AOnItem Callback.
+  end;
 end;
 
 {$IFDEF SUPPORTS_REFERENCETOMETHOD}
