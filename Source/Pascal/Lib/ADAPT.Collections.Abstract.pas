@@ -463,7 +463,7 @@ end;
 
 constructor TADListBase<T>.Create(const AInitialCapacity: Integer);
 begin
-  inherited;
+  inherited Create(AInitialCapacity);
   FSorter := TADListSorterQuick<T>.Create; // Use the Quick Sorter by default.
 end;
 

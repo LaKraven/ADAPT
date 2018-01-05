@@ -1411,8 +1411,8 @@ begin
   FStacks := TADArray<IADList<T>>.Create(APriorityCount);
   for I := 0 to APriorityCount - 1 do
   begin
-    FQueues[I] := TADList<T>.Create(ADCollectionExpanderGeometric);
-    FStacks[I] := TADList<T>.Create(ADCollectionExpanderGeometric);
+    FQueues[I] := TADList<T>.Create;
+    FStacks[I] := TADList<T>.Create;
   end;
 end;
 

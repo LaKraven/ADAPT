@@ -127,6 +127,13 @@ type
     procedure BasicIntegrity;
   end;
 
+  [TestFixture]
+  TADUTCollectionsStackQueue = class(TObject)
+  public
+    [Test]
+    procedure BasicIntegrity;
+  end;
+
 implementation
 
 uses
@@ -820,6 +827,40 @@ begin
   // Verify that we can access the value of the Parent Node via its Child Node.
   LNode2.Parent.Value := 'Haha';
   Assert.IsTrue(LNode.Value = 'Haha', Format('Node Value should be "Haha" but instead got "%s"', [LNode.Value]));
+end;
+
+{ TADUTCollectionsStackQueue }
+
+procedure TADUTCollectionsStackQueue.BasicIntegrity;
+var
+  LStackQueue: IADStackQueue<String>;
+  I: Integer;
+  LConfirms: Array[0..9] of Boolean;
+  LSortedList: IADSortedList<String>;
+begin
+  Randomize;
+  // Initialize LConfirms to False
+  for I := Low(LConfirms) to High(LConfirms) do
+    LConfirms[I] := False;
+
+  // Create and populate a Sorted List (so we can easily confirm that values from the StackQueue are all present)
+  LSortedList := TADSortedList<String>.Create(ADStringComparer, 10);
+  LSortedList.AddItems(BASIC_ITEMS);
+
+  // Create our StackQueue.
+  LStackQueue := TADStackQueue<String>.Create;
+
+  // Populate it with our Values.
+  for I := Low(BASIC_ITEMS) to High(BASIC_ITEMS) do
+    if (I mod 2 = 1) then
+      LStackQueue.Queue(BASIC_ITEMS[I], Random(4) + 1)  // Random Priority
+    else
+      LStackQueue.Stack(BASIC_ITEMS[I], Random(4) + 1); // Random Priority
+
+  // Verify that Count = 10
+  Assert.IsTrue(LStackQueue.CountTotal = 10, Format('Stack/Queue should contain 10 items, instead contains %d.', [LStackQueue.CountTotal]));
+
+  // Now that our StackQueue is populated, we need to Process it to ensure it Processes EVERY Value...
 end;
 
 end.
