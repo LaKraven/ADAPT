@@ -387,12 +387,17 @@ type
     property Value: T read GetValue write SetValue;
   end;
 
-  TADStackQueue<T> = class(TADObject, IADStackQueueReader<T>, IADStackQueue<T>)
+  TADStackQueue<T> = class(TADObject, IADStackQueueReader<T>, IADStackQueue<T>, IADIterableList<T>)
+  private
+    FPriorityCount: Integer;
+    FQueues: IADArray<IADList<T>>; // Bucket of Queues (one per Priority)
+    FStacks: IADArray<IADList<T>>; // Bucket of Stacks (one per Priority)
+    function CheckPriority(const APriority: Integer; const AReturnArrayIndex: Boolean = False): Integer;
   protected
     // Getters
     { IADStackQueueReader<T> }
-    function GetCount: Integer; overload; virtual;
-    function GetCount(const APriority: Integer): Integer; overload; virtual;
+    function GetCount: Integer; overload;
+    function GetCount(const APriority: Integer): Integer; overload;
     function GetIterator: IADIterableList<T>; virtual;
     function GetQueueCount: Integer; overload; virtual;
     function GetQueueCount(const APriority: Integer): Integer; overload; virtual;
@@ -401,7 +406,11 @@ type
     { IADStackQueue<T> }
     function GetReader: IADStackQueueReader<T>;
   public
-
+    ///  <summary><c>Creates a Stack/Queue instance containing the given number of Priority Stacks and Queues (respectively).</c></summary>
+    ///  <remarks>
+    ///    <para>NOTE: <c>Once instanciated, you cannot change the number of Priority Stacks and Queues.</c></para>
+    ///  </remarks>
+    constructor Create(const APriorityCount: Integer = 5); reintroduce;
     // Management Methods
     procedure Queue(const AItem: T); overload; virtual;
     procedure Queue(const AItem: T; const APriority: Integer); overload; virtual;
@@ -415,6 +424,23 @@ type
     procedure Stack(const AItems: IADListReader<T>; const APriority: Integer); overload; virtual;
     procedure Stack(const AItems: Array of T); overload; virtual;
     procedure Stack(const AItems: Array of T; const APriority: Integer); overload; virtual;
+
+    // Iterators
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection = idRight); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection = idRight); overload;
+    procedure Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection = idRight); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateBackward(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateBackward(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateBackward(const ACallback: TADListItemCallbackUnbound<T>); overload;
+    {$IFDEF SUPPORTS_REFERENCETOMETHOD}
+      procedure IterateForward(const ACallback: TADListItemCallbackAnon<T>); overload;
+    {$ENDIF SUPPORTS_REFERENCETOMETHOD}
+    procedure IterateForward(const ACallback: TADListItemCallbackOfObject<T>); overload;
+    procedure IterateForward(const ACallback: TADListItemCallbackUnbound<T>); overload;
 
     // Properties
     { IADStackQueueReader<T> }
@@ -1341,42 +1367,135 @@ end;
 
 { TADStackQueue<T> }
 
+function TADStackQueue<T>.CheckPriority(const APriority: Integer; const AReturnArrayIndex: Boolean = False): Integer;
+begin
+  if APriority < 1 then
+    Result := 1
+  else if APriority > FPriorityCount then
+    Result := FPriorityCount
+  else
+    Result := APriority;
+
+  if (AReturnArrayIndex) then
+    Dec(Result); // This accounts for the 0-based Array Offset.
+end;
+
+constructor TADStackQueue<T>.Create(const APriorityCount: Integer);
+var
+  I: Integer;
+begin
+  inherited Create;
+  FPriorityCount := APriorityCount;
+  FQueues := TADArray<IADList<T>>.Create(APriorityCount);
+  FStacks := TADArray<IADList<T>>.Create(APriorityCount);
+  for I := 0 to APriorityCount - 1 do
+  begin
+    FQueues[I] := TADList<T>.Create(ADCollectionExpanderGeometric);
+    FStacks[I] := TADList<T>.Create(ADCollectionExpanderGeometric);
+  end;
+end;
+
 function TADStackQueue<T>.GetCount: Integer;
 begin
-
+  Result := GetQueueCount + GetStackCount;
 end;
 
 function TADStackQueue<T>.GetCount(const APriority: Integer): Integer;
 begin
-
+  Result := GetQueueCount(APriority) + GetStackCount(APriority);
 end;
 
 function TADStackQueue<T>.GetIterator: IADIterableList<T>;
 begin
-
+  Result := Self;
 end;
 
 function TADStackQueue<T>.GetQueueCount: Integer;
+var
+  I: Integer;
 begin
-
+  Result := 0;
+  for I := 0 to FQueues.Capacity - 1 do
+    Result := Result := FQueues[I].Count;
 end;
 
 function TADStackQueue<T>.GetQueueCount(const APriority: Integer): Integer;
+var
+  LPriority: Integer;
 begin
-
+  LPriority := CheckPriority(APriority, True);
+  Result := FQueues[LPriority].Count;
 end;
 
 function TADStackQueue<T>.GetReader: IADStackQueueReader<T>;
 begin
-
+  Result := Self;
 end;
 
 function TADStackQueue<T>.GetStackCount(const APriority: Integer): Integer;
+var
+  LPriority: Integer;
+begin
+  LPriority := CheckPriority(APriority, True);
+  Result := FStacks[LPriority].Count;
+end;
+
+function TADStackQueue<T>.GetStackCount: Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to FStacks.Capacity - 1 do
+    Result := Result := FStacks[I].Count;
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackAnon<T>; const ADirection: TADIterateDirection);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackUnbound<T>; const ADirection: TADIterateDirection);
 begin
 
 end;
 
-function TADStackQueue<T>.GetStackCount: Integer;
+procedure TADStackQueue<T>.Iterate(const ACallback: TADListItemCallbackOfObject<T>; const ADirection: TADIterateDirection);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackUnbound<T>);
+begin
+
+end;
+
+procedure TADStackQueue<T>.IterateBackward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+{$IFDEF SUPPORTS_REFERENCETOMETHOD}
+  procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackAnon<T>);
+  begin
+
+  end;
+{$ENDIF SUPPORTS_REFERENCETOMETHOD}
+
+procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackOfObject<T>);
+begin
+
+end;
+
+procedure TADStackQueue<T>.IterateForward(const ACallback: TADListItemCallbackUnbound<T>);
 begin
 
 end;
