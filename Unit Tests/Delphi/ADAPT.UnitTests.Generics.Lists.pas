@@ -137,7 +137,7 @@ type
 implementation
 
 uses
-  ADAPT, ADAPT.Collections, ADAPT.Comparers;
+  ADAPT, ADAPT.Collections, ADAPT.Comparers, ADAPT.Math.Delta;
 
 type
   // Specialized Interfaces
@@ -838,6 +838,9 @@ var
   LConfirms: Array[0..9] of Boolean;
   LConfirmAll: Boolean;
   LSortedList: IADSortedList<String>;
+  {$IFDEF PERFLOGGING}
+    LStartTime: ADFloat;
+  {$ENDIF PERLOGGING}
 begin
   Randomize;
   // Initialize LConfirms to False
@@ -862,11 +865,17 @@ begin
   Assert.IsTrue(LStackQueue.CountTotal = 10, Format('Stack/Queue should contain 10 items, instead contains %d.', [LStackQueue.CountTotal]));
 
   // Now that our StackQueue is populated, we need to Process it to ensure it Processes EVERY Value...
+  {$IFDEF PERFLOGGING}
+    LStartTime := ADReferenceTime;
+  {$ENDIF PERFLOGGING}
   LStackQueue.ProcessStackQueue(procedure(const AItem: String) begin
     I := LSortedList.IndexOf(AItem);
     if I > -1 then
       LConfirms[I] := True;
   end);
+  {$IFDEF PERFLOGGING}
+    Log(TLogLevel.Warning, Format('%d Items took %f Seconds', [LStackQueue.CountTotal, ADReferenceTime - LStartTime]));
+  {$ENDIF PERFLOGGING}
 
   LConfirmAll := True; // Optimistic
   for I := Low(LConfirms) to High(LConfirms) do
