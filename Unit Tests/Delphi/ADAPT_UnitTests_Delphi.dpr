@@ -48,7 +48,9 @@ uses
   ADAPT.Comparers.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Comparers.Abstract.pas',
   ADAPT.Math.Common.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Math.Common.Abstract.pas',
   ADAPT.Math.Averagers.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Math.Averagers.Abstract.pas',
-  ADAPT.Collections.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Collections.Abstract.pas';
+  ADAPT.Collections.Abstract in '..\..\Source\Pascal\Lib\ADAPT.Collections.Abstract.pas',
+  ADAPT.EventEngine in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.pas',
+  ADAPT.EventEngine.Intf in '..\..\Source\Pascal\Lib\ADAPT.EventEngine.Intf.pas';
 
 var
   runner : ITestRunner;
